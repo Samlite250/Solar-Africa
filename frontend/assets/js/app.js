@@ -260,9 +260,14 @@ class SolarApp {
     const page = this.state.page;
     
     // Protect routes
-    const protectedPages = ['dashboard', 'profile', 'team'];
+    const protectedPages = ['dashboard', 'profile', 'team', 'admin'];
     if (protectedPages.includes(page) && !this.state.token) {
       window.location.href = 'login.html';
+      return;
+    }
+
+    if (page === 'admin' && this.state.user?.role !== 'admin') {
+      window.location.href = 'dashboard.html';
       return;
     }
 
@@ -419,13 +424,10 @@ class SolarApp {
     const data = await this.fetchAPI('admin/stats');
     if (!data) return;
 
-    const metrics = document.querySelectorAll('.metric-card strong');
-    if (metrics.length >= 4 && data.stats) {
-      metrics[0].textContent = data.stats.users;
-      metrics[1].textContent = data.stats.packages;
-      metrics[2].textContent = data.stats.deposits;
-      metrics[3].textContent = data.stats.withdrawals;
-    }
+    this.updateElement('admin-total-users', data.stats.users);
+    this.updateElement('admin-active-pkgs', `${data.stats.packages} active`);
+    this.updateElement('admin-total-deposits', data.stats.deposits);
+    this.updateElement('admin-total-withdrawals', data.stats.withdrawals);
 
     // Populate tables with professional rows
     const tables = document.querySelectorAll('.admin-panel-card table tbody');

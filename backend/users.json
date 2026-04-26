@@ -6,5 +6,13 @@
     "password": "$2b$10$wcxhMk26IjpX7zXigwer8ehizvTs5Dt5IUuhAT912gsrwSBWsQNMa",
     "role": "user",
     "createdAt": "2026-04-26T14:31:08.703Z"
+  },
+  {
+    "id": "1777213869000",
+    "name": "Admin Sam",
+    "email": "admin@solarafrica.com",
+    "password": "$2b$10$wcxhMk26IjpX7zXigwer8ehizvTs5Dt5IUuhAT912gsrwSBWsQNMa",
+    "role": "admin",
+    "createdAt": "2026-04-26T15:43:00.000Z"
   }
 ]
