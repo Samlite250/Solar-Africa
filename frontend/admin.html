@@ -101,11 +101,55 @@
                 </thead>
                 <tbody id="admin-user-list">
                   <!-- Hydrated by app.js -->
-                  <tr><td>Jean N.</td><td>Burundi</td><td>Apr 2026</td><td><span class="status-badge approved">active</span></td></tr>
-                  <tr><td>Divine M.</td><td>Burundi</td><td>Apr 2026</td><td><span class="status-badge approved">active</span></td></tr>
-                  <tr><td>Samuel K.</td><td>Burundi</td><td>Apr 2026</td><td><span class="status-badge approved">active</span></td></tr>
                 </tbody>
               </table>
+            </div>
+          </article>
+        </section>
+
+        <section class="admin-grid" style="margin-top: 24px;">
+          <article class="panel-card admin-panel-card">
+            <p class="panel-title">Withdrawal requests</p>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Amount</th>
+                    <th>Method</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-withdrawal-list">
+                  <tr>
+                    <td>Samuel K.</td>
+                    <td>450,000 BIF</td>
+                    <td>mPesa</td>
+                    <td><span class="status-badge pending">pending</span></td>
+                    <td>
+                      <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-green" style="padding: 4px 8px; font-size: 11px;">Pay</button>
+                        <button class="btn btn-outline" style="padding: 4px 8px; font-size: 11px; color: #dc2626; border-color: #fecaca;">Reject</button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+          <article class="panel-card admin-panel-card">
+            <p class="panel-title">Platform settings</p>
+            <div style="padding: 16px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <span style="font-size: 14px; font-weight: 500;">Maintenance Mode</span>
+                <div style="width: 40px; height: 20px; background: #e5e7eb; border-radius: 10px; position: relative; cursor: pointer;"><div style="width: 16px; height: 16px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 2px;"></div></div>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <span style="font-size: 14px; font-weight: 500;">Registration Open</span>
+                <div style="width: 40px; height: 20px; background: var(--primary-green); border-radius: 10px; position: relative; cursor: pointer;"><div style="width: 16px; height: 16px; background: white; border-radius: 50%; position: absolute; top: 2px; right: 2px;"></div></div>
+              </div>
+              <button class="btn btn-blue btn-full" style="padding: 10px; font-size: 13px;">Save Settings</button>
             </div>
           </article>
         </section>
