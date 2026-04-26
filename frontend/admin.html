@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Solar Africa | Admin Panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/main.css" />
+  </head>
+  <body data-page="admin">
+    <div class="page-shell">
+      <header class="site-header">
+        <div class="brand-row">
+          <a href="index.html" class="brand-link">
+            <img src="assets/img/logo.png" alt="Solar Africa" class="brand-logo" />
+            <span>Solar Africa</span>
+          </a>
+          <nav class="main-nav" aria-label="Main navigation">
+            <a href="index.html">Home</a>
+            <a href="index.html#how-it-works">About</a>
+            <a href="packages.html">Packages</a>
+            <a href="team.html">Team</a>
+            <a href="profile.html">Profile</a>
+            <a href="admin.html" class="active">Admin</a>
+          </nav>
+        </div>
+      </header>
+
+      <main>
+        <section class="page-header">
+          <div>
+            <p class="eyebrow">Admin Panel</p>
+            <h1>Simple operational control for Solar Africa.</h1>
+            <p>
+              Track users, packages, deposits, and withdrawals in a clean admin
+              dashboard built for fast decisions.
+            </p>
+          </div>
+          <div class="hero-cta-card">
+            <p>Live status</p>
+            <strong>Platform active</strong>
+            <span>All systems running smoothly</span>
+          </div>
+        </section>
+
+        <section class="metric-row">
+          <article class="metric-card">
+            <span>Users</span>
+            <strong>4,320</strong>
+          </article>
+          <article class="metric-card">
+            <span>Packages</span>
+            <strong>5 active</strong>
+          </article>
+          <article class="metric-card">
+            <span>Deposits</span>
+            <strong>1,060</strong>
+          </article>
+          <article class="metric-card">
+            <span>Withdrawals</span>
+            <strong>420</strong>
+          </article>
+        </section>
+
+        <section class="admin-grid">
+          <article class="panel-card admin-panel-card">
+            <p class="panel-title">Recent deposits</p>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Amount</th>
+                    <th>Package</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Hydrated by app.js -->
+                </tbody>
+              </table>
+            </div>
+          </article>
+          <article class="panel-card admin-panel-card">
+            <p class="panel-title">User management</p>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Country</th>
+                    <th>Joined</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-user-list">
+                  <!-- Hydrated by app.js -->
+                  <tr><td>Jean N.</td><td>Burundi</td><td>Apr 2026</td><td><span class="status-badge approved">active</span></td></tr>
+                  <tr><td>Divine M.</td><td>Burundi</td><td>Apr 2026</td><td><span class="status-badge approved">active</span></td></tr>
+                  <tr><td>Samuel K.</td><td>Burundi</td><td>Apr 2026</td><td><span class="status-badge approved">active</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <div class="footer-copy">
+          <div>
+            <img src="assets/img/logo.png" alt="Solar Africa" class="footer-logo" />
+            <p>
+              This admin panel is a lightweight MVP control center for platform
+              metrics, package oversight, and payment management.
+            </p>
+          </div>
+          <div class="footer-links">
+            <div>
+              <p>Actions</p>
+              <a href="dashboard.html">Dashboard</a>
+              <a href="packages.html">Packages</a>
+              <a href="team.html">Team</a>
+            </div>
+            <div>
+              <p>Support</p>
+              <a href="mailto:hello@solarafrica.com">hello@solarafrica.com</a>
+              <a href="tel:+250000000000">+250 000 000 000</a>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span>© 2026 Solar Africa. All rights reserved.</span>
+          <span>Admin controls for MVP operations.</span>
+        </div>
+      </footer>
+    </div>
+    <script src="assets/js/app.js" defer></script>
+  </body>
+</html>

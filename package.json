@@ -1,0 +1,11 @@
+{
+  "name": "solar-africa",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Solar Africa MVP monorepo",
+  "scripts": {
+    "install-backend": "cd backend && npm install",
+    "start": "cd backend && npm start",
+    "dev": "cd backend && npm start"
+  }
+}
