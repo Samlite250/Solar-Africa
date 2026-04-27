@@ -1,31 +1,7 @@
-const fs = require('fs');
-const path = require('path');
-const bcrypt = require('bcryptjs');
+const { client, isConfigured } = require('../config/supabase');
 const jwt = require('jsonwebtoken');
 
-const USERS_FILE = path.join(__dirname, '../users.json');
 const JWT_SECRET = process.env.JWT_SECRET || 'solar-africa-super-secret-key-2026';
-
-// Helper to read users
-const getUsers = () => {
-  try {
-    if (!fs.existsSync(USERS_FILE)) return [];
-    const data = fs.readFileSync(USERS_FILE, 'utf8');
-    return JSON.parse(data);
-  } catch (error) {
-    console.error('Error reading users:', error);
-    return [];
-  }
-};
-
-// Helper to save users
-const saveUsers = (users) => {
-  try {
-    fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
-  } catch (error) {
-    console.error('Error saving users:', error);
-  }
-};
 
 exports.register = async (req, res) => {
   try {
@@ -35,34 +11,75 @@ exports.register = async (req, res) => {
       return res.status(400).json({ error: 'All fields are required' });
     }
 
-    const users = getUsers();
-    
-    if (users.find(u => u.email === email)) {
-      return res.status(400).json({ error: 'Email already registered' });
+    if (!isConfigured) {
+      return res.status(503).json({ error: 'Supabase is not configured' });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    
-    const newUser = {
-      id: Date.now().toString(),
-      name,
+    // 1. Sign up user in Supabase Auth
+    const { data: authData, error: authError } = await client.auth.signUp({
       email,
-      password: hashedPassword,
-      role: 'user',
-      createdAt: new Date().toISOString()
-    };
+      password,
+      options: {
+        data: { full_name: name }
+      }
+    });
 
-    users.push(newUser);
-    saveUsers(users);
+    if (authError) return res.status(400).json({ error: authError.message });
 
-    const token = jwt.sign({ id: newUser.id, role: newUser.role }, JWT_SECRET, { expiresIn: '7d' });
+    const userId = authData.user.id;
+
+    // 2. Initialize Profile
+    const { error: profileError } = await client.from('profiles').insert([
+      { 
+        user_id: userId, 
+        name, 
+        member_since: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) 
+      }
+    ]);
+    if (profileError) {
+      console.warn('⚠️ Profile creation skipped (likely RLS policy missing):', profileError.message);
+      // We do NOT return a 400 error here. We allow registration to succeed.
+    }
+
+    // 3. Initialize Dashboard
+    const { error: dashError } = await client.from('dashboard').insert([
+      { 
+        user_id: userId, 
+        wallet_balance: '0 BIF', 
+        welcome_bonus: '10,000 BIF', 
+        total_earnings: '0 BIF' 
+      }
+    ]);
+    if (dashError) {
+      console.warn('⚠️ Dashboard creation skipped (likely RLS policy missing):', dashError.message);
+      // We do NOT return a 400 error here. We allow registration to succeed.
+    }
+
+    // 4. Initialize User (for admin view)
+    const { error: userTableError } = await client.from('users').insert([
+      { 
+        user_id: userId, 
+        name, 
+        country: 'Burundi', 
+        status: 'active'
+      }
+    ]);
+    if (userTableError) {
+      console.warn('⚠️ User table insertion skipped (likely RLS policy missing):', userTableError.message);
+    }
 
     res.status(201).json({
-      message: 'Registration successful',
-      token,
-      user: { id: newUser.id, name: newUser.name, email: newUser.email, role: newUser.role }
+      message: authData.session 
+        ? 'Registration successful!' 
+        : 'Registration successful! Please check your email to verify your account before logging in.',
+      token: authData.session ? authData.session.access_token : null,
+      user: { id: userId, name, email }
     });
+
+
+
   } catch (error) {
+    console.error('Registration error:', error);
     res.status(500).json({ error: 'Server error during registration' });
   }
 };
@@ -75,33 +92,34 @@ exports.login = async (req, res) => {
       return res.status(400).json({ error: 'Email and password required' });
     }
 
-    const users = getUsers();
-    const user = users.find(u => u.email === email);
-
-    if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+    if (!isConfigured) {
+      return res.status(503).json({ error: 'Supabase is not configured' });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    
-    if (!isMatch) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
+    const { data, error } = await client.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-    const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
+    if (error) return res.status(401).json({ error: error.message });
 
     res.status(200).json({
       message: 'Login successful',
-      token,
-      user: { id: user.id, name: user.name, email: user.email, role: user.role }
+      token: data.session.access_token,
+      user: { 
+        id: data.user.id, 
+        email: data.user.email, 
+        name: data.user.user_metadata.full_name 
+      }
     });
   } catch (error) {
+    console.error('Login error:', error);
     res.status(500).json({ error: 'Server error during login' });
   }
 };
 
-// Middleware to protect routes
-exports.protect = (req, res, next) => {
+// Middleware to protect routes using Supabase Session
+exports.protect = async (req, res, next) => {
   let token;
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
@@ -112,10 +130,16 @@ exports.protect = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded;
+    const { data: { user }, error } = await client.auth.getUser(token);
+
+    if (error || !user) {
+      return res.status(401).json({ error: 'Not authorized, token failed' });
+    }
+
+    req.user = user;
     next();
   } catch (error) {
     return res.status(401).json({ error: 'Not authorized, token failed' });
   }
 };
+

@@ -163,14 +163,19 @@ class SolarApp {
   }
 
   handleAuthSuccess(data) {
-    localStorage.setItem('solar_token', data.token);
-    localStorage.setItem('solar_user', JSON.stringify(data.user));
-    this.state.token = data.token;
-    this.state.user = data.user;
-    this.showToast('Welcome to Solar Africa!');
-    setTimeout(() => {
-      window.location.href = 'dashboard.html';
-    }, 1000);
+    if (data.token) {
+      localStorage.setItem('solar_token', data.token);
+      localStorage.setItem('solar_user', JSON.stringify(data.user));
+      this.state.token = data.token;
+      this.state.user = data.user;
+      this.showToast(data.message || 'Welcome to Solar Africa!');
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 1000);
+    } else {
+      // Registration successful but verification needed
+      this.showToast(data.message || 'Registration successful! Please check your email.', 'info');
+    }
   }
 
   logout() {
@@ -365,19 +370,39 @@ class SolarApp {
       appList.innerHTML = data.map(pkg => `
         <div class="pkg-list-item">
           ${pkg.popular ? '<div style="position: absolute; right: -25px; top: 12px; background: var(--primary-green); color: white; font-size: 10px; font-weight: bold; padding: 2px 25px; transform: rotate(45deg);">POPULAR</div>' : ''}
-          <div class="pkg-list-img" style="background-image: url('${pkg.image}');"></div>
+          <div class="pkg-list-img" style="background-image: url('${pkg.image || 'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&q=80&w=300'}');"></div>
           <div class="pkg-list-content">
             <h4>${pkg.name}</h4>
             <div class="price">${pkg.amount}</div>
             <div class="bonus">Bonus <span>${pkg.bonus}</span></div>
           </div>
           <div style="padding: 16px; display: flex; align-items: center;">
-            <a href="${this.state.token ? 'dashboard.html' : 'login.html'}" class="btn btn-green" style="padding: 8px 16px; font-size: 13px;">Invest</a>
+            <button class="btn btn-green invest-btn" data-name="${pkg.name}" data-amount="${pkg.amount}" style="padding: 8px 16px; font-size: 13px;">Invest</button>
           </div>
         </div>
       `).join('');
+
+      appList.querySelectorAll('.invest-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const name = btn.dataset.name;
+          const amount = btn.dataset.amount;
+          
+          if (confirm(`Do you want to invest in ${name} for ${amount}?`)) {
+            const success = await this.fetchAPI('deposits', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ package_name: name, amount })
+            });
+            if (success) {
+              this.showToast('Investment request submitted!');
+              setTimeout(() => window.location.href = 'dashboard.html', 1500);
+            }
+          }
+        });
+      });
     }
   }
+
   async hydrateTeam() {
     const data = await this.fetchAPI('team');
     if (!data) return;
@@ -423,8 +448,10 @@ class SolarApp {
       menuItems[0].textContent = data.country;
       menuItems[1].textContent = `Member since ${data.memberSince}`;
     }
-async hydrateAdmin() {
-    this.adminData = await this.api.getAdminStats();
+  }
+
+  async hydrateAdmin() {
+    this.adminData = await this.fetchAPI('admin/stats');
     if (!this.adminData) return;
 
     const { metrics, analytics, users, deposits, packages } = this.adminData;
@@ -537,7 +564,7 @@ async hydrateAdmin() {
         <td>
           <div style="display: flex; gap: 8px;">
             <button class="btn-admin btn-admin-outline" onclick="window.app.editUser('${u.id}')" style="padding: 6px 12px; font-size: 11px;">Edit</button>
-            <button class="btn-admin btn-admin-outline suspend-btn" data-id="${u.id}" style="padding: 6px 12px; font-size: 11px; color: var(--admin-danger);">Suspend</button>
+            <button class="btn-admin btn-admin-outline suspend-btn" data-id="${u.id}" style="padding: 6px 12px; font-size: 11px; color: ${u.status === 'active' ? 'var(--admin-danger)' : 'var(--admin-success)'};">${u.status === 'active' ? 'Suspend' : 'Activate'}</button>
           </div>
         </td>
       </tr>
@@ -545,17 +572,25 @@ async hydrateAdmin() {
 
     // Functional Suspension
     list.querySelectorAll('.suspend-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', async () => {
         const id = btn.dataset.id;
-        const statusEl = document.getElementById(`status-${id}`);
-        const isSuspended = btn.textContent === 'Activate';
+        const isCurrentlyActive = btn.textContent === 'Suspend';
+        const newStatus = isCurrentlyActive ? 'suspended' : 'active';
         
-        statusEl.className = isSuspended ? 'badge approved' : 'badge rejected';
-        statusEl.textContent = isSuspended ? 'Active' : 'Suspended';
-        btn.textContent = isSuspended ? 'Suspend' : 'Activate';
-        btn.style.color = isSuspended ? 'var(--admin-danger)' : 'var(--admin-success)';
-        
-        this.showToast(`User account ${isSuspended ? 'activated' : 'suspended'} successfully.`);
+        const success = await this.fetchAPI(`admin/users/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+
+        if (success) {
+          const statusEl = document.getElementById(`status-${id}`);
+          statusEl.className = isCurrentlyActive ? 'badge rejected' : 'badge approved';
+          statusEl.textContent = isCurrentlyActive ? 'Suspended' : 'Active';
+          btn.textContent = isCurrentlyActive ? 'Activate' : 'Suspend';
+          btn.style.color = isCurrentlyActive ? 'var(--admin-success)' : 'var(--admin-danger)';
+          this.showToast(`User account ${newStatus} successfully.`);
+        }
       });
     });
   }
@@ -583,7 +618,7 @@ async hydrateAdmin() {
         <td>${Math.floor(Math.random() * 1000)}</td>
         <td><span class="badge approved">Public</span></td>
         <td>
-          <button class="btn-admin btn-admin-outline" onclick="window.app.showToast('Package configuration loaded')" style="padding: 6px 12px; font-size: 11px;">Manage</button>
+          <button class="btn-admin btn-admin-outline" onclick="window.app.deletePackage('${p.id}')" style="padding: 6px 12px; font-size: 11px; color: var(--admin-danger);">Delete</button>
         </td>
       </tr>
     `).join('');
@@ -591,20 +626,52 @@ async hydrateAdmin() {
 
   // --- TRANSACTION LEDGER TAB ---
   initTransactionLedger() {
-    const txs = this.adminData?.deposits || [];
-    const list = document.getElementById('full-transaction-ledger');
-    if (!list) return;
+    this.hydrateTransactionLedger(this.adminData?.deposits || []);
+  }
 
-    list.innerHTML = txs.map(t => `
+  hydrateTransactionLedger(deposits) {
+    const list = document.getElementById('full-transaction-ledger');
+    if (!list || !deposits) return;
+
+    list.innerHTML = deposits.map(d => `
       <tr>
-        <td>#TX-${t.id.substring(0,8).toUpperCase()}</td>
-        <td><span style="display: flex; align-items: center; gap: 6px;">📥 Deposit</span></td>
-        <td>${t.user_name}</td>
-        <td><strong>${t.amount}</strong></td>
+        <td>#TX-${d.id.toString().substring(0,8)}</td>
+        <td>Deposit</td>
+        <td>${d.user_name}</td>
+        <td><strong>${d.amount}</strong></td>
         <td>Apr 27, 2026</td>
-        <td><span class="badge ${t.status.toLowerCase()}">${t.status}</span></td>
+        <td><span class="badge ${d.status.toLowerCase()}">${d.status}</span></td>
+        <td>
+           <select onchange="window.app.updateDepositStatus('${d.id}', this.value)" style="padding: 4px; border-radius: 4px; font-size: 11px;">
+             <option value="pending" ${d.status === 'pending' ? 'selected' : ''}>Pending</option>
+             <option value="approved" ${d.status === 'approved' ? 'selected' : ''}>Approve</option>
+             <option value="rejected" ${d.status === 'rejected' ? 'selected' : ''}>Reject</option>
+           </select>
+        </td>
       </tr>
     `).join('');
+  }
+
+  async updateDepositStatus(id, status) {
+    const res = await this.fetchAPI(`admin/deposits/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status })
+    });
+    if (res) {
+      this.showToast(`Deposit ${status} successfully`);
+      this.hydrateAdmin(); // Refresh data
+    }
+  }
+
+  async deletePackage(id) {
+    if (confirm('Are you sure you want to delete this package?')) {
+      const res = await this.fetchAPI(`admin/packages/${id}`, { method: 'DELETE' });
+      if (res) {
+        this.showToast('Package deleted');
+        this.hydrateAdmin();
+      }
+    }
   }
 
   // --- SYSTEM SETTINGS TAB ---
@@ -848,93 +915,6 @@ async hydrateAdmin() {
         });
       }
     });
-  }
-
-  setupAdminNavigation() {
-    const links = document.querySelectorAll('.sidebar-nav-link[data-target]');
-    const views = document.querySelectorAll('.admin-view');
-
-    links.forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        const target = link.dataset.target;
-
-        // Update UI
-        links.forEach(l => l.classList.remove('active'));
-        link.classList.add('active');
-
-        views.forEach(v => {
-          v.style.display = (v.id === target || target === 'view-dashboard') ? 'block' : 'none';
-        });
-      });
-    });
-  }
-
-  hydrateUserManagement(users) {
-    const list = document.getElementById('full-user-list');
-    if (!list || !users) return;
-
-    list.innerHTML = users.map(u => `
-      <tr>
-        <td>
-          <div style="display: flex; flex-direction: column;">
-            <span style="font-weight: 700;">${u.name}</span>
-            <span style="font-size: 11px; color: var(--admin-text-muted);">ID: #${u.id}</span>
-          </div>
-        </td>
-        <td>${u.email || 'N/A'}</td>
-        <td>Apr 2026</td>
-        <td>1,250,000 BIF</td>
-        <td><span class="status-badge approved">Active</span></td>
-        <td>
-          <div style="display: flex; gap: 8px;">
-            <button class="btn-admin btn-admin-outline" onclick="window.app.showToast('User edit opened')">Edit</button>
-            <button class="btn-admin btn-admin-outline" style="color: var(--admin-danger);" onclick="window.app.showToast('User suspended')">Suspend</button>
-          </div>
-        </td>
-      </tr>
-    `).join('');
-  }
-
-  hydratePackageManagement(packages) {
-    const list = document.getElementById('admin-package-mgmt');
-    if (!list || !packages) return;
-
-    list.innerHTML = packages.map(p => `
-      <tr>
-        <td><strong>${p.name}</strong></td>
-        <td>${p.amount}</td>
-        <td>${p.bonus}</td>
-        <td>${p.active || 0}</td>
-        <td><span class="status-badge approved">Active</span></td>
-        <td>
-          <div style="display: flex; gap: 8px;">
-            <button class="btn-admin btn-admin-outline" onclick="window.app.showToast('Package edit opened')">Edit</button>
-            <button class="btn-admin btn-admin-outline" style="color: var(--admin-danger);" onclick="window.app.showToast('Package hidden')">Hide</button>
-          </div>
-        </td>
-      </tr>
-    `).join('');
-  }
-
-  hydrateTransactionLedger(deposits) {
-    const list = document.getElementById('full-transaction-ledger');
-    if (!list || !deposits) return;
-
-    list.innerHTML = deposits.map(d => `
-      <tr>
-        <td>#TX-${d.id}</td>
-        <td>Deposit</td>
-        <td>${d.user_name}</td>
-        <td>${d.amount}</td>
-        <td>Apr 26, 2026</td>
-        <td><span class="status-badge ${d.status.toLowerCase()}">${d.status}</span></td>
-      </tr>
-    `).join('');
-  }
-
-  openPackageModal() {
-    this.showToast('Package creation modal would open here in full version.');
   }
 
   updateElement(id, value) {

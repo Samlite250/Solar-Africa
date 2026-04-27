@@ -1,11 +1,23 @@
 -- Solar Africa Database Schema
--- Run this in your Supabase SQL editor to set up the database
+-- This script will reset the database and set up all tables and policies.
+
+-- Clean up existing tables (Warning: This will delete existing data in these tables)
+DROP TABLE IF EXISTS packages CASCADE;
+DROP TABLE IF EXISTS profiles CASCADE;
+DROP TABLE IF EXISTS dashboard CASCADE;
+DROP TABLE IF EXISTS activity CASCADE;
+DROP TABLE IF EXISTS referrals CASCADE;
+DROP TABLE IF EXISTS top_referrals CASCADE;
+DROP TABLE IF EXISTS stats CASCADE;
+DROP TABLE IF EXISTS deposits CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
 
 -- Enable Row Level Security (RLS) for all tables
 -- This ensures data security and proper access control
 
 -- Packages table
 CREATE TABLE packages (
+
   id SERIAL PRIMARY KEY,
   name TEXT NOT NULL,
   amount TEXT NOT NULL,
@@ -123,12 +135,18 @@ CREATE POLICY "Packages are viewable by authenticated users" ON packages
 CREATE POLICY "Users can view own profile" ON profiles
   FOR SELECT USING (auth.uid() = user_id);
 
+CREATE POLICY "Allow profile creation" ON profiles
+  FOR INSERT WITH CHECK (true);
+
 CREATE POLICY "Users can update own profile" ON profiles
   FOR UPDATE USING (auth.uid() = user_id);
 
 -- Dashboard: users can only see their own dashboard
 CREATE POLICY "Users can view own dashboard" ON dashboard
   FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Allow dashboard creation" ON dashboard
+  FOR INSERT WITH CHECK (true);
 
 CREATE POLICY "Users can update own dashboard" ON dashboard
   FOR UPDATE USING (auth.uid() = user_id);
@@ -137,9 +155,15 @@ CREATE POLICY "Users can update own dashboard" ON dashboard
 CREATE POLICY "Users can view own activity" ON activity
   FOR SELECT USING (auth.uid() = user_id);
 
+CREATE POLICY "Allow activity insertion" ON activity
+  FOR INSERT WITH CHECK (true);
+
 -- Referrals: users can only see their own referrals
 CREATE POLICY "Users can view own referrals" ON referrals
   FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Allow referrals creation" ON referrals
+  FOR INSERT WITH CHECK (true);
 
 CREATE POLICY "Users can update own referrals" ON referrals
   FOR UPDATE USING (auth.uid() = user_id);
@@ -147,6 +171,9 @@ CREATE POLICY "Users can update own referrals" ON referrals
 -- Top referrals: users can only see their own top referrals
 CREATE POLICY "Users can view own top referrals" ON top_referrals
   FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Allow top referrals creation" ON top_referrals
+  FOR INSERT WITH CHECK (true);
 
 -- Stats: only readable by authenticated users (for admin panel)
 CREATE POLICY "Stats are viewable by authenticated users" ON stats
@@ -156,9 +183,17 @@ CREATE POLICY "Stats are viewable by authenticated users" ON stats
 CREATE POLICY "Users can view own deposits" ON deposits
   FOR SELECT USING (auth.uid() = user_id);
 
+CREATE POLICY "Allow deposits creation" ON deposits
+  FOR INSERT WITH CHECK (true);
+
 -- Users: only readable by authenticated users (for admin panel)
 CREATE POLICY "Users are viewable by authenticated users" ON users
   FOR SELECT USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Allow user record creation" ON users
+  FOR INSERT WITH CHECK (true);
+
+
 
 -- Insert sample data
 INSERT INTO packages (name, amount, bonus, description, active) VALUES
