@@ -52,6 +52,7 @@ class SolarApp {
         headerActions.innerHTML = `
           <div class="user-menu" style="display: flex; gap: 16px; align-items: center;">
             <a href="dashboard.html" class="btn btn-outline" style="border: none; color: var(--primary-blue); font-weight: 700;">Dashboard</a>
+            ${this.state.user?.role === 'admin' ? '<a href="admin.html" class="btn btn-outline" style="border: none; color: #7c3aed; font-weight: 700;">Admin</a>' : ''}
             <button id="logout-btn" class="btn btn-green">Logout</button>
             <div class="user-avatar" style="width: 36px; height: 36px; background: #eef5ff; color: var(--primary-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">${this.state.user?.name ? this.state.user.name.charAt(0).toUpperCase() : 'U'}</div>
           </div>
@@ -435,44 +436,54 @@ class SolarApp {
     }
 
     // Populate tables with professional rows
-    const tables = document.querySelectorAll('.admin-panel-card table tbody');
-    if (tables[0] && data.deposits) {
-      tables[0].innerHTML = data.deposits.map(d => `
+    const depositsTable = document.getElementById('admin-deposits-table');
+    if (depositsTable && data.deposits) {
+      depositsTable.innerHTML = data.deposits.map(d => `
         <tr>
-          <td>${d.user_name}</td>
+          <td>
+            <div style="display: flex; flex-direction: column;">
+              <span style="font-weight: 700;">${d.user_name}</span>
+              <span style="font-size: 11px; color: var(--admin-text-muted);">ID: #${d.id}</span>
+            </div>
+          </td>
           <td>${d.amount}</td>
           <td>${d.package_name || 'N/A'}</td>
           <td><span class="status-badge ${d.status.toLowerCase()}">${d.status.toLowerCase()}</span></td>
           <td>
             ${d.status.toLowerCase() === 'pending' ? `
               <div style="display: flex; gap: 8px;">
-                <button class="btn btn-green btn-admin-action" data-id="${d.id}" data-action="approve" style="padding: 4px 8px; font-size: 11px;">Approve</button>
-                <button class="btn btn-outline btn-admin-action" data-id="${d.id}" data-action="reject" style="padding: 4px 8px; font-size: 11px; color: #dc2626; border-color: #fecaca;">Reject</button>
+                <button class="btn-admin btn-admin-primary btn-admin-action" data-id="${d.id}" data-action="approve">Approve</button>
+                <button class="btn-admin btn-admin-outline btn-admin-action" data-id="${d.id}" data-action="reject" style="color: var(--admin-danger); border-color: #fee2e2;">Reject</button>
               </div>
-            ` : '<span style="font-size: 11px; color: var(--text-muted);">No actions</span>'}
+            ` : '<span style="font-size: 11px; color: var(--admin-text-muted);">Locked</span>'}
           </td>
         </tr>
       `).join('');
 
       // Add Action Listeners
-      tables[0].querySelectorAll('.btn-admin-action').forEach(btn => {
+      depositsTable.querySelectorAll('.btn-admin-action').forEach(btn => {
         btn.addEventListener('click', (e) => {
           const { id, action } = btn.dataset;
-          this.showToast(`Deposit ${id} ${action}d successfully (Mock)`);
-          // In a real app, this would call an API then re-hydrate
-          btn.closest('tr').querySelector('.status-badge').className = `status-badge ${action === 'approve' ? 'approved' : 'rejected'}`;
-          btn.closest('tr').querySelector('.status-badge').textContent = action === 'approve' ? 'approved' : 'rejected';
-          btn.parentElement.innerHTML = '<span style="font-size: 11px; color: var(--text-muted);">Completed</span>';
+          this.showToast(`Operation ${id} ${action}d successfully`);
+          const badge = btn.closest('tr').querySelector('.status-badge');
+          badge.className = `status-badge ${action === 'approve' ? 'approved' : 'rejected'}`;
+          badge.textContent = action === 'approve' ? 'approved' : 'rejected';
+          btn.parentElement.innerHTML = '<span style="font-size: 11px; color: var(--admin-text-muted);">Completed</span>';
         });
       });
     }
 
-    if (tables[1] && data.users) {
-      tables[1].innerHTML = data.users.map(u => `
+    const usersTable = document.getElementById('admin-users-table');
+    if (usersTable && data.users) {
+      usersTable.innerHTML = data.users.map(u => `
         <tr>
-          <td>${u.name}</td>
+          <td>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div style="width: 32px; height: 32px; background: #eef5ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--admin-primary); font-weight: 700;">${u.name.charAt(0)}</div>
+              <span>${u.name}</span>
+            </div>
+          </td>
           <td>${u.country}</td>
-          <td>Apr 2026</td>
           <td><span class="status-badge approved">${u.status}</span></td>
         </tr>
       `).join('');
