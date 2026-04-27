@@ -40,21 +40,21 @@
             Packages
           </div>
         </a>
-        <a href="#" class="sidebar-nav-link">
+        <a href="#" class="sidebar-nav-link" data-target="view-transactions">
           <div class="link-content">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
             Deposits
           </div>
           <span class="nav-badge">12</span>
         </a>
-        <a href="#" class="sidebar-nav-link">
+        <a href="#" class="sidebar-nav-link" data-target="view-transactions">
           <div class="link-content">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline></svg>
             Withdrawals
           </div>
           <span class="nav-badge warning">8</span>
         </a>
-        <a href="#" class="sidebar-nav-link">
+        <a href="#" class="sidebar-nav-link" data-target="view-transactions">
           <div class="link-content">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
             Transactions
@@ -67,23 +67,17 @@
           </div>
           <span class="nav-badge">15</span>
         </a>
-        <a href="#" class="sidebar-nav-link">
+        <a href="#" class="sidebar-nav-link" data-target="view-settings">
           <div class="link-content">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-            Referrals
-          </div>
-        </a>
-        <a href="#" class="sidebar-nav-link">
-          <div class="link-content">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-            Announcements
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            Settings
           </div>
         </a>
       </nav>
 
       <div class="sidebar-footer">
         <div class="sidebar-illustration">
-          <img src="https://images.unsplash.com/photo-1509391366360-fe09a921881b?auto=format&fit=crop&q=80&w=260" alt="Solar" style="width: 100%; border-radius: 12px;" />
+          <img src="https://images.unsplash.com/photo-1466611653911-954ff21161d1?auto=format&fit=crop&q=80&w=260" alt="Solar" style="width: 100%; border-radius: 12px;" />
         </div>
         <div class="admin-profile-card">
           <img src="https://ui-avatars.com/api/?name=Admin+User&background=0b6cff&color=fff" alt="Admin" id="admin-avatar-sidebar" />
@@ -105,8 +99,8 @@
         <div class="top-bar-left">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
           <div class="dashboard-title">
-            <h2>Dashboard</h2>
-            <p>Overview of Solar Africa Platform</p>
+            <h2 id="current-view-title">Dashboard</h2>
+            <p id="current-view-subtitle">Overview of Solar Africa Platform</p>
           </div>
         </div>
         <div class="top-bar-right">
@@ -126,233 +120,162 @@
         </div>
       </header>
 
-      <div class="dashboard-content">
-        <!-- Top Metrics -->
-        <div class="metric-cards-row">
-          <div class="card metric-card">
-            <div class="metric-card-top">
-              <div class="metric-icon" style="background: #eff6ff; color: #0b6cff;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
-              </div>
-              <div class="trend-badge up">↑ 12.5%</div>
-            </div>
-            <div class="metric-value">
-              <span>Total Users</span>
-              <h3 id="admin-total-users">12,843</h3>
-            </div>
-            <div class="sparkline-container"><canvas id="sparkline-users"></canvas></div>
-          </div>
-          <div class="card metric-card">
-            <div class="metric-card-top">
-              <div class="metric-icon" style="background: #ecfdf5; color: #10b981;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-              </div>
-              <div class="trend-badge up">↑ 18.7%</div>
-            </div>
-            <div class="metric-value">
-              <span>Total Deposits</span>
-              <h3 id="admin-total-deposits">1,245,860k</h3>
-            </div>
-            <div class="sparkline-container"><canvas id="sparkline-deposits"></canvas></div>
-          </div>
-          <div class="card metric-card">
-            <div class="metric-card-top">
-              <div class="metric-icon" style="background: #fff7ed; color: #f59e0b;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h14v4"></path><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"></path><path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"></path></svg>
-              </div>
-              <div class="trend-badge up">↑ 16.3%</div>
-            </div>
-            <div class="metric-value">
-              <span>Total Bonuses Paid</span>
-              <h3 id="admin-total-bonuses">842,350k</h3>
-            </div>
-            <div class="sparkline-container"><canvas id="sparkline-bonuses"></canvas></div>
-          </div>
-          <div class="card metric-card">
-            <div class="metric-card-top">
-              <div class="metric-icon" style="background: #f5f3ff; color: #6366f1;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline></svg>
-              </div>
-              <div class="trend-badge up">↑ 9.5%</div>
-            </div>
-            <div class="metric-value">
-              <span>Total Withdrawals</span>
-              <h3 id="admin-total-withdrawals">456,780k</h3>
-            </div>
-            <div class="sparkline-container"><canvas id="sparkline-withdrawals"></canvas></div>
-          </div>
-          <div class="card metric-card">
-            <div class="metric-card-top">
-              <div class="metric-icon" style="background: #eff6ff; color: #0b6cff;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-              </div>
-              <div class="trend-badge up">↑ 21.6%</div>
-            </div>
-            <div class="metric-value">
-              <span>Total Profit</span>
-              <h3 id="admin-total-profit">389,080k</h3>
-            </div>
-            <div class="sparkline-container"><canvas id="sparkline-profit"></canvas></div>
-          </div>
-        </div>
-
-        <!-- Middle Row -->
-        <div class="dashboard-grid">
-          <!-- Overview Chart -->
-          <div class="card">
-            <div class="panel-header">
-              <h4>Overview Chart</h4>
-              <select class="top-select" style="padding: 4px 8px;">
-                <option>Last 30 Days</option>
-                <option>Last 7 Days</option>
-              </select>
-            </div>
-            <div style="height: 300px;"><canvas id="revenueChart"></canvas></div>
-          </div>
-
-          <!-- Deposits by Status -->
-          <div class="card">
-            <div class="panel-header">
-              <h4>Deposits by Status</h4>
-            </div>
-            <div class="chart-container-relative" style="height: 200px;">
-              <canvas id="statusChart"></canvas>
-              <div class="chart-center-text">
-                <span>Total</span>
-                <strong id="deposits-total-center">230</strong>
-              </div>
-            </div>
-            <div style="margin-top: 10px;">
-                <a href="#" style="font-size: 12px; color: var(--admin-primary); font-weight: 700;">View All Deposits →</a>
-            </div>
-          </div>
-
-          <!-- Recent Deposits -->
-          <div class="card">
-            <div class="panel-header">
-              <h4>Recent Deposits</h4>
-              <a href="#">View All</a>
-            </div>
-            <div class="custom-list" id="recent-deposits-list">
-              <!-- Dynamically Hydrated -->
-            </div>
-          </div>
-        </div>
-
-        <!-- Bottom Row -->
-        <div class="dashboard-grid">
-          <!-- Users by Country -->
-          <div class="card">
-            <div class="panel-header">
-              <h4>Users by Country</h4>
-            </div>
-            <div style="display: flex; align-items: center; gap: 20px;">
-                <div class="chart-container-relative" style="height: 180px; width: 180px;">
-                    <canvas id="countryChart"></canvas>
-                    <div class="chart-center-text">
-                        <strong style="font-size: 18px;">12,843</strong>
-                        <span>Users</span>
-                    </div>
+      <!-- View Containers -->
+      <div id="view-dashboard" class="admin-view">
+        <div class="dashboard-content">
+          <!-- Top Metrics -->
+          <div class="metric-cards-row">
+            <div class="card metric-card">
+              <div class="metric-card-top">
+                <div class="metric-icon" style="background: #eff6ff; color: #0b6cff;">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
                 </div>
-                <div id="country-legend" class="custom-list" style="flex: 1;">
-                    <!-- Legend logic -->
+                <div class="trend-badge up">↑ 12.5%</div>
+              </div>
+              <div class="metric-value">
+                <span>Total Users</span>
+                <h3 id="admin-total-users">12,843</h3>
+              </div>
+              <div class="sparkline-container"><canvas id="sparkline-users"></canvas></div>
+            </div>
+            <div class="card metric-card">
+              <div class="metric-card-top">
+                <div class="metric-icon" style="background: #ecfdf5; color: #10b981;">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
                 </div>
+                <div class="trend-badge up">↑ 18.7%</div>
+              </div>
+              <div class="metric-value">
+                <span>Total Deposits</span>
+                <h3 id="admin-total-deposits">1,245,860k</h3>
+              </div>
+              <div class="sparkline-container"><canvas id="sparkline-deposits"></canvas></div>
+            </div>
+            <div class="card metric-card">
+              <div class="metric-card-top">
+                <div class="metric-icon" style="background: #fff7ed; color: #f59e0b;">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h14v4"></path><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"></path><path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"></path></svg>
+                </div>
+                <div class="trend-badge up">↑ 16.3%</div>
+              </div>
+              <div class="metric-value">
+                <span>Total Bonuses Paid</span>
+                <h3 id="admin-total-bonuses">842,350k</h3>
+              </div>
+              <div class="sparkline-container"><canvas id="sparkline-bonuses"></canvas></div>
+            </div>
+            <div class="card metric-card">
+              <div class="metric-card-top">
+                <div class="metric-icon" style="background: #f5f3ff; color: #6366f1;">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline></svg>
+                </div>
+                <div class="trend-badge up">↑ 9.5%</div>
+              </div>
+              <div class="metric-value">
+                <span>Total Withdrawals</span>
+                <h3 id="admin-total-withdrawals">456,780k</h3>
+              </div>
+              <div class="sparkline-container"><canvas id="sparkline-withdrawals"></canvas></div>
+            </div>
+            <div class="card metric-card">
+              <div class="metric-card-top">
+                <div class="metric-icon" style="background: #eff6ff; color: #0b6cff;">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                </div>
+                <div class="trend-badge up">↑ 21.6%</div>
+              </div>
+              <div class="metric-value">
+                <span>Total Profit</span>
+                <h3 id="admin-total-profit">389,080k</h3>
+              </div>
+              <div class="sparkline-container"><canvas id="sparkline-profit"></canvas></div>
             </div>
           </div>
 
-          <!-- Top Packages -->
-          <div class="card">
-            <div class="panel-header">
-              <h4>Top Packages</h4>
-              <a href="#">View All</a>
+          <!-- Middle Row -->
+          <div class="dashboard-grid">
+            <div class="card">
+              <div class="panel-header"><h4>Overview Chart</h4></div>
+              <div style="height: 300px;"><canvas id="revenueChart"></canvas></div>
             </div>
-            <div class="custom-list" id="top-packages-list">
-              <!-- Dynamically Hydrated -->
-            </div>
-          </div>
-
-          <!-- Withdrawals by Status -->
-          <div class="card">
-            <div class="panel-header">
-              <h4>Withdrawals by Status</h4>
-            </div>
-            <div class="chart-container-relative" style="height: 200px;">
-              <canvas id="withdrawStatusChart"></canvas>
-              <div class="chart-center-text">
-                <span>Total</span>
-                <strong id="withdraw-total-center">98</strong>
+            <div class="card">
+              <div class="panel-header"><h4>Deposits by Status</h4></div>
+              <div class="chart-container-relative" style="height: 200px;">
+                <canvas id="statusChart"></canvas>
+                <div class="chart-center-text"><span>Total</span><strong id="deposits-total-center">230</strong></div>
               </div>
             </div>
-            <div style="margin-top: 10px;">
-                <a href="#" style="font-size: 12px; color: var(--admin-primary); font-weight: 700;">View All Withdrawals →</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Activity and Quick Actions -->
-        <div class="dashboard-grid" style="grid-template-columns: 2.5fr 1.5fr;">
-           <div class="card">
-              <div class="panel-header">
-                <h4>Platform Activity</h4>
-                <a href="#">View All</a>
-              </div>
-              <div class="feed-list" id="activity-feed">
-                <!-- Dynamically Hydrated -->
-              </div>
-           </div>
-           <div class="card" style="background: transparent; box-shadow: none; border: none; padding: 0;">
-              <div class="panel-header">
-                <h4>Quick Actions</h4>
-              </div>
-              <div class="quick-actions-grid" style="grid-template-columns: 1fr 1fr; margin-top: 0;">
-                <div class="card action-card green">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"></path></svg>
-                  Add New Package
-                </div>
-                <div class="card action-card blue">
-                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 5L6 9H2V15H6L11 19V5z"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-                  Announce Message
-                </div>
-                <div class="card action-card purple">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" y1="8" x2="19" y2="14"></line><line x1="22" y1="11" x2="16" y2="11"></line></svg>
-                  Add Admin
-                </div>
-                <div class="card action-card orange">
-                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                  Export Reports
-                </div>
-              </div>
-           </div>
-        </div>
-
-        <!-- Large Recent Users Table -->
-        <div class="recent-users-section">
-          <div class="card table-card">
-            <div class="panel-header">
-              <h4>Recent Users</h4>
-              <a href="#">View All Users</a>
-            </div>
-            <div style="overflow-x: auto;">
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Phone</th>
-                    <th>Country</th>
-                    <th>Package</th>
-                    <th>Joined Date</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody id="admin-users-table">
-                  <!-- Dynamically Hydrated -->
-                </tbody>
-              </table>
+            <div class="card">
+              <div class="panel-header"><h4>Recent Deposits</h4></div>
+              <div class="custom-list" id="recent-deposits-list"></div>
             </div>
           </div>
         </div>
       </div>
+
+      <div id="view-users" class="admin-view" style="display: none; padding: 40px;">
+        <div class="panel-card">
+          <div class="panel-header">
+            <h4 class="panel-title">User Management</h4>
+            <div class="top-search"><input type="text" id="user-search" placeholder="Filter users..." /></div>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead><tr><th>User</th><th>Email</th><th>Joined</th><th>Balance</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="full-user-list"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="view-packages" class="admin-view" style="display: none; padding: 40px;">
+        <div class="panel-card">
+          <div class="panel-header">
+            <h4 class="panel-title">Investment Packages</h4>
+            <button class="btn-admin btn-admin-primary" onclick="window.app.openPackageModal()">Add New Package</button>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead><tr><th>Package</th><th>Amount</th><th>Daily Bonus</th><th>Active Users</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="admin-package-mgmt"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="view-transactions" class="admin-view" style="display: none; padding: 40px;">
+        <div class="panel-card">
+          <div class="panel-header"><h4 class="panel-title">Transaction Ledger</h4></div>
+          <div class="table-container">
+            <table>
+              <thead><tr><th>ID</th><th>Type</th><th>User</th><th>Amount</th><th>Date</th><th>Status</th></tr></thead>
+              <tbody id="full-transaction-ledger"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="view-settings" class="admin-view" style="display: none; padding: 40px;">
+        <div class="panel-card" style="max-width: 800px;">
+          <div class="panel-header"><h4 class="panel-title">Platform Settings</h4></div>
+          <div style="display: flex; flex-direction: column; gap: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span>Maintenance Mode</span>
+              <input type="checkbox" class="toggle" />
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span>Allow New Registrations</span>
+              <input type="checkbox" class="toggle" checked />
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span>Referral Commission (%)</span>
+              <input type="number" value="10" style="width: 80px; padding: 8px; border-radius: 8px; border: 1px solid var(--admin-border);" />
+            </div>
+            <button class="btn-admin btn-admin-primary" style="width: 100%;">Save Global Config</button>
+          </div>
+        </div>
+      </div>
+
     </main>
 
     <script src="assets/js/app.js" defer></script>
