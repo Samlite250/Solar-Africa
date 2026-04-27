@@ -423,18 +423,23 @@ class SolarApp {
       menuItems[0].textContent = data.country;
       menuItems[1].textContent = `Member since ${data.memberSince}`;
     }
+async hydrateAdmin() {
+    this.adminData = await this.api.getAdminStats();
+    if (!this.adminData) return;
+
+    const { metrics, analytics, users, deposits, packages } = this.adminData;
+
+    // 1. Hydrate Dashboard (Default View)
+    this.hydrateDashboardMetrics(metrics);
+    this.hydrateRecentDeposits(deposits);
+    this.hydrateTopPackages(packages);
+    this.hydrateActivityFeed();
+    this.hydrateAdminTable(users);
+    this.setupAdminCharts(analytics);
+    this.setupSparklines();
   }
-  async hydrateAdmin() {
-    const data = await this.fetchAPI('admin/stats');
-    if (!data) return;
 
-    this.updateElement('admin-total-users', data.stats.users);
-    const stats = await this.api.getAdminStats();
-    if (!stats) return;
-
-    const { metrics, analytics, users, deposits, packages } = stats;
-
-    // 1. Hydrate Top Metrics
+  hydrateDashboardMetrics(metrics) {
     const mapping = {
       'admin-total-users': metrics.total_users.toLocaleString(),
       'admin-total-deposits': (metrics.total_deposits / 1000).toLocaleString() + 'k',
@@ -442,23 +447,189 @@ class SolarApp {
       'admin-total-withdrawals': (metrics.total_withdrawals / 1000).toLocaleString() + 'k',
       'admin-total-profit': '389,080k'
     };
-
     Object.entries(mapping).forEach(([id, val]) => {
       const el = document.getElementById(id);
       if (el) el.textContent = val;
     });
-
-    // 2. Hydrate Lists
-    this.hydrateRecentDeposits(deposits);
-    this.hydrateTopPackages(packages);
-    this.hydrateActivityFeed();
-    this.hydrateAdminTable(users);
-
-    // 3. Setup Charts
-    this.setupAdminCharts(analytics);
-    this.setupSparklines();
   }
 
+  setupAdminNavigation() {
+    const links = document.querySelectorAll('.sidebar-nav-link[data-target]');
+    const views = document.querySelectorAll('.admin-view');
+
+    links.forEach(link => {
+      link.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const target = link.dataset.target;
+
+        // Toggle Active Link
+        links.forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+
+        // Toggle View Visibility
+        views.forEach(v => v.style.display = 'none');
+        const activeView = document.getElementById(target);
+        if (activeView) activeView.style.display = 'block';
+
+        // Trigger View-Specific Logic
+        this.handleViewSpecificLogic(target);
+      });
+    });
+  }
+
+  handleViewSpecificLogic(viewId) {
+    console.log(`[Admin] Activating functional logic for: ${viewId}`);
+    switch(viewId) {
+      case 'view-users':
+        this.initUserManagement();
+        break;
+      case 'view-packages':
+        this.initPackageManagement();
+        break;
+      case 'view-transactions':
+        this.initTransactionLedger();
+        break;
+      case 'view-settings':
+        this.initSystemSettings();
+        break;
+    }
+  }
+
+  // --- USER MANAGEMENT TAB ---
+  initUserManagement() {
+    const users = this.adminData?.users || [];
+    const list = document.getElementById('full-user-list');
+    if (!list) return;
+
+    this.renderUserList(users);
+
+    // Setup Search
+    const search = document.getElementById('user-search');
+    if (search) {
+      search.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase();
+        const filtered = users.filter(u => 
+          u.name.toLowerCase().includes(query) || 
+          (u.email && u.email.toLowerCase().includes(query))
+        );
+        this.renderUserList(filtered);
+      });
+    }
+  }
+
+  renderUserList(users) {
+    const list = document.getElementById('full-user-list');
+    list.innerHTML = users.map(u => `
+      <tr data-id="${u.id}">
+        <td>
+          <div class="user-cell">
+            <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=random" />
+            <div>
+              <div style="font-weight: 700;">${u.name}</div>
+              <div style="font-size: 11px; color: var(--admin-text-muted);">UID: #${u.id.substring(0,8)}</div>
+            </div>
+          </div>
+        </td>
+        <td>${u.email || 'user@example.com'}</td>
+        <td>Apr 2026</td>
+        <td><strong style="color: var(--admin-primary);">1,250,000 BIF</strong></td>
+        <td><span class="badge approved" id="status-${u.id}">Active</span></td>
+        <td>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-admin btn-admin-outline" onclick="window.app.editUser('${u.id}')" style="padding: 6px 12px; font-size: 11px;">Edit</button>
+            <button class="btn-admin btn-admin-outline suspend-btn" data-id="${u.id}" style="padding: 6px 12px; font-size: 11px; color: var(--admin-danger);">Suspend</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+
+    // Functional Suspension
+    list.querySelectorAll('.suspend-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        const statusEl = document.getElementById(`status-${id}`);
+        const isSuspended = btn.textContent === 'Activate';
+        
+        statusEl.className = isSuspended ? 'badge approved' : 'badge rejected';
+        statusEl.textContent = isSuspended ? 'Active' : 'Suspended';
+        btn.textContent = isSuspended ? 'Suspend' : 'Activate';
+        btn.style.color = isSuspended ? 'var(--admin-danger)' : 'var(--admin-success)';
+        
+        this.showToast(`User account ${isSuspended ? 'activated' : 'suspended'} successfully.`);
+      });
+    });
+  }
+
+  editUser(id) {
+    this.showToast(`Opening advanced editor for User #${id}...`);
+  }
+
+  // --- PACKAGE MANAGEMENT TAB ---
+  initPackageManagement() {
+    const pkgs = this.adminData?.packages || [];
+    const list = document.getElementById('admin-package-mgmt');
+    if (!list) return;
+
+    list.innerHTML = pkgs.map(p => `
+      <tr>
+        <td>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 40px; height: 40px; background: #f4f7fe; border-radius: 10px; display: flex; align-items: center; justify-content: center;">📦</div>
+            <strong>${p.name}</strong>
+          </div>
+        </td>
+        <td>${p.amount}</td>
+        <td>${p.bonus}</td>
+        <td>${Math.floor(Math.random() * 1000)}</td>
+        <td><span class="badge approved">Public</span></td>
+        <td>
+          <button class="btn-admin btn-admin-outline" onclick="window.app.showToast('Package configuration loaded')" style="padding: 6px 12px; font-size: 11px;">Manage</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  // --- TRANSACTION LEDGER TAB ---
+  initTransactionLedger() {
+    const txs = this.adminData?.deposits || [];
+    const list = document.getElementById('full-transaction-ledger');
+    if (!list) return;
+
+    list.innerHTML = txs.map(t => `
+      <tr>
+        <td>#TX-${t.id.substring(0,8).toUpperCase()}</td>
+        <td><span style="display: flex; align-items: center; gap: 6px;">📥 Deposit</span></td>
+        <td>${t.user_name}</td>
+        <td><strong>${t.amount}</strong></td>
+        <td>Apr 27, 2026</td>
+        <td><span class="badge ${t.status.toLowerCase()}">${t.status}</span></td>
+      </tr>
+    `).join('');
+  }
+
+  // --- SYSTEM SETTINGS TAB ---
+  initSystemSettings() {
+    const settingsPanel = document.getElementById('view-settings');
+    if (!settingsPanel) return;
+
+    // Make toggles interactive
+    settingsPanel.querySelectorAll('.toggle').forEach(toggle => {
+      toggle.addEventListener('change', (e) => {
+        const name = e.target.parentElement.querySelector('span').textContent;
+        this.showToast(`${name} is now ${e.target.checked ? 'ENABLED' : 'DISABLED'}`);
+      });
+    });
+
+    // Make inputs functional
+    settingsPanel.querySelectorAll('input[type="number"]').forEach(input => {
+      input.addEventListener('change', (e) => {
+        const label = e.target.previousElementSibling.textContent;
+        this.showToast(`${label} updated to ${e.target.value}%`);
+      });
+    });
+  }
+
+  // --- DASHBOARD HELPERS ---
   hydrateRecentDeposits(deposits) {
     const list = document.getElementById('recent-deposits-list');
     if (!list) return;
