@@ -184,4 +184,31 @@ const users = [
   }
 ];
 
-module.exports = { packages, stats, dashboard, profile, team, deposits, users };
+const analytics = {
+  revenueGrowth: [
+    { month: 'Jan', value: 1200000 },
+    { month: 'Feb', value: 2500000 },
+    { month: 'Mar', value: 4800000 },
+    { month: 'Apr', value: 8500000 },
+    { month: 'May', value: 12000000 },
+    { month: 'Jun', value: 18500000 },
+  ],
+  userGrowth: [
+    { month: 'Jan', value: 150 },
+    { month: 'Feb', value: 450 },
+    { month: 'Mar', value: 1200 },
+    { month: 'Apr', value: 2800 },
+    { month: 'May', value: 4320 },
+    { month: 'Jun', value: 6500 },
+  ],
+  packageDistribution: [
+    { name: 'Starter', count: 450 },
+    { name: 'Basic', count: 380 },
+    { name: 'Bronze', count: 290 },
+    { name: 'Silver', count: 210 },
+    { name: 'Gold', count: 150 },
+    { name: 'Others', count: 85 },
+  ]
+};
+
+module.exports = { packages, stats, dashboard, profile, team, deposits, users, analytics };

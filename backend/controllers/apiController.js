@@ -83,6 +83,7 @@ exports.getAdminStats = async (req, res) => {
     stats: mockData.stats,
     deposits: mockData.deposits,
     packages: mockData.packages,
-    users: mockData.users
+    users: mockData.users,
+    analytics: mockData.analytics
   });
 };

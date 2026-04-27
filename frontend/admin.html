@@ -11,6 +11,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="assets/css/main.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
   <body data-page="admin">
     <div class="page-shell">
@@ -67,34 +68,52 @@
           </article>
         </section>
 
-        <section class="admin-panel-card" style="margin: 0 5% 24px;">
-          <p class="panel-title">Monthly Revenue Growth</p>
-          <div style="display: flex; align-items: flex-end; gap: 12px; height: 150px; padding-top: 20px;">
-            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px;">
-              <div style="width: 100%; background: #eef5ff; height: 40%; border-radius: 4px; position: relative;"><div style="position: absolute; bottom: 0; width: 100%; height: 100%; background: var(--primary-blue); border-radius: 4px; opacity: 0.3;"></div></div>
-              <span style="font-size: 11px; color: var(--text-muted);">Jan</span>
+        <section class="admin-panel-card BI-section" style="margin: 0 5% 24px; padding: 24px;">
+          <div class="bi-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <div>
+              <p class="panel-title" style="margin: 0;">Business Intelligence Dashboard</p>
+              <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Advanced platform analytics & growth metrics</p>
             </div>
-            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px;">
-              <div style="width: 100%; background: #eef5ff; height: 60%; border-radius: 4px; position: relative;"><div style="position: absolute; bottom: 0; width: 100%; height: 100%; background: var(--primary-blue); border-radius: 4px; opacity: 0.5;"></div></div>
-              <span style="font-size: 11px; color: var(--text-muted);">Feb</span>
-            </div>
-            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px;">
-              <div style="width: 100%; background: #eef5ff; height: 85%; border-radius: 4px; position: relative;"><div style="position: absolute; bottom: 0; width: 100%; height: 100%; background: var(--primary-blue); border-radius: 4px; opacity: 0.8;"></div></div>
-              <span style="font-size: 11px; color: var(--text-muted);">Mar</span>
-            </div>
-            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px;">
-              <div style="width: 100%; background: #eef5ff; height: 100%; border-radius: 4px; position: relative;"><div style="position: absolute; bottom: 0; width: 100%; height: 100%; background: var(--primary-green); border-radius: 4px;"></div></div>
-              <span style="font-size: 11px; color: var(--text-main); font-weight: 700;">Apr</span>
+            <div class="bi-actions">
+              <button class="btn btn-outline" style="font-size: 12px; padding: 6px 12px;" onclick="window.print()">Export Report</button>
             </div>
           </div>
-          <div style="margin-top: 20px; display: flex; gap: 24px; border-top: 1px solid var(--bg-light); padding-top: 20px;">
-             <div>
-               <span style="display: block; font-size: 12px; color: var(--text-muted);">Avg. Daily Deposit</span>
-               <strong style="font-size: 18px;">1,250,000 BIF</strong>
+
+          <div class="chart-grid" style="display: grid; grid-template-columns: 1.5fr 1fr 1.5fr; gap: 24px;">
+            <div class="chart-container" style="background: var(--bg-light); border-radius: 12px; padding: 20px; min-height: 300px;">
+              <p style="font-size: 14px; font-weight: 600; margin-bottom: 16px;">Revenue Growth (BIF)</p>
+              <canvas id="revenueChart"></canvas>
+            </div>
+            <div class="chart-container" style="background: var(--bg-light); border-radius: 12px; padding: 20px; min-height: 300px;">
+              <p style="font-size: 14px; font-weight: 600; margin-bottom: 16px;">Packages</p>
+              <canvas id="packageChart"></canvas>
+            </div>
+            <div class="chart-container" style="background: var(--bg-light); border-radius: 12px; padding: 20px; min-height: 300px;">
+              <p style="font-size: 14px; font-weight: 600; margin-bottom: 16px;">User Growth</p>
+              <canvas id="userChart"></canvas>
+            </div>
+          </div>
+
+          <div class="bi-extra-metrics" style="margin-top: 24px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; border-top: 1px solid var(--border-color); padding-top: 24px;">
+             <div class="bi-mini-card">
+               <span style="display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Conversion Rate</span>
+               <strong style="font-size: 20px; color: var(--primary-blue);">3.8%</strong>
+               <span style="display: block; font-size: 10px; color: var(--primary-green); margin-top: 2px;">↑ 12% vs last month</span>
              </div>
-             <div>
-               <span style="display: block; font-size: 12px; color: var(--text-muted);">Retention Rate</span>
-               <strong style="font-size: 18px; color: var(--primary-green);">94.2%</strong>
+             <div class="bi-mini-card">
+               <span style="display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Avg. Investment</span>
+               <strong style="font-size: 20px;">245,000 BIF</strong>
+               <span style="display: block; font-size: 10px; color: var(--text-muted); margin-top: 2px;">Stable growth</span>
+             </div>
+             <div class="bi-mini-card">
+               <span style="display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">User Churn</span>
+               <strong style="font-size: 20px; color: #ef4444;">1.2%</strong>
+               <span style="display: block; font-size: 10px; color: var(--primary-green); margin-top: 2px;">Low risk</span>
+             </div>
+             <div class="bi-mini-card">
+               <span style="display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Active/Total Ratio</span>
+               <strong style="font-size: 20px; color: var(--primary-green);">88.4%</strong>
+               <span style="display: block; font-size: 10px; color: var(--primary-blue); margin-top: 2px;">Highly engaged</span>
              </div>
           </div>
         </section>

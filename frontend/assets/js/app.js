@@ -428,6 +428,11 @@ class SolarApp {
     this.updateElement('admin-active-pkgs', `${data.stats.packages} active`);
     this.updateElement('admin-total-deposits', data.stats.deposits);
     this.updateElement('admin-total-withdrawals', data.stats.withdrawals);
+    
+    // BI Charts
+    if (data.analytics) {
+      this.setupAdminCharts(data.analytics);
+    }
 
     // Populate tables with professional rows
     const tables = document.querySelectorAll('.admin-panel-card table tbody');
@@ -471,6 +476,99 @@ class SolarApp {
           <td><span class="status-badge approved">${u.status}</span></td>
         </tr>
       `).join('');
+    }
+  }
+
+  setupAdminCharts(analytics) {
+    const revenueCtx = document.getElementById('revenueChart')?.getContext('2d');
+    if (revenueCtx) {
+      new Chart(revenueCtx, {
+        type: 'line',
+        data: {
+          labels: analytics.revenueGrowth.map(d => d.month),
+          datasets: [{
+            label: 'Monthly Revenue',
+            data: analytics.revenueGrowth.map(d => d.value),
+            borderColor: '#3b82f6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            fill: true,
+            tension: 0.4,
+            borderWidth: 3,
+            pointBackgroundColor: '#3b82f6',
+            pointRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: { color: 'rgba(0,0,0,0.05)' },
+              ticks: { font: { size: 10 } }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { font: { size: 10 } }
+            }
+          }
+        }
+      });
+    }
+
+    const packageCtx = document.getElementById('packageChart')?.getContext('2d');
+    if (packageCtx) {
+      new Chart(packageCtx, {
+        type: 'doughnut',
+        data: {
+          labels: analytics.packageDistribution.map(d => d.name),
+          datasets: [{
+            data: analytics.packageDistribution.map(d => d.count),
+            backgroundColor: [
+              '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#64748b'
+            ],
+            borderWidth: 0,
+            hoverOffset: 10
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { boxWidth: 12, font: { size: 11 } }
+            }
+          },
+          cutout: '70%'
+        }
+      });
+    }
+
+    const userCtx = document.getElementById('userChart')?.getContext('2d');
+    if (userCtx) {
+      new Chart(userCtx, {
+        type: 'bar',
+        data: {
+          labels: analytics.userGrowth.map(d => d.month),
+          datasets: [{
+            label: 'Total Users',
+            data: analytics.userGrowth.map(d => d.value),
+            backgroundColor: 'rgba(16, 185, 129, 0.6)',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+            x: { grid: { display: false } }
+          }
+        }
+      });
     }
   }
 
