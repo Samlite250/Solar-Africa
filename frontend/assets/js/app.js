@@ -276,7 +276,10 @@ class SolarApp {
     if (page === 'packages') await this.hydratePackages();
     if (page === 'team') await this.hydrateTeam();
     if (page === 'profile') await this.hydrateProfile();
-    if (page === 'admin') await this.hydrateAdmin();
+    if (page === 'admin') {
+      await this.hydrateAdmin();
+      this.setupAdminNavigation();
+    }
     
     // Global stats update for landing page
     if (page === 'home') this.animateStats();
@@ -488,6 +491,98 @@ class SolarApp {
         </tr>
       `).join('');
     }
+
+    // Full Management Views
+    this.hydrateUserManagement(data.users);
+    this.hydratePackageManagement(data.packages);
+    this.hydrateTransactionLedger(data.deposits);
+  }
+
+  setupAdminNavigation() {
+    const links = document.querySelectorAll('.sidebar-nav-link[data-target]');
+    const views = document.querySelectorAll('.admin-view');
+
+    links.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = link.dataset.target;
+
+        // Update UI
+        links.forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+
+        views.forEach(v => {
+          v.style.display = v.id === target ? 'block' : 'none';
+        });
+      });
+    });
+  }
+
+  hydrateUserManagement(users) {
+    const list = document.getElementById('full-user-list');
+    if (!list || !users) return;
+
+    list.innerHTML = users.map(u => `
+      <tr>
+        <td>
+          <div style="display: flex; flex-direction: column;">
+            <span style="font-weight: 700;">${u.name}</span>
+            <span style="font-size: 11px; color: var(--admin-text-muted);">ID: #${u.id}</span>
+          </div>
+        </td>
+        <td>${u.email || 'N/A'}</td>
+        <td>Apr 2026</td>
+        <td>1,250,000 BIF</td>
+        <td><span class="status-badge approved">Active</span></td>
+        <td>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-admin btn-admin-outline" onclick="window.app.showToast('User edit opened')">Edit</button>
+            <button class="btn-admin btn-admin-outline" style="color: var(--admin-danger);" onclick="window.app.showToast('User suspended')">Suspend</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  hydratePackageManagement(packages) {
+    const list = document.getElementById('admin-package-mgmt');
+    if (!list || !packages) return;
+
+    list.innerHTML = packages.map(p => `
+      <tr>
+        <td><strong>${p.name}</strong></td>
+        <td>${p.amount}</td>
+        <td>${p.bonus}</td>
+        <td>${p.active || 0}</td>
+        <td><span class="status-badge approved">Active</span></td>
+        <td>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-admin btn-admin-outline" onclick="window.app.showToast('Package edit opened')">Edit</button>
+            <button class="btn-admin btn-admin-outline" style="color: var(--admin-danger);" onclick="window.app.showToast('Package hidden')">Hide</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  hydrateTransactionLedger(deposits) {
+    const list = document.getElementById('full-transaction-ledger');
+    if (!list || !deposits) return;
+
+    list.innerHTML = deposits.map(d => `
+      <tr>
+        <td>#TX-${d.id}</td>
+        <td>Deposit</td>
+        <td>${d.user_name}</td>
+        <td>${d.amount}</td>
+        <td>Apr 26, 2026</td>
+        <td><span class="status-badge ${d.status.toLowerCase()}">${d.status}</span></td>
+      </tr>
+    `).join('');
+  }
+
+  openPackageModal() {
+    this.showToast('Package creation modal would open here in full version.');
   }
 
   setupAdminCharts(analytics) {

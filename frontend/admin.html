@@ -20,33 +20,29 @@
       
       <nav class="sidebar-nav">
         <p class="nav-group-label">General</p>
-        <a href="admin.html" class="sidebar-nav-link active">
+        <a href="#" class="sidebar-nav-link active" data-target="view-dashboard">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
           Dashboard
         </a>
-        <a href="packages.html" class="sidebar-nav-link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
-          Packages
+        <a href="#" class="sidebar-nav-link" data-target="view-users">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          User Management
         </a>
-        <a href="dashboard.html" class="sidebar-nav-link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-          User View
+        <a href="#" class="sidebar-nav-link" data-target="view-packages">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+          Package Control
         </a>
 
-        <p class="nav-group-label">Operations</p>
-        <a href="#" class="sidebar-nav-link">
+        <p class="nav-group-label">Financials</p>
+        <a href="#" class="sidebar-nav-link" data-target="view-transactions">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-          Deposits
-        </a>
-        <a href="#" class="sidebar-nav-link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
-          Withdrawals
+          Transactions
         </a>
         
-        <p class="nav-group-label">Settings</p>
-        <a href="#" class="sidebar-nav-link">
+        <p class="nav-group-label">System</p>
+        <a href="#" class="sidebar-nav-link" data-target="view-settings">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-          Configuration
+          Platform Settings
         </a>
       </nav>
 
@@ -73,140 +69,174 @@
         </div>
       </header>
 
-      <!-- Key Metrics -->
-      <section class="stats-grid">
-        <article class="stat-card">
-          <div class="stat-icon blue">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-          </div>
-          <div class="stat-info">
-            <span>Total Users</span>
-            <strong id="admin-total-users">0</strong>
-          </div>
-        </article>
-        <article class="stat-card">
-          <div class="stat-icon purple">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
-          </div>
-          <div class="stat-info">
-            <span>Active Packages</span>
-            <strong id="admin-active-pkgs">0</strong>
-          </div>
-        </article>
-        <article class="stat-card">
-          <div class="stat-icon green">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-          </div>
-          <div class="stat-info">
-            <span>Total Deposits</span>
-            <strong id="admin-total-deposits">0</strong>
-          </div>
-        </article>
-        <article class="stat-card">
-          <div class="stat-icon orange">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
-          </div>
-          <div class="stat-info">
-            <span>Withdrawals</span>
-            <strong id="admin-total-withdrawals">0</strong>
-          </div>
-        </article>
-      </section>
+      <div id="view-dashboard" class="admin-view active">
+        <!-- Key Metrics -->
+        <section class="stats-grid">
+          <article class="stat-card">
+            <div class="stat-icon blue"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg></div>
+            <div class="stat-info"><span>Total Users</span><strong id="admin-total-users">0</strong></div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-icon purple"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg></div>
+            <div class="stat-info"><span>Active Packages</span><strong id="admin-active-pkgs">0</strong></div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-icon green"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></div>
+            <div class="stat-info"><span>Total Deposits</span><strong id="admin-total-deposits">0</strong></div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-icon orange"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline></svg></div>
+            <div class="stat-info"><span>Withdrawals</span><strong id="admin-total-withdrawals">0</strong></div>
+          </article>
+        </section>
 
-      <!-- BI Dashboard -->
-      <section class="bi-grid">
-        <div class="panel-card">
-          <div class="panel-header">
-            <h2 class="panel-title">Revenue & Growth Trends</h2>
-            <button class="btn-admin btn-admin-outline" onclick="window.print()">Export BI Data</button>
-          </div>
-          <div style="height: 300px;">
-            <canvas id="revenueChart"></canvas>
-          </div>
-          <div class="mini-bi-row">
-            <div class="mini-bi-card">
-              <span>Conversion Rate</span>
-              <strong>3.8%</strong>
-              <div class="trend up">↑ 12%</div>
-            </div>
-            <div class="mini-bi-card">
-              <span>Avg. Ticket</span>
-              <strong>245k BIF</strong>
-              <div class="trend">Stable</div>
-            </div>
-            <div class="mini-bi-card">
-              <span>Retention</span>
-              <strong>94.2%</strong>
-              <div class="trend up">↑ 2%</div>
-            </div>
-            <div class="mini-bi-card">
-              <span>Churn Rate</span>
-              <strong>1.2%</strong>
-              <div class="trend down">↓ 0.5%</div>
+        <!-- BI Dashboard -->
+        <section class="bi-grid">
+          <div class="panel-card">
+            <div class="panel-header"><h2 class="panel-title">Revenue & Growth Trends</h2></div>
+            <div style="height: 300px;"><canvas id="revenueChart"></canvas></div>
+            <div class="mini-bi-row">
+              <div class="mini-bi-card"><span>Conversion Rate</span><strong>3.8%</strong><div class="trend up">↑ 12%</div></div>
+              <div class="mini-bi-card"><span>Avg. Ticket</span><strong>245k BIF</strong><div class="trend">Stable</div></div>
+              <div class="mini-bi-card"><span>Retention</span><strong>94.2%</strong><div class="trend up">↑ 2%</div></div>
+              <div class="mini-bi-card"><span>Churn Rate</span><strong>1.2%</strong><div class="trend down">↓ 0.5%</div></div>
             </div>
           </div>
-        </div>
-        
-        <div class="panel-card">
-          <div class="panel-header">
-            <h2 class="panel-title">Portfolio Mix</h2>
+          <div class="panel-card">
+            <div class="panel-header"><h2 class="panel-title">Portfolio Mix</h2></div>
+            <div style="height: 250px;"><canvas id="packageChart"></canvas></div>
+            <div style="margin-top: 24px;"><h2 class="panel-title" style="font-size: 14px; margin-bottom: 12px;">User Acquisition</h2><div style="height: 150px;"><canvas id="userChart"></canvas></div></div>
           </div>
-          <div style="height: 250px;">
-            <canvas id="packageChart"></canvas>
-          </div>
-          <div style="margin-top: 24px;">
-            <h2 class="panel-title" style="font-size: 14px; margin-bottom: 12px;">User Acquisition</h2>
-            <div style="height: 150px;">
-              <canvas id="userChart"></canvas>
-            </div>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- Tables Section -->
-      <section style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px;">
+        <!-- Tables Section -->
+        <section style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px;">
+          <div class="panel-card">
+            <div class="panel-header"><h2 class="panel-title">Pending Verifications</h2></div>
+            <div class="table-container"><table><thead><tr><th>User</th><th>Amount</th><th>Package</th><th>Status</th><th>Actions</th></tr></thead><tbody id="admin-deposits-table"></tbody></table></div>
+          </div>
+          <div class="panel-card">
+            <div class="panel-header"><h2 class="panel-title">Recent Investors</h2></div>
+            <div class="table-container"><table><thead><tr><th>Name</th><th>Country</th><th>Status</th></tr></thead><tbody id="admin-users-table"></tbody></table></div>
+          </div>
+        </section>
+      </div>
+
+      <div id="view-users" class="admin-view" style="display: none;">
         <div class="panel-card">
           <div class="panel-header">
-            <h2 class="panel-title">Pending Verifications</h2>
+            <h2 class="panel-title">Full User Management</h2>
+            <div class="header-actions">
+              <input type="text" id="user-search" placeholder="Search by name or email..." class="btn-admin btn-admin-outline" style="width: 250px;" />
+            </div>
           </div>
           <div class="table-container">
             <table>
               <thead>
                 <tr>
-                  <th>User</th>
-                  <th>Amount</th>
-                  <th>Package</th>
+                  <th>User Details</th>
+                  <th>Contact</th>
+                  <th>Joined</th>
+                  <th>Balance</th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
-              <tbody id="admin-deposits-table">
-                <!-- Hydrated by app.js -->
+              <tbody id="full-user-list">
+                <!-- Dynamic Content -->
               </tbody>
             </table>
           </div>
         </div>
+      </div>
 
+      <div id="view-packages" class="admin-view" style="display: none;">
         <div class="panel-card">
           <div class="panel-header">
-            <h2 class="panel-title">Recent Investors</h2>
+            <h2 class="panel-title">Investment Package Control</h2>
+            <button class="btn-admin btn-admin-primary" onclick="window.app.openPackageModal()">+ Create New Package</button>
           </div>
           <div class="table-container">
             <table>
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Country</th>
+                  <th>Package Name</th>
+                  <th>Price</th>
+                  <th>Bonus</th>
+                  <th>Active Investors</th>
                   <th>Status</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
-              <tbody id="admin-users-table">
-                <!-- Hydrated by app.js -->
+              <tbody id="admin-package-mgmt">
+                <!-- Dynamic Content -->
               </tbody>
             </table>
           </div>
         </div>
-      </section>
+      </div>
+
+      <div id="view-transactions" class="admin-view" style="display: none;">
+        <div class="panel-card">
+          <div class="panel-header">
+            <h2 class="panel-title">Financial Ledger</h2>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Transaction ID</th>
+                  <th>Type</th>
+                  <th>User</th>
+                  <th>Amount</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="full-transaction-ledger">
+                <!-- Dynamic Content -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="view-settings" class="admin-view" style="display: none;">
+        <div class="panel-card">
+          <h2 class="panel-title" style="margin-bottom: 24px;">Global Platform Configuration</h2>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+            <div>
+              <h3 style="font-size: 14px; margin-bottom: 16px;">General Controls</h3>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <span>Maintenance Mode</span>
+                <input type="checkbox" class="toggle" />
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <span>Public Registration</span>
+                <input type="checkbox" checked class="toggle" />
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <span>Withdrawal System</span>
+                <input type="checkbox" checked class="toggle" />
+              </div>
+            </div>
+            <div>
+              <h3 style="font-size: 14px; margin-bottom: 16px;">Commission Rates</h3>
+              <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 12px; color: var(--admin-text-muted);">Referral Bonus (%)</label>
+                <input type="number" value="10" class="btn-admin btn-admin-outline" style="width: 100%; margin-top: 4px;" />
+              </div>
+              <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 12px; color: var(--admin-text-muted);">Withdrawal Fee (%)</label>
+                <input type="number" value="5" class="btn-admin btn-admin-outline" style="width: 100%; margin-top: 4px;" />
+              </div>
+            </div>
+          </div>
+          <div style="margin-top: 32px; border-top: 1px solid var(--admin-border); padding-top: 24px;">
+            <button class="btn-admin btn-admin-primary">Save Platform Configuration</button>
+          </div>
+        </div>
+      </div>
     </main>
 
     <script src="assets/js/app.js" defer></script>
