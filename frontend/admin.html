@@ -3,254 +3,353 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Solar Africa | Command Center</title>
+    <title>Solar Africa | Admin Command</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="assets/css/admin.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
   <body class="admin-body" data-page="admin">
-    <!-- Sidebar Navigation -->
+    <!-- Sidebar -->
     <aside class="admin-sidebar">
       <div class="sidebar-header">
         <img src="assets/img/logo.png" alt="Solar Africa" class="brand-logo" />
-        <span>Solar Africa</span>
+        <div class="brand-info">
+          <h1>SOLAR AFRICA</h1>
+          <p>Admin Panel</p>
+        </div>
       </div>
       
       <nav class="sidebar-nav">
-        <p class="nav-group-label">General</p>
         <a href="#" class="sidebar-nav-link active" data-target="view-dashboard">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-          Dashboard
+          <div class="link-content">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            Dashboard
+          </div>
         </a>
         <a href="#" class="sidebar-nav-link" data-target="view-users">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-          User Management
+          <div class="link-content">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+            Users
+          </div>
         </a>
         <a href="#" class="sidebar-nav-link" data-target="view-packages">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
-          Package Control
+          <div class="link-content">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+            Packages
+          </div>
         </a>
-
-        <p class="nav-group-label">Financials</p>
-        <a href="#" class="sidebar-nav-link" data-target="view-transactions">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-          Transactions
+        <a href="#" class="sidebar-nav-link">
+          <div class="link-content">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            Deposits
+          </div>
+          <span class="nav-badge">12</span>
         </a>
-        
-        <p class="nav-group-label">System</p>
-        <a href="#" class="sidebar-nav-link" data-target="view-settings">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-          Platform Settings
+        <a href="#" class="sidebar-nav-link">
+          <div class="link-content">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline></svg>
+            Withdrawals
+          </div>
+          <span class="nav-badge warning">8</span>
+        </a>
+        <a href="#" class="sidebar-nav-link">
+          <div class="link-content">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            Transactions
+          </div>
+        </a>
+        <a href="#" class="sidebar-nav-link">
+          <div class="link-content">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            KYC Verifications
+          </div>
+          <span class="nav-badge">15</span>
+        </a>
+        <a href="#" class="sidebar-nav-link">
+          <div class="link-content">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            Referrals
+          </div>
+        </a>
+        <a href="#" class="sidebar-nav-link">
+          <div class="link-content">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+            Announcements
+          </div>
         </a>
       </nav>
 
-      <div style="padding: 24px;">
-        <button id="logout-btn" class="btn-admin btn-admin-outline" style="width: 100%;">Sign Out</button>
+      <div class="sidebar-footer">
+        <div class="sidebar-illustration">
+          <img src="https://images.unsplash.com/photo-1509391366360-fe09a921881b?auto=format&fit=crop&q=80&w=260" alt="Solar" style="width: 100%; border-radius: 12px;" />
+        </div>
+        <div class="admin-profile-card">
+          <img src="https://ui-avatars.com/api/?name=Admin+User&background=0b6cff&color=fff" alt="Admin" id="admin-avatar-sidebar" />
+          <div class="admin-info">
+            <h4 id="admin-name-sidebar">Admin</h4>
+            <p>Super Administrator</p>
+          </div>
+        </div>
+        <button class="logout-btn" id="logout-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          Logout
+        </button>
       </div>
     </aside>
 
     <!-- Main Content -->
     <main class="admin-main">
-      <header class="admin-header">
-        <div class="header-title">
-          <p>System Administrator Dashboard</p>
-          <h1>Solar Africa Command</h1>
-        </div>
-        <div class="header-actions">
-          <div class="search-bar">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            <input type="text" placeholder="Search users, packages, or TX IDs..." />
+      <header class="top-bar">
+        <div class="top-bar-left">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          <div class="dashboard-title">
+            <h2>Dashboard</h2>
+            <p>Overview of Solar Africa Platform</p>
           </div>
-          <div style="display: flex; gap: 12px;">
-            <div style="width: 48px; height: 48px; background: white; border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: var(--admin-shadow); cursor: pointer; border: 1px solid var(--admin-border);">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-            </div>
-            <div style="width: 48px; height: 48px; background: var(--admin-primary); border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: var(--admin-shadow); cursor: pointer; color: white;">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            </div>
+        </div>
+        <div class="top-bar-right">
+          <select class="top-select">
+            <option>🇧🇮 Burundi</option>
+            <option>🇺🇬 Uganda</option>
+            <option>🇰🇪 Kenya</option>
+          </select>
+          <div class="top-search">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" placeholder="Search anything..." />
+          </div>
+          <div class="notif-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+            <span class="notif-badge">5</span>
           </div>
         </div>
       </header>
 
-      <div style="background: linear-gradient(135deg, #0b6cff 0%, #6366f1 100%); padding: 40px; border-radius: 32px; color: white; margin-bottom: 40px; box-shadow: var(--admin-shadow-lg); position: relative; overflow: hidden;">
-        <div style="position: absolute; right: -50px; top: -50px; width: 200px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
-        <div style="position: relative; z-index: 1;">
-          <h2 style="font-size: 32px; font-weight: 800; margin-bottom: 8px;">Hello, Admin Sam!</h2>
-          <p style="font-size: 16px; opacity: 0.9; max-width: 600px; font-weight: 500;">Your platform is currently growing at 12% MoM. You have 3 pending deposits that require your immediate attention.</p>
-          <div style="display: flex; gap: 16px; margin-top: 24px;">
-            <button class="btn-admin" style="background: white; color: var(--admin-primary); border-radius: 12px; font-weight: 700;">Generate Monthly Report</button>
-            <button class="btn-admin" style="background: rgba(255,255,255,0.2); color: white; border-radius: 12px; font-weight: 700; border: 1px solid rgba(255,255,255,0.3);">View Audit Logs</button>
+      <div class="dashboard-content">
+        <!-- Top Metrics -->
+        <div class="metric-cards-row">
+          <div class="card metric-card">
+            <div class="metric-card-top">
+              <div class="metric-icon" style="background: #eff6ff; color: #0b6cff;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+              </div>
+              <div class="trend-badge up">↑ 12.5%</div>
+            </div>
+            <div class="metric-value">
+              <span>Total Users</span>
+              <h3 id="admin-total-users">12,843</h3>
+            </div>
+            <div class="sparkline-container"><canvas id="sparkline-users"></canvas></div>
+          </div>
+          <div class="card metric-card">
+            <div class="metric-card-top">
+              <div class="metric-icon" style="background: #ecfdf5; color: #10b981;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+              </div>
+              <div class="trend-badge up">↑ 18.7%</div>
+            </div>
+            <div class="metric-value">
+              <span>Total Deposits</span>
+              <h3 id="admin-total-deposits">1,245,860k</h3>
+            </div>
+            <div class="sparkline-container"><canvas id="sparkline-deposits"></canvas></div>
+          </div>
+          <div class="card metric-card">
+            <div class="metric-card-top">
+              <div class="metric-icon" style="background: #fff7ed; color: #f59e0b;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h14v4"></path><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"></path><path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"></path></svg>
+              </div>
+              <div class="trend-badge up">↑ 16.3%</div>
+            </div>
+            <div class="metric-value">
+              <span>Total Bonuses Paid</span>
+              <h3 id="admin-total-bonuses">842,350k</h3>
+            </div>
+            <div class="sparkline-container"><canvas id="sparkline-bonuses"></canvas></div>
+          </div>
+          <div class="card metric-card">
+            <div class="metric-card-top">
+              <div class="metric-icon" style="background: #f5f3ff; color: #6366f1;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline></svg>
+              </div>
+              <div class="trend-badge up">↑ 9.5%</div>
+            </div>
+            <div class="metric-value">
+              <span>Total Withdrawals</span>
+              <h3 id="admin-total-withdrawals">456,780k</h3>
+            </div>
+            <div class="sparkline-container"><canvas id="sparkline-withdrawals"></canvas></div>
+          </div>
+          <div class="card metric-card">
+            <div class="metric-card-top">
+              <div class="metric-icon" style="background: #eff6ff; color: #0b6cff;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+              </div>
+              <div class="trend-badge up">↑ 21.6%</div>
+            </div>
+            <div class="metric-value">
+              <span>Total Profit</span>
+              <h3 id="admin-total-profit">389,080k</h3>
+            </div>
+            <div class="sparkline-container"><canvas id="sparkline-profit"></canvas></div>
           </div>
         </div>
-      </div>
 
-      <div id="view-dashboard" class="admin-view active">
-        <!-- Key Metrics -->
-        <section class="stats-grid">
-          <article class="stat-card">
-            <div class="stat-icon blue"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg></div>
-            <div class="stat-info"><span>Total Users</span><strong id="admin-total-users">0</strong></div>
-          </article>
-          <article class="stat-card">
-            <div class="stat-icon purple"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg></div>
-            <div class="stat-info"><span>Active Packages</span><strong id="admin-active-pkgs">0</strong></div>
-          </article>
-          <article class="stat-card">
-            <div class="stat-icon green"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></div>
-            <div class="stat-info"><span>Total Deposits</span><strong id="admin-total-deposits">0</strong></div>
-          </article>
-          <article class="stat-card">
-            <div class="stat-icon orange"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline></svg></div>
-            <div class="stat-info"><span>Withdrawals</span><strong id="admin-total-withdrawals">0</strong></div>
-          </article>
-        </section>
-
-        <!-- BI Dashboard -->
-        <section class="bi-grid">
-          <div class="panel-card">
-            <div class="panel-header"><h2 class="panel-title">Revenue & Growth Trends</h2></div>
+        <!-- Middle Row -->
+        <div class="dashboard-grid">
+          <!-- Overview Chart -->
+          <div class="card">
+            <div class="panel-header">
+              <h4>Overview Chart</h4>
+              <select class="top-select" style="padding: 4px 8px;">
+                <option>Last 30 Days</option>
+                <option>Last 7 Days</option>
+              </select>
+            </div>
             <div style="height: 300px;"><canvas id="revenueChart"></canvas></div>
-            <div class="mini-bi-row">
-              <div class="mini-bi-card"><span>Conversion Rate</span><strong>3.8%</strong><div class="trend up">↑ 12%</div></div>
-              <div class="mini-bi-card"><span>Avg. Ticket</span><strong>245k BIF</strong><div class="trend">Stable</div></div>
-              <div class="mini-bi-card"><span>Retention</span><strong>94.2%</strong><div class="trend up">↑ 2%</div></div>
-              <div class="mini-bi-card"><span>Churn Rate</span><strong>1.2%</strong><div class="trend down">↓ 0.5%</div></div>
+          </div>
+
+          <!-- Deposits by Status -->
+          <div class="card">
+            <div class="panel-header">
+              <h4>Deposits by Status</h4>
+            </div>
+            <div class="chart-container-relative" style="height: 200px;">
+              <canvas id="statusChart"></canvas>
+              <div class="chart-center-text">
+                <span>Total</span>
+                <strong id="deposits-total-center">230</strong>
+              </div>
+            </div>
+            <div style="margin-top: 10px;">
+                <a href="#" style="font-size: 12px; color: var(--admin-primary); font-weight: 700;">View All Deposits →</a>
             </div>
           </div>
-          <div class="panel-card">
-            <div class="panel-header"><h2 class="panel-title">Portfolio Mix</h2></div>
-            <div style="height: 250px;"><canvas id="packageChart"></canvas></div>
-            <div style="margin-top: 24px;"><h2 class="panel-title" style="font-size: 14px; margin-bottom: 12px;">User Acquisition</h2><div style="height: 150px;"><canvas id="userChart"></canvas></div></div>
-          </div>
-        </section>
 
-        <!-- Tables Section -->
-        <section style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px;">
-          <div class="panel-card">
-            <div class="panel-header"><h2 class="panel-title">Pending Verifications</h2></div>
-            <div class="table-container"><table><thead><tr><th>User</th><th>Amount</th><th>Package</th><th>Status</th><th>Actions</th></tr></thead><tbody id="admin-deposits-table"></tbody></table></div>
-          </div>
-          <div class="panel-card">
-            <div class="panel-header"><h2 class="panel-title">Recent Investors</h2></div>
-            <div class="table-container"><table><thead><tr><th>Name</th><th>Country</th><th>Status</th></tr></thead><tbody id="admin-users-table"></tbody></table></div>
-          </div>
-        </section>
-      </div>
-
-      <div id="view-users" class="admin-view" style="display: none;">
-        <div class="panel-card">
-          <div class="panel-header">
-            <h2 class="panel-title">Full User Management</h2>
-            <div class="header-actions">
-              <input type="text" id="user-search" placeholder="Search by name or email..." class="btn-admin btn-admin-outline" style="width: 250px;" />
+          <!-- Recent Deposits -->
+          <div class="card">
+            <div class="panel-header">
+              <h4>Recent Deposits</h4>
+              <a href="#">View All</a>
             </div>
-          </div>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>User Details</th>
-                  <th>Contact</th>
-                  <th>Joined</th>
-                  <th>Balance</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="full-user-list">
-                <!-- Dynamic Content -->
-              </tbody>
-            </table>
+            <div class="custom-list" id="recent-deposits-list">
+              <!-- Dynamically Hydrated -->
+            </div>
           </div>
         </div>
-      </div>
 
-      <div id="view-packages" class="admin-view" style="display: none;">
-        <div class="panel-card">
-          <div class="panel-header">
-            <h2 class="panel-title">Investment Package Control</h2>
-            <button class="btn-admin btn-admin-primary" onclick="window.app.openPackageModal()">+ Create New Package</button>
-          </div>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Package Name</th>
-                  <th>Price</th>
-                  <th>Bonus</th>
-                  <th>Active Investors</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="admin-package-mgmt">
-                <!-- Dynamic Content -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <div id="view-transactions" class="admin-view" style="display: none;">
-        <div class="panel-card">
-          <div class="panel-header">
-            <h2 class="panel-title">Financial Ledger</h2>
-          </div>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Transaction ID</th>
-                  <th>Type</th>
-                  <th>User</th>
-                  <th>Amount</th>
-                  <th>Date</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="full-transaction-ledger">
-                <!-- Dynamic Content -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <div id="view-settings" class="admin-view" style="display: none;">
-        <div class="panel-card">
-          <h2 class="panel-title" style="margin-bottom: 24px;">Global Platform Configuration</h2>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
-            <div>
-              <h3 style="font-size: 14px; margin-bottom: 16px;">General Controls</h3>
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <span>Maintenance Mode</span>
-                <input type="checkbox" class="toggle" />
-              </div>
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <span>Public Registration</span>
-                <input type="checkbox" checked class="toggle" />
-              </div>
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <span>Withdrawal System</span>
-                <input type="checkbox" checked class="toggle" />
-              </div>
+        <!-- Bottom Row -->
+        <div class="dashboard-grid">
+          <!-- Users by Country -->
+          <div class="card">
+            <div class="panel-header">
+              <h4>Users by Country</h4>
             </div>
-            <div>
-              <h3 style="font-size: 14px; margin-bottom: 16px;">Commission Rates</h3>
-              <div style="margin-bottom: 16px;">
-                <label style="display: block; font-size: 12px; color: var(--admin-text-muted);">Referral Bonus (%)</label>
-                <input type="number" value="10" class="btn-admin btn-admin-outline" style="width: 100%; margin-top: 4px;" />
-              </div>
-              <div style="margin-bottom: 16px;">
-                <label style="display: block; font-size: 12px; color: var(--admin-text-muted);">Withdrawal Fee (%)</label>
-                <input type="number" value="5" class="btn-admin btn-admin-outline" style="width: 100%; margin-top: 4px;" />
-              </div>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <div class="chart-container-relative" style="height: 180px; width: 180px;">
+                    <canvas id="countryChart"></canvas>
+                    <div class="chart-center-text">
+                        <strong style="font-size: 18px;">12,843</strong>
+                        <span>Users</span>
+                    </div>
+                </div>
+                <div id="country-legend" class="custom-list" style="flex: 1;">
+                    <!-- Legend logic -->
+                </div>
             </div>
           </div>
-          <div style="margin-top: 32px; border-top: 1px solid var(--admin-border); padding-top: 24px;">
-            <button class="btn-admin btn-admin-primary">Save Platform Configuration</button>
+
+          <!-- Top Packages -->
+          <div class="card">
+            <div class="panel-header">
+              <h4>Top Packages</h4>
+              <a href="#">View All</a>
+            </div>
+            <div class="custom-list" id="top-packages-list">
+              <!-- Dynamically Hydrated -->
+            </div>
+          </div>
+
+          <!-- Withdrawals by Status -->
+          <div class="card">
+            <div class="panel-header">
+              <h4>Withdrawals by Status</h4>
+            </div>
+            <div class="chart-container-relative" style="height: 200px;">
+              <canvas id="withdrawStatusChart"></canvas>
+              <div class="chart-center-text">
+                <span>Total</span>
+                <strong id="withdraw-total-center">98</strong>
+              </div>
+            </div>
+            <div style="margin-top: 10px;">
+                <a href="#" style="font-size: 12px; color: var(--admin-primary); font-weight: 700;">View All Withdrawals →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity and Quick Actions -->
+        <div class="dashboard-grid" style="grid-template-columns: 2.5fr 1.5fr;">
+           <div class="card">
+              <div class="panel-header">
+                <h4>Platform Activity</h4>
+                <a href="#">View All</a>
+              </div>
+              <div class="feed-list" id="activity-feed">
+                <!-- Dynamically Hydrated -->
+              </div>
+           </div>
+           <div class="card" style="background: transparent; box-shadow: none; border: none; padding: 0;">
+              <div class="panel-header">
+                <h4>Quick Actions</h4>
+              </div>
+              <div class="quick-actions-grid" style="grid-template-columns: 1fr 1fr; margin-top: 0;">
+                <div class="card action-card green">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"></path></svg>
+                  Add New Package
+                </div>
+                <div class="card action-card blue">
+                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 5L6 9H2V15H6L11 19V5z"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                  Announce Message
+                </div>
+                <div class="card action-card purple">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" y1="8" x2="19" y2="14"></line><line x1="22" y1="11" x2="16" y2="11"></line></svg>
+                  Add Admin
+                </div>
+                <div class="card action-card orange">
+                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                  Export Reports
+                </div>
+              </div>
+           </div>
+        </div>
+
+        <!-- Large Recent Users Table -->
+        <div class="recent-users-section">
+          <div class="card table-card">
+            <div class="panel-header">
+              <h4>Recent Users</h4>
+              <a href="#">View All Users</a>
+            </div>
+            <div style="overflow-x: auto;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Country</th>
+                    <th>Package</th>
+                    <th>Joined Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-users-table">
+                  <!-- Dynamically Hydrated -->
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>

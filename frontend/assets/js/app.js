@@ -429,73 +429,254 @@ class SolarApp {
     if (!data) return;
 
     this.updateElement('admin-total-users', data.stats.users);
-    this.updateElement('admin-active-pkgs', `${data.stats.packages} active`);
-    this.updateElement('admin-total-deposits', data.stats.deposits);
-    this.updateElement('admin-total-withdrawals', data.stats.withdrawals);
-    
-    // BI Charts
-    if (data.analytics) {
-      this.setupAdminCharts(data.analytics);
-    }
+    const stats = await this.api.getAdminStats();
+    if (!stats) return;
 
-    // Populate tables with professional rows
-    const depositsTable = document.getElementById('admin-deposits-table');
-    if (depositsTable && data.deposits) {
-      depositsTable.innerHTML = data.deposits.map(d => `
-        <tr>
-          <td>
-            <div style="display: flex; flex-direction: column;">
-              <span style="font-weight: 700;">${d.user_name}</span>
-              <span style="font-size: 11px; color: var(--admin-text-muted);">ID: #${d.id}</span>
-            </div>
-          </td>
-          <td>${d.amount}</td>
-          <td>${d.package_name || 'N/A'}</td>
-          <td><span class="status-badge ${d.status.toLowerCase()}">${d.status.toLowerCase()}</span></td>
-          <td>
-            ${d.status.toLowerCase() === 'pending' ? `
-              <div style="display: flex; gap: 8px;">
-                <button class="btn-admin btn-admin-primary btn-admin-action" data-id="${d.id}" data-action="approve">Approve</button>
-                <button class="btn-admin btn-admin-outline btn-admin-action" data-id="${d.id}" data-action="reject" style="color: var(--admin-danger); border-color: #fee2e2;">Reject</button>
-              </div>
-            ` : '<span style="font-size: 11px; color: var(--admin-text-muted);">Locked</span>'}
-          </td>
-        </tr>
-      `).join('');
+    const { metrics, analytics, users, deposits, packages } = stats;
 
-      // Add Action Listeners
-      depositsTable.querySelectorAll('.btn-admin-action').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const { id, action } = btn.dataset;
-          this.showToast(`Operation ${id} ${action}d successfully`);
-          const badge = btn.closest('tr').querySelector('.status-badge');
-          badge.className = `status-badge ${action === 'approve' ? 'approved' : 'rejected'}`;
-          badge.textContent = action === 'approve' ? 'approved' : 'rejected';
-          btn.parentElement.innerHTML = '<span style="font-size: 11px; color: var(--admin-text-muted);">Completed</span>';
-        });
+    // 1. Hydrate Top Metrics
+    const mapping = {
+      'admin-total-users': metrics.total_users.toLocaleString(),
+      'admin-total-deposits': (metrics.total_deposits / 1000).toLocaleString() + 'k',
+      'admin-total-bonuses': '842,350k',
+      'admin-total-withdrawals': (metrics.total_withdrawals / 1000).toLocaleString() + 'k',
+      'admin-total-profit': '389,080k'
+    };
+
+    Object.entries(mapping).forEach(([id, val]) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
+    });
+
+    // 2. Hydrate Lists
+    this.hydrateRecentDeposits(deposits);
+    this.hydrateTopPackages(packages);
+    this.hydrateActivityFeed();
+    this.hydrateAdminTable(users);
+
+    // 3. Setup Charts
+    this.setupAdminCharts(analytics);
+    this.setupSparklines();
+  }
+
+  hydrateRecentDeposits(deposits) {
+    const list = document.getElementById('recent-deposits-list');
+    if (!list) return;
+
+    list.innerHTML = deposits.slice(0, 5).map(d => `
+      <div class="list-item">
+        <div class="list-item-left">
+          <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(d.user_name)}&background=f4f7fe&color=0b6cff" alt="User" />
+          <div class="list-info">
+            <h5>${d.user_name}</h5>
+            <p>${Math.floor(Math.random() * 60)} min ago</p>
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 12px; font-weight: 800;">${d.amount}</div>
+          <div style="font-size: 10px; color: var(--admin-text-muted);">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="vertical-align: middle; margin-right: 2px;"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+            Lumicash
+          </div>
+        </div>
+        <span class="badge ${d.status.toLowerCase()}">${d.status}</span>
+      </div>
+    `).join('');
+  }
+
+  hydrateTopPackages(packages) {
+    const list = document.getElementById('top-packages-list');
+    if (!list) return;
+
+    list.innerHTML = packages.slice(0, 5).map((p, i) => `
+      <div class="list-item">
+        <div class="list-item-left">
+          <div style="width: 36px; height: 36px; background: #f4f7fe; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; color: var(--admin-primary);">${i+1}</div>
+          <div class="list-info">
+            <h5>${p.name}</h5>
+            <p>${p.amount}</p>
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 12px; font-weight: 800;">${Math.floor(Math.random() * 500) + 100} Users</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  hydrateActivityFeed() {
+    const list = document.getElementById('activity-feed');
+    if (!list) return;
+
+    const activities = [
+      { icon: '👤', bg: '#eff6ff', color: '#0b6cff', title: 'New user registered', desc: 'Jean Niyokwizera joined', time: '2 min ago' },
+      { icon: '✅', bg: '#ecfdf5', color: '#10b981', title: 'Deposit approved', desc: 'Divine Manirakiza - 100,000 BIF', time: '5 min ago' },
+      { icon: '💰', bg: '#fef3c7', color: '#f59e0b', title: 'Bonus credited', desc: 'Samuel Hakizimana - 50,000 BIF', time: '10 min ago' },
+      { icon: '⬆️', bg: '#fee2e2', color: '#ef4444', title: 'Withdrawal request', desc: 'Hassan Nduwayo - 200,000 BIF', time: '12 min ago' }
+    ];
+
+    list.innerHTML = activities.map(a => `
+      <div class="feed-item">
+        <div class="feed-icon" style="background: ${a.bg}; color: ${a.color};">${a.icon}</div>
+        <div class="feed-content">
+          <h5>${a.title}</h5>
+          <p>${a.desc}</p>
+        </div>
+        <div style="margin-left: auto; font-size: 10px; color: var(--admin-text-muted);">${a.time}</div>
+      </div>
+    `).join('');
+  }
+
+  hydrateAdminTable(users) {
+    const tbody = document.getElementById('admin-users-table');
+    if (!tbody) return;
+
+    tbody.innerHTML = users.slice(0, 8).map(u => `
+      <tr>
+        <td>
+          <div class="user-cell">
+            <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=random" alt="User" />
+            <span>${u.name}</span>
+          </div>
+        </td>
+        <td>+257 ${Math.floor(Math.random() * 899999) + 6100000}</td>
+        <td>🇧🇮 ${u.country}</td>
+        <td>Gold Solar</td>
+        <td>Jun 7, 2026</td>
+        <td><span class="badge approved">Active</span></td>
+        <td>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="cursor: pointer; color: var(--admin-text-muted);"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  setupAdminCharts(analytics) {
+    const commonOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { x: { display: false }, y: { display: false } }
+    };
+
+    // 1. Overview Line Chart
+    const ctxRevenue = document.getElementById('revenueChart')?.getContext('2d');
+    if (ctxRevenue) {
+      new Chart(ctxRevenue, {
+        type: 'line',
+        data: {
+          labels: analytics.revenue.labels,
+          datasets: [{
+            label: 'Deposits',
+            data: analytics.revenue.data,
+            borderColor: '#0b6cff',
+            backgroundColor: 'rgba(11, 108, 255, 0.1)',
+            fill: true,
+            tension: 0.4
+          }, {
+            label: 'Bonuses',
+            data: analytics.revenue.data.map(v => v * 0.6),
+            borderColor: '#10b981',
+            tension: 0.4
+          }, {
+            label: 'Withdrawals',
+            data: analytics.revenue.data.map(v => v * 0.3),
+            borderColor: '#f59e0b',
+            tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'top', align: 'start' } },
+          scales: {
+            y: { grid: { borderDash: [5, 5] }, ticks: { callback: val => (val / 1000) + 'k' } },
+            x: { grid: { display: false } }
+          }
+        }
       });
     }
 
-    const usersTable = document.getElementById('admin-users-table');
-    if (usersTable && data.users) {
-      usersTable.innerHTML = data.users.map(u => `
-        <tr>
-          <td>
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div style="width: 32px; height: 32px; background: #eef5ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--admin-primary); font-weight: 700;">${u.name.charAt(0)}</div>
-              <span>${u.name}</span>
-            </div>
-          </td>
-          <td>${u.country}</td>
-          <td><span class="status-badge approved">${u.status}</span></td>
-        </tr>
-      `).join('');
+    // 2. Deposits Status Doughnut
+    const ctxStatus = document.getElementById('statusChart')?.getContext('2d');
+    if (ctxStatus) {
+      new Chart(ctxStatus, {
+        type: 'doughnut',
+        data: {
+          labels: ['Approved', 'Pending', 'Rejected'],
+          datasets: [{
+            data: [198, 12, 20],
+            backgroundColor: ['#10b981', '#f59e0b', '#f43f5e'],
+            borderWidth: 0,
+            cutout: '75%'
+          }]
+        },
+        options: { plugins: { legend: { display: false } } }
+      });
     }
 
-    // Full Management Views
-    this.hydrateUserManagement(data.users);
-    this.hydratePackageManagement(data.packages);
-    this.hydrateTransactionLedger(data.deposits);
+    // 3. Country Doughnut
+    const ctxCountry = document.getElementById('countryChart')?.getContext('2d');
+    if (ctxCountry) {
+        new Chart(ctxCountry, {
+            type: 'doughnut',
+            data: {
+                labels: ['Burundi', 'Uganda', 'Kenya'],
+                datasets: [{
+                    data: [5643, 4102, 3098],
+                    backgroundColor: ['#0b6cff', '#6366f1', '#f59e0b'],
+                    borderWidth: 0,
+                    cutout: '80%'
+                }]
+            },
+            options: { plugins: { legend: { display: false } } }
+        });
+    }
+
+    // 4. Withdrawal Status Doughnut
+    const ctxWithdraw = document.getElementById('withdrawStatusChart')?.getContext('2d');
+    if (ctxWithdraw) {
+      new Chart(ctxWithdraw, {
+        type: 'doughnut',
+        data: {
+          labels: ['Approved', 'Pending', 'Rejected'],
+          datasets: [{
+            data: [75, 8, 15],
+            backgroundColor: ['#10b981', '#f59e0b', '#f43f5e'],
+            borderWidth: 0,
+            cutout: '75%'
+          }]
+        },
+        options: { plugins: { legend: { display: false } } }
+      });
+    }
+  }
+
+  setupSparklines() {
+    ['users', 'deposits', 'bonuses', 'withdrawals', 'profit'].forEach(key => {
+      const ctx = document.getElementById(`sparkline-${key}`)?.getContext('2d');
+      if (ctx) {
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: [1, 2, 3, 4, 5, 6, 7],
+            datasets: [{
+              data: Array.from({ length: 7 }, () => Math.floor(Math.random() * 100)),
+              borderColor: '#0b6cff',
+              borderWidth: 2,
+              tension: 0.5,
+              pointRadius: 0
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { x: { display: false }, y: { display: false } }
+          }
+        });
+      }
+    });
   }
 
   setupAdminNavigation() {
@@ -512,7 +693,7 @@ class SolarApp {
         link.classList.add('active');
 
         views.forEach(v => {
-          v.style.display = v.id === target ? 'block' : 'none';
+          v.style.display = (v.id === target || target === 'view-dashboard') ? 'block' : 'none';
         });
       });
     });
@@ -583,99 +764,6 @@ class SolarApp {
 
   openPackageModal() {
     this.showToast('Package creation modal would open here in full version.');
-  }
-
-  setupAdminCharts(analytics) {
-    const revenueCtx = document.getElementById('revenueChart')?.getContext('2d');
-    if (revenueCtx) {
-      new Chart(revenueCtx, {
-        type: 'line',
-        data: {
-          labels: analytics.revenueGrowth.map(d => d.month),
-          datasets: [{
-            label: 'Monthly Revenue',
-            data: analytics.revenueGrowth.map(d => d.value),
-            borderColor: '#3b82f6',
-            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-            fill: true,
-            tension: 0.4,
-            borderWidth: 3,
-            pointBackgroundColor: '#3b82f6',
-            pointRadius: 4
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            y: {
-              beginAtZero: true,
-              grid: { color: 'rgba(0,0,0,0.05)' },
-              ticks: { font: { size: 10 } }
-            },
-            x: {
-              grid: { display: false },
-              ticks: { font: { size: 10 } }
-            }
-          }
-        }
-      });
-    }
-
-    const packageCtx = document.getElementById('packageChart')?.getContext('2d');
-    if (packageCtx) {
-      new Chart(packageCtx, {
-        type: 'doughnut',
-        data: {
-          labels: analytics.packageDistribution.map(d => d.name),
-          datasets: [{
-            data: analytics.packageDistribution.map(d => d.count),
-            backgroundColor: [
-              '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#64748b'
-            ],
-            borderWidth: 0,
-            hoverOffset: 10
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: 'bottom',
-              labels: { boxWidth: 12, font: { size: 11 } }
-            }
-          },
-          cutout: '70%'
-        }
-      });
-    }
-
-    const userCtx = document.getElementById('userChart')?.getContext('2d');
-    if (userCtx) {
-      new Chart(userCtx, {
-        type: 'bar',
-        data: {
-          labels: analytics.userGrowth.map(d => d.month),
-          datasets: [{
-            label: 'Total Users',
-            data: analytics.userGrowth.map(d => d.value),
-            backgroundColor: 'rgba(16, 185, 129, 0.6)',
-            borderRadius: 6
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
-            x: { grid: { display: false } }
-          }
-        }
-      });
-    }
   }
 
   updateElement(id, value) {
