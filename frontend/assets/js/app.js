@@ -288,6 +288,39 @@ class SolarApp {
     }
   }
 
+  // --- TEAM HYDRATION ---
+
+  async hydrateTeam() {
+    // Populate referral link
+    const refLinkInput = document.getElementById('ref-link');
+    if (refLinkInput && this.state.user) {
+      refLinkInput.value = `https://solarafrica.com/ref/${this.state.user.id || 'USER123'}`;
+    }
+    
+    // Populate dummy stats for now or fetch if available
+    this.updateElement('ref-count', '12');
+    this.updateElement('ref-active', '5');
+    this.updateElement('ref-bonus', '15,000 BIF');
+  }
+
+  copyRef() {
+    const link = document.getElementById('ref-link');
+    if (link) {
+      link.select();
+      document.execCommand('copy');
+      this.showToast('Referral link copied to clipboard!', 'success');
+    }
+  }
+
+  // --- PROFILE HYDRATION ---
+
+  async hydrateProfile() {
+    if (this.state.user) {
+      this.updateElement('profile-name', this.state.user.name);
+      this.updateElement('profile-phone', this.state.user.phone || '+257 000 000 00');
+    }
+  }
+
   // --- ADMIN ENGINE ---
 
   async hydrateAdmin() {
