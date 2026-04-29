@@ -367,6 +367,33 @@ class SolarApp {
     });
   }
 
+  // Admin Management Views
+  initTransactionLedger() {
+    console.log("Admin: Initializing Transaction Ledger...");
+    // Ideally this would fetch from 'admin/transactions'
+  }
+
+  initUserManagement() {
+    console.log("Admin: Initializing User Management...");
+    // Ideally this would fetch from 'admin/users'
+  }
+
+  initPackageManagement() {
+    console.log("Admin: Initializing Package Management...");
+    // Ideally this would fetch from 'admin/packages'
+  }
+
+  // Admin Modals
+  openPackageModal() {
+    const modal = document.getElementById('package-modal');
+    if (modal) modal.style.display = 'flex';
+  }
+
+  closePackageModal() {
+    const modal = document.getElementById('package-modal');
+    if (modal) modal.style.display = 'none';
+  }
+
   // --- UTILITIES ---
 
   setLoading(isLoading) {
