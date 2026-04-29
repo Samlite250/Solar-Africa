@@ -11,18 +11,21 @@ IF %ERRORLEVEL% NEQ 0 (
     exit /b
 )
 
-echo [INFO] Starting backend server...
+echo [INFO] Starting backend API...
 start cmd /k "cd backend && npm start"
 
-echo [INFO] Waiting for server to initialize...
-timeout /t 3 /nobreak >nul
+echo [INFO] Starting modern React frontend...
+start cmd /k "cd frontend-react && npm run dev"
+
+echo [INFO] Waiting for servers to initialize...
+timeout /t 4 /nobreak >nul
 
 echo [INFO] Opening application in your default browser...
-start http://localhost:3000
+start http://localhost:5173
 
 echo =========================================
 echo ✅ Setup Complete! 
-echo If you see 'email rate limit exceeded' when registering, 
-echo please wait or disable Email Confirmations in Supabase.
+echo Frontend: http://localhost:5173
+echo Backend API: http://localhost:3000
 echo =========================================
 pause
