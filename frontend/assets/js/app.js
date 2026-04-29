@@ -89,76 +89,138 @@ class SolarApp {
         await this.hydrate();
       }, 200);
     }
-  }
-
-  getTemplate(page) {
+   getTemplate(page) {
     const templates = {
       dashboard: `
-        <div class="dash-banner glass-panel" style="margin: 20px 5%;">
-          <div class="banner-content"><h2>Welcome back</h2><p>Your solar investments are growing 🚀</p></div>
-          <div class="user-profile-mini"><img src="https://ui-avatars.com/api/?name=User&background=random" alt="User" id="user-avatar-mini"></div>
+        <div class="dash-hero-banner">
+          <div class="dash-hero-text">
+            <p class="dash-hero-sub">Welcome to</p>
+            <h2 class="dash-hero-title">Invest in clean energy,<br>earn a bright future.</h2>
+          </div>
+          <img class="dash-hero-img" src="https://images.unsplash.com/photo-1509391366360-2e959784a276?w=300&q=80" alt="Solar Panel">
         </div>
-        <div class="metrics-grid" style="padding: 0 5%;">
-          <div class="m-card blue"><span>Wallet Balance</span><strong id="wallet-balance">...</strong></div>
-          <div class="m-card green"><span>Welcome Bonus</span><strong id="welcome-bonus">...</strong></div>
-          <div class="m-card white"><span>Total Earnings</span><strong id="total-earnings">...</strong></div>
-          <div class="m-card white"><span>Active Package</span><strong id="active-package" class="text-yellow">...</strong></div>
+
+        <div class="dash-metrics-row">
+          <div class="dash-metric-card blue">
+            <span class="dash-metric-label">Wallet Balance</span>
+            <strong class="dash-metric-value" id="wallet-balance">...</strong>
+          </div>
+          <div class="dash-metric-card green">
+            <span class="dash-metric-label">Welcome Bonus</span>
+            <strong class="dash-metric-value" id="welcome-bonus">...</strong>
+          </div>
         </div>
-        <div class="chart-section premium-card" style="margin: 20px 5%;">
-          <div class="chart-header"><h4>Earnings Growth</h4><span class="badge up">↑ 12.5%</span></div>
-          <div id="wallet-chart" class="chart-canvas"></div>
+
+        <div class="dash-sub-stats">
+          <div class="dash-sub-item">
+            <span>Total Earnings</span>
+            <strong id="total-earnings">...</strong>
+          </div>
+          <div class="dash-sub-divider"></div>
+          <div class="dash-sub-item">
+            <span>Active Package</span>
+            <strong id="active-package" style="color:#1565C0">...</strong>
+          </div>
         </div>
-        <div class="quick-actions" style="padding: 0 5%; display: flex; gap: 16px;">
-          <button id="deposit-btn" class="btn btn-blue btn-full" onclick="window.location.hash='#packages'">Deposit Funds</button>
-          <button id="withdraw-btn" class="btn btn-outline btn-full">Withdraw</button>
+
+        <div class="section-block">
+          <div class="section-block-header">
+            <h3>Recent Activity</h3>
+            <a href="#" class="view-all-link">View all</a>
+          </div>
+          <div class="activity-list" id="activity-list"></div>
         </div>
-        <div style="padding: 24px 5%;"><div class="section-head"><h3>Recent Activity</h3></div><div class="activity-list" id="activity-list"></div></div>
       `,
       packages: `
-        <div style="padding: 24px 5% 0;"><h2 style="font-size: 24px; font-weight: 800; margin-bottom: 4px;">Solar Plans</h2><p style="color: var(--text-muted); font-size: 14px;">Choose the best solar plan that fits your needs and start earning instantly.</p></div>
-        <div class="header-stats-row">
-          <div class="top-badge"><div class="icon-box bg-light-green">✅</div><div class="text-box"><span>Instant Reward</span><strong>Get paid immediately</strong></div></div>
-          <div class="top-badge"><div class="icon-box bg-light-yellow">⚡</div><div class="text-box"><span>100% Secure</span><strong>Safe & trusted platform</strong></div></div>
-          <div class="top-badge"><div class="icon-box bg-light-blue">🛡️</div><div class="text-box"><span>Clean Energy</span><strong>Powering Burundi</strong></div></div>
-          <div class="top-badge"><div class="icon-box bg-light-purple">🎧</div><div class="text-box"><span>24/7 Support</span><strong>We are here for you</strong></div></div>
+        <div class="page-header-plain">
+          <h2>Packages</h2>
         </div>
-        <div style="padding: 0 5%; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
-           <h3 style="font-size: 18px; font-weight: 800;">24 Solar Plans Available</h3>
-        </div>
-        <div class="pkg-list"></div>
+        <div class="pkg-list-vertical" id="pkg-list-vertical"></div>
       `,
       team: `
-        <div style="padding: 24px 5% 0;"><h2 style="font-size: 24px; font-weight: 800; margin-bottom: 4px;">Referral Team</h2><p style="color: var(--text-muted); font-size: 14px;">Invite your friends and earn bonuses for every investment they make.</p></div>
-        <div style="padding: 24px 5%;">
-          <div class="team-container premium-card">
-            <div class="ref-link-box">
-              <h4>Your Referral Link</h4>
-              <div class="link-input-group">
-                <input type="text" id="ref-link" readonly value="" style="background: #f1f5f9; padding: 12px; border-radius: 8px; border: none; flex: 1;" />
-                <button class="btn btn-blue" onclick="window.app.copyRef()">Copy</button>
-              </div>
-            </div>
-            <div class="ref-stats-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px;">
-              <div class="ref-stat-card" style="background: #f8fafc; padding: 16px; border-radius: 12px; text-align: center;"><span style="font-size: 12px; color: var(--text-muted);">Total Referrals</span><strong id="ref-count" style="display: block; font-size: 20px;">0</strong></div>
-              <div class="ref-stat-card" style="background: #f8fafc; padding: 16px; border-radius: 12px; text-align: center;"><span style="font-size: 12px; color: var(--text-muted);">Active</span><strong id="ref-active" style="display: block; font-size: 20px;">0</strong></div>
-              <div class="ref-stat-card" style="background: #f8fafc; padding: 16px; border-radius: 12px; text-align: center;"><span style="font-size: 12px; color: var(--text-muted);">Total Bonus</span><strong id="ref-bonus" style="display: block; font-size: 20px; color: var(--primary-green);">0 BIF</strong></div>
-            </div>
+        <div class="page-header-plain">
+          <h2>Team / Referral</h2>
+        </div>
+        <div class="section-block">
+          <p class="section-label">My Referral Link</p>
+          <div class="ref-link-row">
+            <input type="text" id="ref-link" readonly value="" class="ref-link-input" />
+            <button class="ref-copy-btn" onclick="window.app.copyRef()">Copy</button>
           </div>
+        </div>
+        <div class="ref-stats-row">
+          <div class="ref-stat-box">
+            <strong id="ref-count">0</strong>
+            <span>Referrals</span>
+          </div>
+          <div class="ref-stat-box">
+            <strong id="ref-active">0</strong>
+            <span>Active</span>
+          </div>
+          <div class="ref-stat-box accent">
+            <strong id="ref-bonus">0 BIF</strong>
+            <span>Total Earnings</span>
+          </div>
+        </div>
+        <div class="section-block">
+          <p class="section-label">Invite Your Friends</p>
+          <p style="font-size:13px;color:#666;margin-bottom:14px;">Share your link and start earning together.</p>
+          <div class="invite-btns">
+            <button class="invite-btn whatsapp" onclick="window.app.shareWhatsApp()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              WhatsApp
+            </button>
+            <button class="invite-btn telegram" onclick="window.app.shareTelegram()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+              Telegram
+            </button>
+            <button class="invite-btn more" onclick="window.app.shareMore()">
+              ••• More
+            </button>
+          </div>
+        </div>
+        <div class="section-block">
+          <p class="section-label">Top Referrals</p>
+          <div id="top-referrals-list" class="top-referrals-list"></div>
         </div>
       `,
       profile: `
-        <div class="profile-header" style="text-align: center; padding: 40px 5%; background: white; margin-bottom: 20px;">
-          <img src="https://ui-avatars.com/api/?name=User&size=120&background=random" alt="Avatar" style="width: 100px; height: 100px; border-radius: 50%; margin-bottom: 16px; border: 4px solid #f1f5f9;">
-          <h2 id="profile-name" style="font-size: 20px; font-weight: 800;">Member User</h2>
-          <p id="profile-phone" style="color: var(--text-muted); font-size: 14px;">+257 60 000 000</p>
-        </div>
-        <div style="padding: 0 5%;">
-          <div class="premium-card" style="display: flex; flex-direction: column; gap: 4px; padding: 8px 0;">
-             <div style="padding: 16px 20px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;"><span>Personal Info</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
-             <div style="padding: 16px 20px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;"><span>Investment History</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
-             <div style="padding: 16px 20px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;"><span>Security Settings</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
-             <div style="padding: 16px 20px; color: #ef4444; font-weight: 600; cursor: pointer;" id="logout-btn" onclick="window.app.logout()">Logout Account</div>
+        <div class="profile-hero">
+          <img id="profile-avatar" src="https://ui-avatars.com/api/?name=User&size=200&background=1565C0&color=fff" alt="Avatar" class="profile-avatar-img">
+          <h2 id="profile-name" class="profile-name">Member User</h2>
+          <p id="profile-phone" class="profile-phone">+257 60 000 000</p>
+          <div class="profile-country">
+            <img src="https://flagcdn.com/w20/bi.png" alt="Burundi" style="width:20px;height:14px;border-radius:2px;">
+            <span>Burundi</span>
           </div>
+        </div>
+        <div class="profile-menu">
+          <div class="profile-menu-item" onclick="window.app.editProfile()">
+            <span>Profile Information</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </div>
+          <div class="profile-menu-item" onclick="window.location.hash='#packages'">
+            <span>Deposit History</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </div>
+          <div class="profile-menu-item">
+            <span>Withdrawals</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </div>
+          <div class="profile-menu-item">
+            <span>Change Password</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </div>
+          <div class="profile-menu-item">
+            <span>Support Center</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </div>
+        </div>
+        <div style="padding: 20px 16px;">
+          <button class="logout-btn-red" id="logout-btn" onclick="window.app.logout()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Logout
+          </button>
         </div>
       `
     };
@@ -283,10 +345,41 @@ class SolarApp {
     if (!data) return;
 
     // 1. Personalize
-    const banner = document.querySelector('.dash-banner h2');
+    const banner = document.querySelector('.dash-hero-title');
     if (banner && this.state.user) {
-      banner.textContent = `Welcome, ${this.state.user.name.split(' ')[0]}`;
+      // Keep the hero title as is from template
     }
+
+    this.updateElement('wallet-balance', data.wallet_balance || '0 BIF');
+    this.updateElement('welcome-bonus', data.welcome_bonus || '0 BIF');
+    this.updateElement('total-earnings', data.total_earnings || '0 BIF');
+    this.updateElement('active-package', data.active_package || 'No Active Plan');
+
+    this.hydrateActivity(data.activities || []);
+  }
+
+  hydrateActivity(activities) {
+    const list = document.getElementById('activity-list');
+    if (!list) return;
+
+    if (activities.length === 0) {
+      list.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">No recent activity</p>';
+      return;
+    }
+
+    list.innerHTML = activities.map(act => `
+      <div class="act-item">
+        <div class="act-icon ${act.type === 'bonus' ? 'green' : 'yellow'}">
+          ${act.type === 'bonus' ? '🎁' : '⚡'}
+        </div>
+        <div class="act-details">
+          <strong>${act.title}</strong>
+          <span>${act.date}</span>
+        </div>
+        <div class="act-value ${act.amount.includes('+') ? 'green' : ''}">${act.amount}</div>
+      </div>
+    `).join('');
+  }
 
     // 2. Metrics (with soft update)
     this.updateElement('wallet-balance', data.wallet_balance);
@@ -389,46 +482,25 @@ class SolarApp {
 
   async hydratePackages() {
     const data = await this.fetchAPI('packages');
-    const list = document.querySelector('.pkg-list');
+    const list = document.getElementById('pkg-list-vertical');
     if (!list || !data) return;
 
     list.innerHTML = data.map((p, i) => {
-      const variant = i % 6; // Use 6 color variants
-      const num = (i + 1).toString().padStart(2, '0');
-      
-      // Select icon based on variant
-      const icons = [
-        '<path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>', // Sun
-        '<rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line><line x1="7" y1="3" x2="7" y2="17"></line><line x1="12" y1="3" x2="12" y2="17"></line><line x1="17" y1="3" x2="17" y2="17"></line>', // Panel
-        '<path d="M11 12h2M12 11v2"></path><circle cx="12" cy="12" r="10"></circle>', // Plus
-        '<path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>', // Layers
-        '<path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>', // Pulse
-        '<circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>' // Gear
-      ];
-
       return `
-        <div class="package-card pkg-variant-${variant} premium-card">
-          <span class="pkg-number">${num}</span>
-          <div class="pkg-header">
-            <div class="pkg-icon-wrap">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                ${icons[variant]}
-              </svg>
-            </div>
-            <div class="pkg-price-tag">
-              <strong>${p.amount}</strong>
-              <span>Amount</span>
-            </div>
+        <div class="pkg-item-row" onclick="window.app.invest('${p.id}', '${p.name}', '${p.amount}')">
+          <img src="https://images.unsplash.com/photo-1509391366360-2e959784a276?w=100&q=80" class="pkg-item-img" alt="${p.name}">
+          <div class="pkg-item-info">
+            <h4>${p.name}</h4>
+            <p>${p.amount}</p>
           </div>
-          <h3>${p.name}</h3>
-          <div class="pkg-reward-box">
+          <div class="pkg-item-bonus">
+            <span>Bonus</span>
             <strong>${p.bonus}</strong>
-            <span>Instant Reward</span>
           </div>
-          <button class="btn-choose" onclick="window.app.invest('${p.id}', '${p.name}', '${p.amount}')">Choose Plan</button>
         </div>
       `;
     }).join('');
+  }
   }
 
   async invest(id, name, amount) {
@@ -453,10 +525,52 @@ class SolarApp {
       refLinkInput.value = `https://solarafrica.com/ref/${this.state.user.id || 'USER123'}`;
     }
     
-    // Populate dummy stats for now or fetch if available
-    this.updateElement('ref-count', '12');
-    this.updateElement('ref-active', '5');
-    this.updateElement('ref-bonus', '15,000 BIF');
+    // Populate stats
+    this.updateElement('ref-count', '128');
+    this.updateElement('ref-active', '96');
+    this.updateElement('ref-bonus', '1,450,000 BIF');
+
+    // Top Referrals List
+    const topList = document.getElementById('top-referrals-list');
+    if (topList) {
+      const tops = [
+        { name: 'Jean N.', amount: '2,350,000 BIF' },
+        { name: 'Divine M.', amount: '1,890,000 BIF' },
+        { name: 'Samuel K.', amount: '1,250,000 BIF' }
+      ];
+      topList.innerHTML = tops.map((t, i) => `
+        <div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid #f1f5f9;">
+          <div style="display:flex; gap:12px;">
+            <span style="font-weight:700;color:#999;">${i+1}.</span>
+            <span style="font-weight:600;">${t.name}</span>
+          </div>
+          <span style="font-weight:700;">${t.amount}</span>
+        </div>
+      `).join('');
+    }
+  }
+
+  shareWhatsApp() {
+    const text = `Join Solar Africa and start earning! ${document.getElementById('ref-link')?.value}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+  }
+
+  shareTelegram() {
+    const text = `Join Solar Africa and start earning!`;
+    const url = document.getElementById('ref-link')?.value;
+    window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank');
+  }
+
+  shareMore() {
+    if (navigator.share) {
+      navigator.share({
+        title: 'Solar Africa',
+        text: 'Join Solar Africa and start earning!',
+        url: document.getElementById('ref-link')?.value
+      });
+    } else {
+      this.copyRef();
+    }
   }
 
   copyRef() {
