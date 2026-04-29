@@ -185,6 +185,65 @@ class SolarApp {
       case 'profile':   await this.hydrateProfile(); break;
       case 'admin':     await this.hydrateAdmin(); break;
       case 'home':      this.animateLandingStats(); break;
+      case 'auth':      this.hydrateAuth(); break;
+    }
+  }
+
+  // --- AUTH HYDRATION ---
+
+  hydrateAuth() {
+    // LOGIN FORM
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('login-btn');
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        if (btn) { btn.disabled = true; btn.textContent = 'Signing in...'; }
+        try {
+          const res = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.message || data.error || 'Login failed');
+          localStorage.setItem('solar_token', data.token || data.data?.token);
+          localStorage.setItem('solar_user', JSON.stringify(data.user || data.data?.user));
+          window.location.href = 'dashboard.html';
+        } catch (err) {
+          this.showToast(err.message, 'error');
+          if (btn) { btn.disabled = false; btn.textContent = 'Sign In'; }
+        }
+      });
+    }
+
+    // REGISTER FORM
+    const registerForm = document.getElementById('register-form');
+    if (registerForm) {
+      registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('register-btn');
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        if (btn) { btn.disabled = true; btn.textContent = 'Creating account...'; }
+        try {
+          const res = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, password })
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.message || data.error || 'Registration failed');
+          this.showToast('Account created! Please sign in.', 'success');
+          setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+        } catch (err) {
+          this.showToast(err.message, 'error');
+          if (btn) { btn.disabled = false; btn.textContent = 'Create Account'; }
+        }
+      });
     }
   }
 
