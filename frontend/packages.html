@@ -3,42 +3,94 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Packages | Solar Africa</title>
+    <title>Solar Plans | Solar Africa</title>
     <link rel="stylesheet" href="assets/css/main.css" />
   </head>
   <body class="app-container" data-page="packages">
-    <header class="page-header">
-      <a href="dashboard.html" style="color: var(--text-main);">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-      </a>
-      <span>Packages</span>
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-container">
+        <img src="assets/img/logo1.png" alt="Logo" style="height: 32px; border-radius: 6px;">
+        <strong style="font-size: 18px;"><span class="logo-text-blue">SOLAR</span><span class="logo-text-green">AFRICA</span></strong>
+      </div>
+      <div class="header-meta">
+        <div class="country-selector">
+          <img src="https://flagcdn.com/w20/bi.png" alt="Burundi">
+          <span>Burundi (BIF)</span>
+        </div>
+        <div style="position: relative;">
+           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        </div>
+        <img src="https://ui-avatars.com/api/?name=User&background=random" style="width: 36px; height: 36px; border-radius: 50%;">
+      </div>
     </header>
 
-    <div class="pkg-list">
-      <!-- Dynamically Hydrated -->
-      <div style="padding: 40px; text-align: center; color: var(--text-muted); font-size: 14px;">
-        Loading packages...
+    <main class="main-content">
+      <!-- Title Section -->
+      <div style="padding: 24px 5% 0;">
+        <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 4px;">Solar Plans</h2>
+        <p style="color: var(--text-muted); font-size: 14px;">Choose the best solar plan that fits your needs and start earning instantly.</p>
       </div>
-    </div>
 
+      <!-- Stats Row (From Image) -->
+      <div class="header-stats-row">
+        <div class="top-badge">
+          <div class="icon-box bg-light-green">✅</div>
+          <div class="text-box"><span>Instant Reward</span><strong>Get paid immediately</strong></div>
+        </div>
+        <div class="top-badge">
+          <div class="icon-box bg-light-yellow">⚡</div>
+          <div class="text-box"><span>100% Secure</span><strong>Safe & trusted platform</strong></div>
+        </div>
+        <div class="top-badge">
+          <div class="icon-box bg-light-blue">🛡️</div>
+          <div class="text-box"><span>Clean Energy</span><strong>Powering Burundi</strong></div>
+        </div>
+        <div class="top-badge">
+          <div class="icon-box bg-light-purple">🎧</div>
+          <div class="text-box"><span>24/7 Support</span><strong>We are here for you</strong></div>
+        </div>
+      </div>
+
+      <!-- Filters Row -->
+      <div style="padding: 0 5%; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+         <h3 style="font-size: 18px; font-weight: 800;">24 Solar Plans Available</h3>
+         <div style="display: flex; gap: 12px;">
+            <select style="padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border-subtle); font-size: 13px; background: white;">
+              <option>All Categories</option>
+            </select>
+            <select style="padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border-subtle); font-size: 13px; background: white;">
+              <option>Sort by: Amount (Low to High)</option>
+            </select>
+         </div>
+      </div>
+
+      <!-- Grid Container -->
+      <div class="pkg-list">
+        <!-- Dynamically Hydrated -->
+      </div>
+    </main>
+
+    <!-- Bottom Nav -->
     <nav class="bottom-nav">
       <a href="dashboard.html" class="nav-item">
         <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-        Home
+        Dashboard
       </a>
       <a href="packages.html" class="nav-item active">
         <svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>
-        Packages
+        Plans
       </a>
       <a href="team.html" class="nav-item">
-        <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-        Team
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+        Referrals
       </a>
       <a href="profile.html" class="nav-item">
-        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
         Me
       </a>
     </nav>
-    <script src="assets/js/app.js?v=20260427_1448" defer></script>
+
+    <script src="assets/js/app.js" defer></script>
   </body>
 </html>

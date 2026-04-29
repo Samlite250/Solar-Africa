@@ -7,112 +7,92 @@
     <link rel="stylesheet" href="assets/css/main.css" />
   </head>
   <body class="app-container" data-page="dashboard">
+    <!-- Header -->
     <header class="app-header">
-      <div class="logo-container" style="font-size: 18px;">
-        <img src="assets/img/logo1.png" alt="Solar Africa Logo" style="height: 30px; width: auto; border-radius: 6px;">
-        <span><span class="logo-text-blue">SOLAR</span><span class="logo-text-green">AFRICA</span></span>
+      <div class="logo-container">
+        <img src="assets/img/logo1.png" alt="Logo" style="height: 32px; border-radius: 6px;">
+        <strong style="font-size: 18px;"><span class="logo-text-blue">SOLAR</span><span class="logo-text-green">AFRICA</span></strong>
       </div>
-      <div style="display: flex; gap: 12px; color: var(--text-main);">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+      <div class="header-meta">
+        <div class="country-selector">
+          <img src="https://flagcdn.com/w20/bi.png" alt="Burundi">
+          <span>Burundi (BIF)</span>
+        </div>
+        <img src="https://ui-avatars.com/api/?name=User&background=random" style="width: 36px; height: 36px; border-radius: 50%;">
       </div>
     </header>
 
-    <div class="dash-banner">
-      <h2>Welcome to</h2>
-      <p>Invest in clean energy, earn a bright future.</p>
-    </div>
-
-    <div class="metrics-grid">
-      <div class="m-card blue">
-        <span>Wallet Balance</span>
-        <strong id="wallet-balance">1,250,000 BIF</strong>
-      </div>
-      <div class="m-card green">
-        <span>Welcome Bonus</span>
-        <strong id="welcome-bonus">2,350,000 BIF</strong>
-      </div>
-      <div class="m-card white">
-        <span>Total Earnings</span>
-        <strong id="total-earnings">3,600,000 BIF</strong>
-      </div>
-      <div class="m-card white">
-        <span>Active Package</span>
-        <strong id="active-package" class="text-yellow">Gold Solar</strong>
-      </div>
-    </div>
-
-    <div class="quick-actions">
-      <button class="btn btn-blue btn-full" style="gap: 8px;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-        Deposit Funds
-      </button>
-      <button class="btn btn-outline btn-full" style="gap: 8px;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12h14"/></svg>
-        Withdraw
-      </button>
-    </div>
-
-    <div class="referral-teaser">
-      <div class="teaser-content">
-        <h4>Refer & Earn</h4>
-        <p>Get up to 10% bonus for every friend you invite.</p>
-      </div>
-      <a href="team.html" class="btn btn-green" style="padding: 10px 20px; font-size: 13px;">Invite</a>
-    </div>
-
-    <div class="section-head">
-      <h3>Recent Activity</h3>
-      <a href="#">View all</a>
-    </div>
-
-    <div class="activity-list" id="activity-list">
-      <div class="act-item">
-        <div class="act-icon green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>
-        <div class="act-details">
-          <strong>Welcome Bonus Received</strong>
-          <span>Today, 10:30 AM</span>
+    <main class="main-content">
+      <div class="dash-banner glass-panel" style="margin: 20px 5%;">
+        <div class="banner-content">
+          <h2>Welcome back</h2>
+          <p>Your solar investments are growing 🚀</p>
         </div>
-        <div class="act-value green">+900,000 BIF</div>
-      </div>
-      <div class="act-item">
-        <div class="act-icon green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>
-        <div class="act-details">
-          <strong>Package Activated</strong>
-          <span>Today, 10:28 AM</span>
+        <div class="user-profile-mini">
+          <img src="https://ui-avatars.com/api/?name=User&background=random" alt="User" id="user-avatar-mini">
         </div>
-        <div class="act-value">Gold Solar</div>
       </div>
-      <div class="act-item">
-        <div class="act-icon yellow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="22"></line><line x1="5" y1="9" x2="12" y2="2"></line><line x1="19" y1="9" x2="12" y2="2"></line></svg></div>
-        <div class="act-details">
-          <strong>Deposit Submitted</strong>
-          <span>Today, 10:20 AM</span>
-        </div>
-        <div class="act-value">300,000 BIF</div>
-      </div>
-    </div>
 
+      <div class="metrics-grid" style="padding: 0 5%;">
+        <div class="m-card blue">
+          <span>Wallet Balance</span>
+          <strong id="wallet-balance">...</strong>
+        </div>
+        <div class="m-card green">
+          <span>Welcome Bonus</span>
+          <strong id="welcome-bonus">...</strong>
+        </div>
+        <div class="m-card white">
+          <span>Total Earnings</span>
+          <strong id="total-earnings">...</strong>
+        </div>
+        <div class="m-card white">
+          <span>Active Package</span>
+          <strong id="active-package" class="text-yellow">...</strong>
+        </div>
+      </div>
+
+      <div class="chart-section premium-card" style="margin: 20px 5%;">
+        <div class="chart-header">
+          <h4>Earnings Growth</h4>
+          <span class="badge up">↑ 12.5%</span>
+        </div>
+        <div id="wallet-chart" class="chart-canvas"></div>
+      </div>
+
+      <div class="quick-actions" style="padding: 0 5%; display: flex; gap: 16px;">
+        <button id="deposit-btn" class="btn btn-blue btn-full">Deposit Funds</button>
+        <button id="withdraw-btn" class="btn btn-outline btn-full">Withdraw</button>
+      </div>
+
+      <div style="padding: 24px 5%;">
+        <div class="section-head">
+          <h3>Recent Activity</h3>
+        </div>
+        <div class="activity-list" id="activity-list"></div>
+      </div>
+    </main>
+
+    <!-- Bottom Nav -->
     <nav class="bottom-nav">
       <a href="dashboard.html" class="nav-item active">
         <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-        Home
+        Dashboard
       </a>
       <a href="packages.html" class="nav-item">
         <svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>
-        Packages
+        Plans
       </a>
       <a href="team.html" class="nav-item">
-        <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-        Team
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+        Referrals
       </a>
       <a href="profile.html" class="nav-item">
-        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
         Me
       </a>
     </nav>
-    <div class="support-fab">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-10.6 8.38 8.38 0 0 1 3.8.9L21 3.5z"></path></svg>
-    </div>
-    <script src="assets/js/app.js?v=20260427_1448" defer></script>
+
+    <script src="assets/js/app.js" defer></script>
   </body>
 </html>

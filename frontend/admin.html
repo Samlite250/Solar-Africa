@@ -278,6 +278,35 @@
 
     </main>
 
+    <!-- Package Modal -->
+    <div id="package-modal" class="admin-modal" style="display: none;">
+      <div class="modal-content">
+        <h3>Create New Solar Package</h3>
+        <form id="package-form">
+          <div class="form-group">
+            <label>Package Name</label>
+            <input type="text" id="pkg-name" placeholder="e.g. Platinum Solar" required />
+          </div>
+          <div class="form-group">
+            <label>Investment Amount (BIF)</label>
+            <input type="text" id="pkg-amount" placeholder="e.g. 500,000 BIF" required />
+          </div>
+          <div class="form-group">
+            <label>Daily/Welcome Bonus (BIF)</label>
+            <input type="text" id="pkg-bonus" placeholder="e.g. 1,200,000 BIF" required />
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="pkg-desc" placeholder="Describe the benefits..."></textarea>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn-admin btn-admin-outline" onclick="window.app.closePackageModal()">Cancel</button>
+            <button type="submit" class="btn-admin btn-admin-primary">Create Package</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <script src="assets/js/app.js?v=20260427_1448" defer></script>
   </body>
 </html>

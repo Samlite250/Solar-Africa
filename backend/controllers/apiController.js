@@ -197,6 +197,27 @@ exports.adminUpdateDeposit = async (req, res) => {
       .single();
 
     if (error) throw error;
+
+    // If approved, update user's dashboard balance and active package
+    if (status === 'approved') {
+      const { amount, package_name, user_id } = data;
+      const cleanAmount = parseFloat(amount.replace(/[^0-9.]/g, ''));
+      
+      // Get current dashboard
+      const { data: dash } = await client.from('dashboard').select('*').eq('user_id', user_id).single();
+      
+      if (dash) {
+        const currentBalance = parseFloat(dash.wallet_balance.replace(/[^0-9.]/g, '')) || 0;
+        const newBalance = currentBalance + cleanAmount;
+        
+        await client.from('dashboard').update({
+          wallet_balance: newBalance.toLocaleString() + ' BIF',
+          active_package: package_name,
+          updated_at: new Date()
+        }).eq('user_id', user_id);
+      }
+    }
+
     res.json({ message: 'Deposit status updated', data });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -255,3 +276,40 @@ exports.adminUpdateUser = async (req, res) => {
   }
 };
 
+exports.createWithdrawal = async (req, res) => {
+  if (!isConfigured) return res.status(503).json({ error: 'Supabase not configured' });
+
+  try {
+    const { amount } = req.body;
+    
+    // 1. Create Withdrawal Record
+    const { data, error } = await client
+      .from('withdrawals')
+      .insert([
+        {
+          user_id: req.user.id,
+          user_name: req.user.user_metadata?.full_name || 'User',
+          amount,
+          status: 'pending'
+        }
+      ])
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    // 2. Also Log in Activity
+    await client.from('activity').insert([{
+      user_id: req.user.id,
+      title: 'Withdrawal Requested',
+      value: `-${amount}`,
+      description: `Your withdrawal of ${amount} is pending.`,
+      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    }]);
+
+    res.status(201).json({ message: 'Withdrawal request submitted', data });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

@@ -11,6 +11,7 @@ router.get('/profile', protect, apiController.getProfile);
 router.put('/profile', protect, apiController.updateProfile);
 router.get('/activity', protect, apiController.getActivity);
 router.post('/deposits', protect, apiController.createDeposit);
+router.post('/withdrawals', protect, apiController.createWithdrawal);
 
 // Admin Routes
 router.get('/admin/stats', protect, apiController.getAdminStats);

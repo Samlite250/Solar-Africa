@@ -115,6 +115,16 @@ CREATE TABLE users (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Withdrawals table
+CREATE TABLE withdrawals (
+  id SERIAL PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  user_name TEXT NOT NULL,
+  amount TEXT NOT NULL,
+  status TEXT DEFAULT 'pending',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Enable RLS on all tables
 ALTER TABLE packages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
@@ -193,15 +203,46 @@ CREATE POLICY "Users are viewable by authenticated users" ON users
 CREATE POLICY "Allow user record creation" ON users
   FOR INSERT WITH CHECK (true);
 
+ALTER TABLE withdrawals ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own withdrawals" ON withdrawals
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Allow withdrawals creation" ON withdrawals
+  FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Withdrawals are viewable by authenticated users" ON withdrawals
+  FOR SELECT USING (auth.role() = 'authenticated');
+
 
 
 -- Insert sample data
+-- Insert 24 premium solar packages
 INSERT INTO packages (name, amount, bonus, description, active) VALUES
-  ('Starter Solar', '50,000 BIF', '120,000 BIF', 'A smooth entry package with strong welcome bonus.', 144),
-  ('Growth Solar', '100,000 BIF', '261,000 BIF', 'A popular plan for growing your solar portfolio.', 102),
-  ('Silver Solar', '200,000 BIF', '560,000 BIF', 'High value returns and faster bonus activation.', 94),
-  ('Gold Solar', '300,000 BIF', '900,000 BIF', 'Premium package with proven performance.', 78),
-  ('VIP Solar', '1,000,000 BIF', '8,600,000 BIF', 'Best returns and highest VIP rewards.', 22);
+  ('Mono Starter', '80,000 BIF', '210,000 BIF', 'Entry-level solar investment with instant rewards.', 144),
+  ('Poly Basic', '120,000 BIF', '320,000 BIF', 'Standard solar plan for consistent growth.', 102),
+  ('Thin Film', '160,000 BIF', '450,000 BIF', 'Flexible solar technology investment.', 94),
+  ('Off-Grid Lite', '200,000 BIF', '600,000 BIF', 'Small scale off-grid solar solution.', 88),
+  ('Hybrid Lite', '240,000 BIF', '800,000 BIF', 'Combined energy source lite investment.', 76),
+  ('Grid-Tied Lite', '280,000 BIF', '1,000,000 BIF', 'Connected grid lite solar plan.', 65),
+  ('Solar Storage', '320,000 BIF', '1,300,000 BIF', 'Advanced battery storage solar investment.', 58),
+  ('Smart Solar', '360,000 BIF', '1,700,000 BIF', 'Intelligent energy management plan.', 52),
+  ('PV Entry', '400,000 BIF', '2,100,000 BIF', 'Entry level Photovoltaic investment.', 48),
+  ('PV Basic', '440,000 BIF', '2,500,000 BIF', 'Fundamental PV solar system plan.', 44),
+  ('PV Standard', '480,000 BIF', '3,000,000 BIF', 'Standard PV performance investment.', 40),
+  ('PV Plus', '520,000 BIF', '3,600,000 BIF', 'Enhanced PV solar returns plan.', 38),
+  ('PV Pro', '560,000 BIF', '4,200,000 BIF', 'Professional grade PV investment.', 35),
+  ('PV Max', '600,000 BIF', '4,800,000 BIF', 'Maximum capacity PV solar plan.', 32),
+  ('Off-Grid Pro', '640,000 BIF', '5,200,000 BIF', 'Professional off-grid solar systems.', 28),
+  ('Hybrid Pro', '680,000 BIF', '5,600,000 BIF', 'High-end hybrid solar solution.', 25),
+  ('Grid-Tied Pro', '720,000 BIF', '6,000,000 BIF', 'Full grid-tied professional system.', 22),
+  ('Solar Battery', '760,000 BIF', '6,400,000 BIF', 'Dedicated high-capacity battery plan.', 20),
+  ('Storage Plus', '800,000 BIF', '6,800,000 BIF', 'Ultimate storage and energy backup.', 18),
+  ('Smart Hybrid', '840,000 BIF', '7,100,000 BIF', 'Intelligent hybrid energy investment.', 15),
+  ('PV Ultra', '880,000 BIF', '7,400,000 BIF', 'Ultra-performance solar technology.', 12),
+  ('Solar Array', '920,000 BIF', '7,600,000 BIF', 'Large scale solar array investment.', 10),
+  ('Solar Plant', '960,000 BIF', '7,800,000 BIF', 'Industrial solar plant ownership.', 8),
+  ('Commercial Solar', '1,000,000 BIF', '8,000,000 BIF', 'Top-tier commercial solar partnership.', 5);
 
 INSERT INTO stats (users, packages, deposits, withdrawals, total_payouts) VALUES
   (4320, 5, 1060, 420, '128,430,000 BIF');
