@@ -204,6 +204,24 @@ body {
 .logo-text-blue { color: var(--primary-blue); font-weight: 800; }
 .logo-text-green { color: var(--primary-green); font-weight: 800; }
 
+.desktop-nav {
+  display: flex;
+  gap: 24px;
+}
+
+.desktop-nav-link {
+  text-decoration: none;
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: 15px;
+  transition: color 0.2s;
+}
+
+.desktop-nav-link:hover,
+.desktop-nav-link.active {
+  color: var(--primary-blue);
+}
+
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -215,6 +233,15 @@ body {
   padding: 12px 0;
   box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
   z-index: 1000;
+}
+
+@media (max-width: 768px) {
+  .desktop-nav { display: none; }
+}
+
+@media (min-width: 769px) {
+  .bottom-nav { display: none; }
+  .app-container { padding-bottom: 0 !important; }
 }
 
 .nav-item {

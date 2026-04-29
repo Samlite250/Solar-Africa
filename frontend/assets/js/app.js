@@ -73,7 +73,7 @@ class SolarApp {
     this.state.page = hash;
     
     // Highlight active nav items
-    const navLinks = document.querySelectorAll('.bottom-nav a');
+    const navLinks = document.querySelectorAll('.bottom-nav a, .desktop-nav-link');
     navLinks.forEach(link => {
       link.classList.remove('active');
       if (link.getAttribute('href') === `#${hash}`) link.classList.add('active');
