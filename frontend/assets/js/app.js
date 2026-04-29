@@ -54,33 +54,130 @@ class SolarApp {
   }
 
   setupNavigation() {
-    // Highlight active nav items
-    const navLinks = document.querySelectorAll('.nav-item, .desktop-nav a');
-    const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+    window.addEventListener('hashchange', () => this.handleRoute());
+    
+    // Default to dashboard if no hash or invalid hash
+    if (!window.location.hash || !['#dashboard', '#packages', '#team', '#profile'].includes(window.location.hash)) {
+      if (document.body.dataset.page !== 'home' && document.body.dataset.page !== 'auth' && document.body.dataset.page !== 'admin') {
+         window.location.hash = '#dashboard';
+      }
+    } else {
+      this.handleRoute();
+    }
+  }
 
+  async handleRoute() {
+    const hash = window.location.hash.replace('#', '') || 'dashboard';
+    if (document.body.dataset.page === 'home' || document.body.dataset.page === 'auth' || document.body.dataset.page === 'admin') return;
+
+    this.state.page = hash;
+    
+    // Highlight active nav items
+    const navLinks = document.querySelectorAll('.bottom-nav a');
     navLinks.forEach(link => {
-      const href = link.getAttribute('href');
-      if (href === currentPath) link.classList.add('active');
+      link.classList.remove('active');
+      if (link.getAttribute('href') === `#${hash}`) link.classList.add('active');
     });
+
+    // Inject Template
+    const main = document.querySelector('.main-content');
+    if (main) {
+      main.style.opacity = '0';
+      setTimeout(async () => {
+        main.innerHTML = this.getTemplate(hash);
+        main.style.opacity = '1';
+        await this.hydrate();
+      }, 200);
+    }
+  }
+
+  getTemplate(page) {
+    const templates = {
+      dashboard: `
+        <div class="dash-banner glass-panel" style="margin: 20px 5%;">
+          <div class="banner-content"><h2>Welcome back</h2><p>Your solar investments are growing 🚀</p></div>
+          <div class="user-profile-mini"><img src="https://ui-avatars.com/api/?name=User&background=random" alt="User" id="user-avatar-mini"></div>
+        </div>
+        <div class="metrics-grid" style="padding: 0 5%;">
+          <div class="m-card blue"><span>Wallet Balance</span><strong id="wallet-balance">...</strong></div>
+          <div class="m-card green"><span>Welcome Bonus</span><strong id="welcome-bonus">...</strong></div>
+          <div class="m-card white"><span>Total Earnings</span><strong id="total-earnings">...</strong></div>
+          <div class="m-card white"><span>Active Package</span><strong id="active-package" class="text-yellow">...</strong></div>
+        </div>
+        <div class="chart-section premium-card" style="margin: 20px 5%;">
+          <div class="chart-header"><h4>Earnings Growth</h4><span class="badge up">↑ 12.5%</span></div>
+          <div id="wallet-chart" class="chart-canvas"></div>
+        </div>
+        <div class="quick-actions" style="padding: 0 5%; display: flex; gap: 16px;">
+          <button id="deposit-btn" class="btn btn-blue btn-full" onclick="window.location.hash='#packages'">Deposit Funds</button>
+          <button id="withdraw-btn" class="btn btn-outline btn-full">Withdraw</button>
+        </div>
+        <div style="padding: 24px 5%;"><div class="section-head"><h3>Recent Activity</h3></div><div class="activity-list" id="activity-list"></div></div>
+      `,
+      packages: `
+        <div style="padding: 24px 5% 0;"><h2 style="font-size: 24px; font-weight: 800; margin-bottom: 4px;">Solar Plans</h2><p style="color: var(--text-muted); font-size: 14px;">Choose the best solar plan that fits your needs and start earning instantly.</p></div>
+        <div class="header-stats-row">
+          <div class="top-badge"><div class="icon-box bg-light-green">✅</div><div class="text-box"><span>Instant Reward</span><strong>Get paid immediately</strong></div></div>
+          <div class="top-badge"><div class="icon-box bg-light-yellow">⚡</div><div class="text-box"><span>100% Secure</span><strong>Safe & trusted platform</strong></div></div>
+          <div class="top-badge"><div class="icon-box bg-light-blue">🛡️</div><div class="text-box"><span>Clean Energy</span><strong>Powering Burundi</strong></div></div>
+          <div class="top-badge"><div class="icon-box bg-light-purple">🎧</div><div class="text-box"><span>24/7 Support</span><strong>We are here for you</strong></div></div>
+        </div>
+        <div style="padding: 0 5%; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+           <h3 style="font-size: 18px; font-weight: 800;">24 Solar Plans Available</h3>
+        </div>
+        <div class="pkg-list"></div>
+      `,
+      team: `
+        <div style="padding: 24px 5% 0;"><h2 style="font-size: 24px; font-weight: 800; margin-bottom: 4px;">Referral Team</h2><p style="color: var(--text-muted); font-size: 14px;">Invite your friends and earn bonuses for every investment they make.</p></div>
+        <div style="padding: 24px 5%;">
+          <div class="team-container premium-card">
+            <div class="ref-link-box">
+              <h4>Your Referral Link</h4>
+              <div class="link-input-group">
+                <input type="text" id="ref-link" readonly value="" style="background: #f1f5f9; padding: 12px; border-radius: 8px; border: none; flex: 1;" />
+                <button class="btn btn-blue" onclick="window.app.copyRef()">Copy</button>
+              </div>
+            </div>
+            <div class="ref-stats-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px;">
+              <div class="ref-stat-card" style="background: #f8fafc; padding: 16px; border-radius: 12px; text-align: center;"><span style="font-size: 12px; color: var(--text-muted);">Total Referrals</span><strong id="ref-count" style="display: block; font-size: 20px;">0</strong></div>
+              <div class="ref-stat-card" style="background: #f8fafc; padding: 16px; border-radius: 12px; text-align: center;"><span style="font-size: 12px; color: var(--text-muted);">Active</span><strong id="ref-active" style="display: block; font-size: 20px;">0</strong></div>
+              <div class="ref-stat-card" style="background: #f8fafc; padding: 16px; border-radius: 12px; text-align: center;"><span style="font-size: 12px; color: var(--text-muted);">Total Bonus</span><strong id="ref-bonus" style="display: block; font-size: 20px; color: var(--primary-green);">0 BIF</strong></div>
+            </div>
+          </div>
+        </div>
+      `,
+      profile: `
+        <div class="profile-header" style="text-align: center; padding: 40px 5%; background: white; margin-bottom: 20px;">
+          <img src="https://ui-avatars.com/api/?name=User&size=120&background=random" alt="Avatar" style="width: 100px; height: 100px; border-radius: 50%; margin-bottom: 16px; border: 4px solid #f1f5f9;">
+          <h2 id="profile-name" style="font-size: 20px; font-weight: 800;">Member User</h2>
+          <p id="profile-phone" style="color: var(--text-muted); font-size: 14px;">+257 60 000 000</p>
+        </div>
+        <div style="padding: 0 5%;">
+          <div class="premium-card" style="display: flex; flex-direction: column; gap: 4px; padding: 8px 0;">
+             <div style="padding: 16px 20px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;"><span>Personal Info</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
+             <div style="padding: 16px 20px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;"><span>Investment History</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
+             <div style="padding: 16px 20px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;"><span>Security Settings</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
+             <div style="padding: 16px 20px; color: #ef4444; font-weight: 600; cursor: pointer;" id="logout-btn" onclick="window.app.logout()">Logout Account</div>
+          </div>
+        </div>
+      `
+    };
+    return templates[page] || '';
   }
 
   async hydrate() {
     const { page, token } = this.state;
 
-    // Route Protection
-    const protectedPages = ['dashboard', 'packages', 'team', 'profile', 'admin'];
-    if (protectedPages.includes(page) && !token) {
+    if (['dashboard', 'packages', 'team', 'profile', 'admin'].includes(page) && !token) {
       window.location.href = 'login.html';
       return;
     }
 
-    // Role Protection
     if (page === 'admin' && this.state.user?.role !== 'admin') {
       window.location.href = 'dashboard.html';
       return;
     }
 
-    // Page-Specific Hydration
     switch (page) {
       case 'dashboard': await this.hydrateDashboard(); break;
       case 'packages':  await this.hydratePackages(); break;
