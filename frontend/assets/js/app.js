@@ -369,6 +369,27 @@ class SolarApp {
     window.location.href = 'login.html';
   }
 
+  animateLandingStats() {
+    const stats = document.querySelectorAll('.floating-card strong');
+    stats.forEach(s => {
+      const targetText = s.textContent.replace(/[^0-9]/g, '');
+      const target = parseInt(targetText);
+      if (isNaN(target)) return;
+      
+      let current = 0;
+      const step = target / 50;
+      const interval = setInterval(() => {
+        current += step;
+        if (current >= target) {
+          s.textContent = target.toLocaleString() + (s.textContent.includes('BIF') ? ' BIF' : '+');
+          clearInterval(interval);
+        } else {
+          s.textContent = Math.floor(current).toLocaleString() + (s.textContent.includes('BIF') ? ' BIF' : '+');
+        }
+      }, 30);
+    });
+  }
+
   setupIntersections() {
     const observer = new IntersectionObserver(entries => {
       entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
