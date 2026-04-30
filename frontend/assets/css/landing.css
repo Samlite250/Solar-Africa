@@ -281,10 +281,11 @@
   .desktop-nav, .header-actions { display: none; }
   .hero { grid-template-columns: 1fr; background-position: center; min-height: auto; }
   .hero::before { width: 100%; background: rgba(255,255,255,0.9); }
-  .hero-content { padding: 40px 5%; align-items: center; text-align: center; }
+  .hero-content { padding: 40px 5% 20px; align-items: center; text-align: center; }
   .hero-actions { justify-content: center; }
   .hero-features { flex-direction: column; gap: 16px; align-items: center; text-align: left; }
-  .hero-visual { display: none; }
+  .hero-visual { display: flex; padding: 20px 5% 40px; }
+  .hero-floating-cards { transform: none; min-width: 100%; padding: 24px; box-shadow: 0 12px 24px rgba(0,0,0,0.05); }
   .pkg-list { grid-template-columns: repeat(2, 1fr); }
 }
 
