@@ -469,7 +469,7 @@ class SolarApp {
     playBtn.onclick = () => {
       overlay.style.display = 'none';
       timerEl.style.display = 'block';
-      timerEl.textContent = \`00:\${duration < 10 ? '0'+duration : duration}\`;
+      timerEl.textContent = `00:${duration < 10 ? '0'+duration : duration}`;
       video.play();
       
       let timeLeft = duration;
@@ -489,7 +489,7 @@ class SolarApp {
           btn.textContent = 'Done';
           btn.style.background = '#94a3b8';
           btn.disabled = true;
-          this.showToast(\`Task completed! \${reward} credited to your wallet.\`, 'success');
+          this.showToast(`Task completed! ${reward} credited to your wallet.`, 'success');
           
           // Increment wallet visually
           const walletEl = document.getElementById('wallet-balance');
@@ -503,7 +503,7 @@ class SolarApp {
           
           setTimeout(() => { container.style.display = 'none'; }, 2000);
         } else {
-          timerEl.textContent = \`00:\${timeLeft < 10 ? '0'+timeLeft : timeLeft}\`;
+          timerEl.textContent = `00:${timeLeft < 10 ? '0'+timeLeft : timeLeft}`;
         }
       }, 1000);
     };
