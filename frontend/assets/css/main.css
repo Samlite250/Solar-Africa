@@ -660,7 +660,7 @@ body {
   width: 100%;
   padding: 14px 16px;
   background: #f8fafc;
-  border: 1px solid transparent;
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   font-size: 15px;
   color: var(--text-main);
