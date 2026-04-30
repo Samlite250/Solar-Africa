@@ -5,9 +5,9 @@ const JWT_SECRET = process.env.JWT_SECRET || 'solar-africa-super-secret-key-2026
 
 exports.register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, phone, country, password } = req.body;
 
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !phone || !country) {
       return res.status(400).json({ error: 'All fields are required' });
     }
 
@@ -33,6 +33,8 @@ exports.register = async (req, res) => {
       { 
         user_id: userId, 
         name, 
+        phone,
+        country,
         member_since: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) 
       }
     ]);
@@ -60,7 +62,7 @@ exports.register = async (req, res) => {
       { 
         user_id: userId, 
         name, 
-        country: 'Burundi', 
+        country, 
         status: 'active'
       }
     ]);

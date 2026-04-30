@@ -291,13 +291,15 @@ class SolarApp {
         const btn = document.getElementById('register-btn');
         const name = document.getElementById('name').value.trim();
         const email = document.getElementById('email').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const country = document.getElementById('country').value;
         const password = document.getElementById('password').value;
         if (btn) { btn.disabled = true; btn.textContent = 'Creating account...'; }
         try {
           const res = await fetch('/api/auth/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, email, password })
+            body: JSON.stringify({ name, email, phone, country, password })
           });
           const data = await res.json();
           if (!res.ok) throw new Error(data.message || data.error || 'Registration failed');
