@@ -278,6 +278,7 @@
 }
 
 @media (max-width: 768px) {
+  .desktop-nav, .header-actions { display: none; }
   .hero { grid-template-columns: 1fr; background-position: center; min-height: auto; }
   .hero::before { width: 100%; background: rgba(255,255,255,0.9); }
   .hero-content { padding: 40px 5%; align-items: center; text-align: center; }
