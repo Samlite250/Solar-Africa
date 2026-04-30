@@ -401,12 +401,18 @@ class SolarApp {
 
     // Real Imagery Map
     const imgMap = [
-      'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=200&q=80',
-      'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=200&q=80',
-      'https://images.unsplash.com/photo-1466611653911-954ffea112d8?w=200&q=80',
-      'https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=200&q=80',
-      'https://images.unsplash.com/photo-1548337138-e87d889cc369?w=200&q=80',
-      'https://images.unsplash.com/photo-1521618755572-156ae0cdd74d?w=200&q=80'
+      'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=300&q=80', // Mono
+      'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=300&q=80', // Poly
+      'https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=300&q=80', // Thin Film (Working)
+      'https://images.unsplash.com/photo-1548337138-e87d889cc369?w=300&q=80', // Off-Grid
+      'https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=300&q=80', // Hybrid
+      'https://images.unsplash.com/photo-1592833159155-c62df1b65634?w=300&q=80', // Grid-Tied
+      'https://images.unsplash.com/photo-1559302995-f0a1bc19e51f?w=300&q=80', // Storage
+      'https://images.unsplash.com/photo-1611365892117-00ac5efdf03f?w=300&q=80', // Smart
+      'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=300&q=80', // PV Entry
+      'https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=300&q=80', // PV Basic
+      'https://images.unsplash.com/photo-1548337138-e87d889cc369?w=300&q=80', // PV Standard
+      'https://images.unsplash.com/photo-1592833159155-c62df1b65634?w=300&q=80'  // PV Plus
     ];
 
     const mockPkgs = [
@@ -736,6 +742,21 @@ class SolarApp {
     const list = document.querySelector('.pkg-list');
     if (!list) return;
 
+    const imgMap = [
+      'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=300&q=80',
+      'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=300&q=80',
+      'https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=300&q=80',
+      'https://images.unsplash.com/photo-1548337138-e87d889cc369?w=300&q=80',
+      'https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=300&q=80',
+      'https://images.unsplash.com/photo-1592833159155-c62df1b65634?w=300&q=80',
+      'https://images.unsplash.com/photo-1559302995-f0a1bc19e51f?w=300&q=80',
+      'https://images.unsplash.com/photo-1611365892117-00ac5efdf03f?w=300&q=80',
+      'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=300&q=80',
+      'https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=300&q=80',
+      'https://images.unsplash.com/photo-1548337138-e87d889cc369?w=300&q=80',
+      'https://images.unsplash.com/photo-1592833159155-c62df1b65634?w=300&q=80'
+    ];
+
     const mockPkgs = [
       { name: 'Mono Starter', amount: '80,000 BIF', bonus: '210,000 BIF' },
       { name: 'Poly Basic', amount: '120,000 BIF', bonus: '320,000 BIF' },
@@ -768,7 +789,7 @@ class SolarApp {
     list.innerHTML = finalData.map((p, i) => `
       <div class="landing-pkg-card">
         ${p.name.includes('Pro') || p.name.includes('Commercial') ? '<div class="popular-ribbon">POPULAR</div>' : ''}
-        <img src="https://images.unsplash.com/photo-1509391366360-2e959784a276?w=400&q=80" class="landing-pkg-img" alt="${p.name}">
+        <img src="${imgMap[i % imgMap.length]}" class="landing-pkg-img" alt="${p.name}">
         <div class="landing-pkg-content">
           <h3>${p.name}</h3>
           <div class="landing-pkg-price">${p.amount}</div>
