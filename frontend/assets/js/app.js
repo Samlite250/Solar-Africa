@@ -696,6 +696,12 @@ class SolarApp {
 
   setLoading(isLoading) {
     this.state.loading = isLoading;
+    if (isLoading && !document.querySelector('.loading-overlay')) {
+      const loader = document.createElement('div');
+      loader.className = 'loading-overlay';
+      loader.innerHTML = '<div class="spinner"></div>';
+      document.body.appendChild(loader);
+    }
     document.body.classList.toggle('loading', isLoading);
   }
 
