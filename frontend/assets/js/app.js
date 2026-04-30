@@ -57,7 +57,7 @@ class SolarApp {
     window.addEventListener('hashchange', () => this.handleRoute());
     
     // Default to dashboard if no hash or invalid hash
-    if (!window.location.hash || !['#dashboard', '#packages', '#team', '#profile'].includes(window.location.hash)) {
+    if (!window.location.hash || !['#dashboard', '#packages', '#task', '#profile'].includes(window.location.hash)) {
       if (document.body.dataset.page !== 'home' && document.body.dataset.page !== 'auth' && document.body.dataset.page !== 'admin') {
          window.location.hash = '#dashboard';
       }
@@ -138,55 +138,26 @@ class SolarApp {
         </div>
         <div class="pkg-list-vertical" id="pkg-list-vertical"></div>
       `,
-      team: `
+      task: `
         <div class="page-header-plain" style="padding: 20px 16px; display: flex; align-items: center; gap: 12px;">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="window.location.hash='#dashboard'"><path d="M15 18l-6-6 6-6"/></svg>
-          <h2 style="font-size: 20px; font-weight: 800;">Team / Referral</h2>
+          <h2 style="font-size: 20px; font-weight: 800;">Daily Tasks</h2>
         </div>
         <div class="section-block">
-          <div class="ref-card-modern">
-            <p style="font-size: 14px; font-weight: 700; margin-bottom: 12px; color: #374151;">My Referral Link</p>
-            <div class="ref-link-display">
-              <span id="ref-link-text">https://solarafrica.com/ref/USER</span>
-              <button class="btn-copy-small" onclick="window.app.copyRef()">Copy</button>
-              <input type="hidden" id="ref-link" value="" />
-            </div>
-          </div>
+          <p style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">Earn by watching</p>
+          <p style="font-size: 13px; color: #64748b; margin-bottom: 24px;">Watch short videos from our advertisers (max 20s) to earn instant rewards.</p>
           
-          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 32px;">
-            <div class="dash-sub-item" style="text-align: center;">
-              <span style="font-size: 11px;">Referrals</span>
-              <strong id="ref-count" style="font-size: 18px;">0</strong>
+          <div id="task-video-container" style="display: none; background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 24px; position: relative;">
+            <video id="task-video" style="width: 100%; aspect-ratio: 16/9; display: block;" playsinline></video>
+            <div id="task-video-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); color: white; font-weight: 800; font-size: 20px;">
+              <button id="task-play-btn" style="background: #16a34a; color: white; border: none; padding: 12px 24px; border-radius: 30px; font-weight: 800; font-size: 16px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Play Video
+              </button>
             </div>
-            <div class="dash-sub-item" style="text-align: center;">
-              <span style="font-size: 11px;">Active</span>
-              <strong id="ref-active" style="font-size: 18px;">0</strong>
-            </div>
-            <div class="dash-sub-item" style="text-align: center; border-color: #16a34a;">
-              <span style="font-size: 11px; color: #16a34a;">Earnings</span>
-              <strong id="ref-bonus" style="font-size: 14px; color: #16a34a;">0 BIF</strong>
-            </div>
+            <div id="task-timer" style="position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.7); color: white; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; display: none;">00:20</div>
           </div>
 
-          <p style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">Invite Your Friends</p>
-          <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">Share your link and start earning together.</p>
-          
-          <div style="display: flex; gap: 10px; margin-bottom: 40px;">
-            <button class="invite-btn whatsapp" onclick="window.app.shareWhatsApp()" style="flex: 1; background: #16a34a; color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px;">
-               <svg width="18" height="18" fill="white" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-               WhatsApp
-            </button>
-            <button class="invite-btn telegram" onclick="window.app.shareTelegram()" style="flex: 1; background: #3b82f6; color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px;">
-               <svg width="18" height="18" fill="white" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-               Telegram
-            </button>
-            <button class="invite-btn more" onclick="window.app.shareMore()" style="background: #f1f5f9; color: #475569; border: none; padding: 12px; border-radius: 12px; font-weight: 700;">
-               More
-            </button>
-          </div>
-
-          <p style="font-size: 15px; font-weight: 800; margin-bottom: 16px;">Top Referrals</p>
-          <div id="top-referrals-list" class="top-referrals-list"></div>
+          <div id="task-list" style="display: flex; flex-direction: column; gap: 12px;"></div>
         </div>
       `,
       profile: `
@@ -239,7 +210,7 @@ class SolarApp {
   async hydrate() {
     const { page, token } = this.state;
 
-    if (['dashboard', 'packages', 'team', 'profile', 'admin'].includes(page) && !token) {
+    if (['dashboard', 'packages', 'task', 'profile', 'admin'].includes(page) && !token) {
       window.location.href = 'login.html';
       return;
     }
@@ -252,7 +223,7 @@ class SolarApp {
     switch (page) {
       case 'dashboard': await this.hydrateDashboard(); break;
       case 'packages':  await this.hydratePackages(); break;
-      case 'team':      await this.hydrateTeam(); break;
+      case 'task':      await this.hydrateTask(); break;
       case 'profile':   await this.hydrateProfile(); break;
       case 'admin':     await this.hydrateAdmin(); break;
       case 'home':      this.animateLandingStats(); this.hydrateLandingPackages(); break;
@@ -401,29 +372,29 @@ class SolarApp {
 
     const mockPkgs = [
       { name: 'Mono Starter', amount: '80,000 BIF', bonus: '210,000 BIF', img: 'https://images.pexels.com/photos/356036/pexels-photo-356036.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Poly Basic', amount: '120,000 BIF', bonus: '320,000 BIF', img: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=400&q=80' },
+      { name: 'Poly Basic', amount: '120,000 BIF', bonus: '320,000 BIF', img: 'https://images.pexels.com/photos/885350/pexels-photo-885350.jpeg?auto=compress&cs=tinysrgb&w=400' },
       { name: 'Thin Film', amount: '160,000 BIF', bonus: '450,000 BIF', img: 'https://images.pexels.com/photos/433333/pexels-photo-433333.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Off-Grid Lite', amount: '200,000 BIF', bonus: '600,000 BIF', img: 'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=400&q=80' },
+      { name: 'Off-Grid Lite', amount: '200,000 BIF', bonus: '600,000 BIF', img: 'https://images.pexels.com/photos/9875679/pexels-photo-9875679.jpeg?auto=compress&cs=tinysrgb&w=400' },
       { name: 'Hybrid Lite', amount: '240,000 BIF', bonus: '800,000 BIF', img: 'https://images.pexels.com/photos/2800839/pexels-photo-2800839.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Grid-Tied Lite', amount: '280,000 BIF', bonus: '1,000,000 BIF', img: 'https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=400&q=80' },
+      { name: 'Grid-Tied Lite', amount: '280,000 BIF', bonus: '1,000,000 BIF', img: 'https://images.pexels.com/photos/357440/pexels-photo-357440.jpeg?auto=compress&cs=tinysrgb&w=400' },
       { name: 'Solar Storage', amount: '320,000 BIF', bonus: '1,300,000 BIF', img: 'https://images.pexels.com/photos/159397/pexels-photo-159397.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Smart Solar', amount: '360,000 BIF', bonus: '1,700,000 BIF', img: 'https://images.unsplash.com/photo-1548337138-e87d889cc369?w=400&q=80' },
+      { name: 'Smart Solar', amount: '360,000 BIF', bonus: '1,700,000 BIF', img: 'https://images.pexels.com/photos/2592537/pexels-photo-2592537.jpeg?auto=compress&cs=tinysrgb&w=400' },
       { name: 'PV Entry', amount: '400,000 BIF', bonus: '2,100,000 BIF', img: 'https://images.pexels.com/photos/4254898/pexels-photo-4254898.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'PV Basic', amount: '440,000 BIF', bonus: '2,500,000 BIF', img: 'https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=400&q=80' },
+      { name: 'PV Basic', amount: '440,000 BIF', bonus: '2,500,000 BIF', img: 'https://images.pexels.com/photos/6301389/pexels-photo-6301389.jpeg?auto=compress&cs=tinysrgb&w=400' },
       { name: 'PV Standard', amount: '480,000 BIF', bonus: '3,000,000 BIF', img: 'https://images.pexels.com/photos/159394/pexels-photo-159394.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'PV Plus', amount: '520,000 BIF', bonus: '3,600,000 BIF', img: 'https://images.unsplash.com/photo-1592833159155-c62df1b65634?w=400&q=80' },
+      { name: 'PV Plus', amount: '520,000 BIF', bonus: '3,600,000 BIF', img: 'https://images.pexels.com/photos/3181033/pexels-photo-3181033.jpeg?auto=compress&cs=tinysrgb&w=400' },
       { name: 'PV Pro', amount: '560,000 BIF', bonus: '4,200,000 BIF', img: 'https://images.pexels.com/photos/2850347/pexels-photo-2850347.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'PV Max', amount: '600,000 BIF', bonus: '4,800,000 BIF', img: 'https://images.unsplash.com/photo-1559302995-f0a1bc19e51f?w=400&q=80' },
+      { name: 'PV Max', amount: '600,000 BIF', bonus: '4,800,000 BIF', img: 'https://images.pexels.com/photos/10050865/pexels-photo-10050865.jpeg?auto=compress&cs=tinysrgb&w=400' },
       { name: 'Off-Grid Pro', amount: '640,000 BIF', bonus: '5,200,000 BIF', img: 'https://images.pexels.com/photos/2990644/pexels-photo-2990644.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Hybrid Pro', amount: '680,000 BIF', bonus: '5,600,000 BIF', img: 'https://images.unsplash.com/photo-1611365892117-00ac5efdf03f?w=400&q=80' },
+      { name: 'Hybrid Pro', amount: '680,000 BIF', bonus: '5,600,000 BIF', img: 'https://images.pexels.com/photos/3608055/pexels-photo-3608055.jpeg?auto=compress&cs=tinysrgb&w=400' },
       { name: 'Grid-Tied Pro', amount: '720,000 BIF', bonus: '6,000,000 BIF', img: 'https://images.pexels.com/photos/37728/pexels-photo-37728.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Solar Battery', amount: '760,000 BIF', bonus: '6,400,000 BIF', img: 'https://images.unsplash.com/photo-1516937622594-c8c7f769d7a7?w=400&q=80' },
+      { name: 'Solar Battery', amount: '760,000 BIF', bonus: '6,400,000 BIF', img: 'https://images.pexels.com/photos/414837/pexels-photo-414837.jpeg?auto=compress&cs=tinysrgb&w=400' },
       { name: 'Storage Plus', amount: '800,000 BIF', bonus: '6,800,000 BIF', img: 'https://images.pexels.com/photos/1108101/pexels-photo-1108101.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Smart Hybrid', amount: '840,000 BIF', bonus: '7,100,000 BIF', img: 'https://images.unsplash.com/photo-1501183007981-d4a019f5c93c?w=400&q=80' },
+      { name: 'Smart Hybrid', amount: '840,000 BIF', bonus: '7,100,000 BIF', img: 'https://images.pexels.com/photos/4323223/pexels-photo-4323223.jpeg?auto=compress&cs=tinysrgb&w=400' },
       { name: 'PV Ultra', amount: '880,000 BIF', bonus: '7,400,000 BIF', img: 'https://images.pexels.com/photos/2422265/pexels-photo-2422265.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Solar Array', amount: '920,000 BIF', bonus: '7,600,000 BIF', img: 'https://images.unsplash.com/photo-1473341304179-c14f39e3b981?w=400&q=80' },
+      { name: 'Solar Array', amount: '920,000 BIF', bonus: '7,600,000 BIF', img: 'https://images.pexels.com/photos/1353938/pexels-photo-1353938.jpeg?auto=compress&cs=tinysrgb&w=400' },
       { name: 'Solar Plant', amount: '960,000 BIF', bonus: '7,800,000 BIF', img: 'https://images.pexels.com/photos/159375/pexels-photo-159375.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Commercial Solar', amount: '1,000,000 BIF', bonus: '8,000,000 BIF', img: 'https://images.unsplash.com/photo-1581094851215-630978918174?w=400&q=80' }
+      { name: 'Commercial Solar', amount: '1,000,000 BIF', bonus: '8,000,000 BIF', img: 'https://images.pexels.com/photos/6301391/pexels-photo-6301391.jpeg?auto=compress&cs=tinysrgb&w=400' }
     ];
 
     const finalData = data && data.length >= 24 ? data : mockPkgs;
@@ -448,74 +419,94 @@ class SolarApp {
     `).join('');
   }
 
-  // --- TEAM HYDRATION ---
+  // --- TASK HYDRATION ---
 
-  async hydrateTeam() {
-    const data = await this.fetchAPI('team');
-    const team = data && !Array.isArray(data) ? data : null;
-    const userId = this.state.user?.id || 'SAMDEV';
-    const baseUrl = 'https://solarafrica.com';
+  async hydrateTask() {
+    const taskList = document.getElementById('task-list');
+    if (!taskList) return;
 
-    const refLinkInput = document.getElementById('ref-link');
-    const refLinkText = document.getElementById('ref-link-text');
-    const fullLink = `${baseUrl}/ref/${userId}`;
-    if (refLinkInput) refLinkInput.value = fullLink;
-    if (refLinkText) refLinkText.textContent = fullLink;
+    // Mock video tasks
+    const tasks = [
+      { id: 1, title: 'Solar Africa Intro', reward: '500 BIF', duration: 15, videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' },
+      { id: 2, title: 'Clean Energy Ads', reward: '800 BIF', duration: 20, videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' },
+      { id: 3, title: 'Partner Spotlight', reward: '400 BIF', duration: 10, videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' },
+      { id: 4, title: 'Power Grid Expansion', reward: '600 BIF', duration: 18, videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' }
+    ];
 
-    this.updateElement('ref-count', team?.referrals ?? '128');
-    this.updateElement('ref-active', team?.activeInvestors ?? '96');
-    this.updateElement('ref-bonus', team?.referralBonus ?? '1,450,000 BIF');
-
-    const topList = document.getElementById('top-referrals-list');
-    if (topList) {
-      const mockTops = [
-        { name: 'Jean N.', amount: '2,350,000 BIF' },
-        { name: 'Divine M.', amount: '1,890,000 BIF' },
-        { name: 'Samuel K.', amount: '1,250,000 BIF' }
-      ];
-      const tops = team?.topReferrals || mockTops;
-      topList.innerHTML = tops.map((t, i) => `
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:16px; background:#f8fafc; border-radius:12px; margin-bottom:12px;">
-          <div style="display:flex; align-items:center; gap:12px;">
-            <span style="font-weight:800; color:#64748b; width:20px;">${i+1}.</span>
-            <span style="font-weight:700; color:#1e293b;">${t.name}</span>
+    taskList.innerHTML = tasks.map((t, i) => `
+      <div class="task-card" style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0;">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <div style="width: 48px; height: 48px; background: #e0f2fe; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #0284c7;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
           </div>
-          <span style="font-weight:800; color:#1e293b;">${t.amount}</span>
-        </div>`).join('');
-    }
+          <div>
+            <strong style="display: block; font-size: 15px; color: #1e293b; margin-bottom: 2px;">${t.title}</strong>
+            <span style="font-size: 12px; color: #64748b; font-weight: 600;">${t.duration}s • ${t.reward}</span>
+          </div>
+        </div>
+        <button onclick="window.app.playTaskVideo('${t.videoUrl}', ${t.duration}, '${t.reward}', this)" style="background: #16a34a; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; transition: all 0.2s;">Watch</button>
+      </div>
+    `).join('');
   }
 
+  playTaskVideo(url, duration, reward, btn) {
+    if (btn.disabled) return;
+    
+    const container = document.getElementById('task-video-container');
+    const video = document.getElementById('task-video');
+    const overlay = document.getElementById('task-video-overlay');
+    const playBtn = document.getElementById('task-play-btn');
+    const timerEl = document.getElementById('task-timer');
 
-  shareWhatsApp() {
-    const text = `Join Solar Africa and start earning! ${document.getElementById('ref-link')?.value}`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-  }
+    container.style.display = 'block';
+    video.src = url;
+    video.load();
+    
+    overlay.style.display = 'flex';
+    timerEl.style.display = 'none';
+    timerEl.style.background = 'rgba(0,0,0,0.7)';
 
-  shareTelegram() {
-    const text = `Join Solar Africa and start earning!`;
-    const url = document.getElementById('ref-link')?.value;
-    window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank');
-  }
+    playBtn.onclick = () => {
+      overlay.style.display = 'none';
+      timerEl.style.display = 'block';
+      timerEl.textContent = \`00:\${duration < 10 ? '0'+duration : duration}\`;
+      video.play();
+      
+      let timeLeft = duration;
+      
+      // Prevent user from skipping
+      video.onseeking = () => {
+         // Optionally prevent seeking if needed
+      };
 
-  shareMore() {
-    if (navigator.share) {
-      navigator.share({
-        title: 'Solar Africa',
-        text: 'Join Solar Africa and start earning!',
-        url: document.getElementById('ref-link')?.value
-      });
-    } else {
-      this.copyRef();
-    }
-  }
-
-  copyRef() {
-    const link = document.getElementById('ref-link');
-    if (link) {
-      link.select();
-      document.execCommand('copy');
-      this.showToast('Referral link copied to clipboard!', 'success');
-    }
+      const interval = setInterval(() => {
+        timeLeft--;
+        if (timeLeft <= 0) {
+          clearInterval(interval);
+          video.pause();
+          timerEl.textContent = 'Completed!';
+          timerEl.style.background = '#16a34a';
+          btn.textContent = 'Done';
+          btn.style.background = '#94a3b8';
+          btn.disabled = true;
+          this.showToast(\`Task completed! \${reward} credited to your wallet.\`, 'success');
+          
+          // Increment wallet visually
+          const walletEl = document.getElementById('wallet-balance');
+          if (walletEl && walletEl.textContent) {
+              const currentVal = parseInt(walletEl.textContent.replace(/[^0-9]/g, ''));
+              const rewardVal = parseInt(reward.replace(/[^0-9]/g, ''));
+              if (!isNaN(currentVal) && !isNaN(rewardVal)) {
+                  walletEl.textContent = (currentVal + rewardVal).toLocaleString() + ' BIF';
+              }
+          }
+          
+          setTimeout(() => { container.style.display = 'none'; }, 2000);
+        } else {
+          timerEl.textContent = \`00:\${timeLeft < 10 ? '0'+timeLeft : timeLeft}\`;
+        }
+      }, 1000);
+    };
   }
 
   // --- PROFILE HYDRATION ---
@@ -730,29 +721,29 @@ class SolarApp {
 
     const mockPkgs = [
       { name: 'Mono Starter', amount: '80,000 BIF', bonus: '210,000 BIF', img: 'https://images.pexels.com/photos/356036/pexels-photo-356036.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Poly Basic', amount: '120,000 BIF', bonus: '320,000 BIF', img: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=400&q=80' },
+      { name: 'Poly Basic', amount: '120,000 BIF', bonus: '320,000 BIF', img: 'https://images.pexels.com/photos/885350/pexels-photo-885350.jpeg?auto=compress&cs=tinysrgb&w=400' },
       { name: 'Thin Film', amount: '160,000 BIF', bonus: '450,000 BIF', img: 'https://images.pexels.com/photos/433333/pexels-photo-433333.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Off-Grid Lite', amount: '200,000 BIF', bonus: '600,000 BIF', img: 'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=400&q=80' },
+      { name: 'Off-Grid Lite', amount: '200,000 BIF', bonus: '600,000 BIF', img: 'https://images.pexels.com/photos/9875679/pexels-photo-9875679.jpeg?auto=compress&cs=tinysrgb&w=400' },
       { name: 'Hybrid Lite', amount: '240,000 BIF', bonus: '800,000 BIF', img: 'https://images.pexels.com/photos/2800839/pexels-photo-2800839.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Grid-Tied Lite', amount: '280,000 BIF', bonus: '1,000,000 BIF', img: 'https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=400&q=80' },
+      { name: 'Grid-Tied Lite', amount: '280,000 BIF', bonus: '1,000,000 BIF', img: 'https://images.pexels.com/photos/357440/pexels-photo-357440.jpeg?auto=compress&cs=tinysrgb&w=400' },
       { name: 'Solar Storage', amount: '320,000 BIF', bonus: '1,300,000 BIF', img: 'https://images.pexels.com/photos/159397/pexels-photo-159397.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Smart Solar', amount: '360,000 BIF', bonus: '1,700,000 BIF', img: 'https://images.unsplash.com/photo-1548337138-e87d889cc369?w=400&q=80' },
+      { name: 'Smart Solar', amount: '360,000 BIF', bonus: '1,700,000 BIF', img: 'https://images.pexels.com/photos/2592537/pexels-photo-2592537.jpeg?auto=compress&cs=tinysrgb&w=400' },
       { name: 'PV Entry', amount: '400,000 BIF', bonus: '2,100,000 BIF', img: 'https://images.pexels.com/photos/4254898/pexels-photo-4254898.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'PV Basic', amount: '440,000 BIF', bonus: '2,500,000 BIF', img: 'https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=400&q=80' },
+      { name: 'PV Basic', amount: '440,000 BIF', bonus: '2,500,000 BIF', img: 'https://images.pexels.com/photos/6301389/pexels-photo-6301389.jpeg?auto=compress&cs=tinysrgb&w=400' },
       { name: 'PV Standard', amount: '480,000 BIF', bonus: '3,000,000 BIF', img: 'https://images.pexels.com/photos/159394/pexels-photo-159394.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'PV Plus', amount: '520,000 BIF', bonus: '3,600,000 BIF', img: 'https://images.unsplash.com/photo-1592833159155-c62df1b65634?w=400&q=80' },
+      { name: 'PV Plus', amount: '520,000 BIF', bonus: '3,600,000 BIF', img: 'https://images.pexels.com/photos/3181033/pexels-photo-3181033.jpeg?auto=compress&cs=tinysrgb&w=400' },
       { name: 'PV Pro', amount: '560,000 BIF', bonus: '4,200,000 BIF', img: 'https://images.pexels.com/photos/2850347/pexels-photo-2850347.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'PV Max', amount: '600,000 BIF', bonus: '4,800,000 BIF', img: 'https://images.unsplash.com/photo-1559302995-f0a1bc19e51f?w=400&q=80' },
+      { name: 'PV Max', amount: '600,000 BIF', bonus: '4,800,000 BIF', img: 'https://images.pexels.com/photos/10050865/pexels-photo-10050865.jpeg?auto=compress&cs=tinysrgb&w=400' },
       { name: 'Off-Grid Pro', amount: '640,000 BIF', bonus: '5,200,000 BIF', img: 'https://images.pexels.com/photos/2990644/pexels-photo-2990644.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Hybrid Pro', amount: '680,000 BIF', bonus: '5,600,000 BIF', img: 'https://images.unsplash.com/photo-1611365892117-00ac5efdf03f?w=400&q=80' },
+      { name: 'Hybrid Pro', amount: '680,000 BIF', bonus: '5,600,000 BIF', img: 'https://images.pexels.com/photos/3608055/pexels-photo-3608055.jpeg?auto=compress&cs=tinysrgb&w=400' },
       { name: 'Grid-Tied Pro', amount: '720,000 BIF', bonus: '6,000,000 BIF', img: 'https://images.pexels.com/photos/37728/pexels-photo-37728.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Solar Battery', amount: '760,000 BIF', bonus: '6,400,000 BIF', img: 'https://images.unsplash.com/photo-1516937622594-c8c7f769d7a7?w=400&q=80' },
+      { name: 'Solar Battery', amount: '760,000 BIF', bonus: '6,400,000 BIF', img: 'https://images.pexels.com/photos/414837/pexels-photo-414837.jpeg?auto=compress&cs=tinysrgb&w=400' },
       { name: 'Storage Plus', amount: '800,000 BIF', bonus: '6,800,000 BIF', img: 'https://images.pexels.com/photos/1108101/pexels-photo-1108101.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Smart Hybrid', amount: '840,000 BIF', bonus: '7,100,000 BIF', img: 'https://images.unsplash.com/photo-1501183007981-d4a019f5c93c?w=400&q=80' },
+      { name: 'Smart Hybrid', amount: '840,000 BIF', bonus: '7,100,000 BIF', img: 'https://images.pexels.com/photos/4323223/pexels-photo-4323223.jpeg?auto=compress&cs=tinysrgb&w=400' },
       { name: 'PV Ultra', amount: '880,000 BIF', bonus: '7,400,000 BIF', img: 'https://images.pexels.com/photos/2422265/pexels-photo-2422265.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Solar Array', amount: '920,000 BIF', bonus: '7,600,000 BIF', img: 'https://images.unsplash.com/photo-1473341304179-c14f39e3b981?w=400&q=80' },
+      { name: 'Solar Array', amount: '920,000 BIF', bonus: '7,600,000 BIF', img: 'https://images.pexels.com/photos/1353938/pexels-photo-1353938.jpeg?auto=compress&cs=tinysrgb&w=400' },
       { name: 'Solar Plant', amount: '960,000 BIF', bonus: '7,800,000 BIF', img: 'https://images.pexels.com/photos/159375/pexels-photo-159375.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Commercial Solar', amount: '1,000,000 BIF', bonus: '8,000,000 BIF', img: 'https://images.unsplash.com/photo-1581094851215-630978918174?w=400&q=80' }
+      { name: 'Commercial Solar', amount: '1,000,000 BIF', bonus: '8,000,000 BIF', img: 'https://images.pexels.com/photos/6301391/pexels-photo-6301391.jpeg?auto=compress&cs=tinysrgb&w=400' }
     ];
 
     const finalData = data && data.length >= 24 ? data : mockPkgs;
