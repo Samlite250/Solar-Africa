@@ -758,23 +758,17 @@ class SolarApp {
     const data = await this.fetchAPI('packages');
     const list = document.querySelector('.pkg-list');
     if (!list || !data) return;
-    list.innerHTML = data.slice(0, 6).map((p, i) => `
-      <div class="package-card pkg-variant-${i % 6}">
-        <div class="pkg-header">
-          <div>
-            <div class="pkg-icon-wrap">☀️</div>
-            <h3>${p.name}</h3>
-          </div>
-          <div class="pkg-price-tag">
-            <strong>${p.amount}</strong>
-            <span>Invest</span>
-          </div>
+    list.innerHTML = data.slice(0, 5).map((p, i) => `
+      <div class="landing-pkg-card">
+        ${i === 4 ? '<div class="popular-ribbon">POPULAR</div>' : ''}
+        <img src="https://images.unsplash.com/photo-1509391366360-2e959784a276?w=400&q=80" class="landing-pkg-img" alt="${p.name}">
+        <div class="landing-pkg-content">
+          <h3>${p.name}</h3>
+          <div class="landing-pkg-price">${p.amount}</div>
+          <span class="landing-pkg-bonus-label">Welcome Bonus</span>
+          <strong class="landing-pkg-bonus">${p.bonus}</strong>
+          <a href="register.html" class="btn btn-green btn-choose" style="margin-top:auto;">Choose Package</a>
         </div>
-        <div class="pkg-reward-box">
-          <strong>${p.bonus}</strong>
-          <span>Welcome Bonus</span>
-        </div>
-        <a href="register.html" class="btn-choose">Get Started →</a>
       </div>`).join('');
   }
 
