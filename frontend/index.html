@@ -34,7 +34,21 @@
       <div class="header-actions">
         <a href="register.html" class="btn btn-blue" style="padding: 10px 24px; border-radius: 8px;">Get Started</a>
       </div>
+
+      <div class="mobile-menu-btn" onclick="document.querySelector('.mobile-nav').classList.toggle('active')">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </div>
     </header>
+
+    <div class="mobile-nav">
+      <a href="#" onclick="document.querySelector('.mobile-nav').classList.remove('active')">Home</a>
+      <a href="#why-choose" onclick="document.querySelector('.mobile-nav').classList.remove('active')">About</a>
+      <a href="#why-choose" onclick="document.querySelector('.mobile-nav').classList.remove('active')">How It Works</a>
+      <a href="register.html">Packages</a>
+      <a href="register.html">FAQ</a>
+      <a href="#contact" onclick="document.querySelector('.mobile-nav').classList.remove('active')">Contact</a>
+      <a href="register.html" class="btn btn-blue" style="text-align: center; margin-top: 16px;">Get Started</a>
+    </div>
 
     <main>
       <!-- Hero Section -->
