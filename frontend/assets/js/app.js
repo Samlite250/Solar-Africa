@@ -113,15 +113,14 @@ class SolarApp {
           </div>
         </div>
 
-        <div class="dash-sub-stats">
+        <div class="dash-sub-stats" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
           <div class="dash-sub-item">
             <span>Total Earnings</span>
             <strong id="total-earnings">...</strong>
           </div>
-          <div class="dash-sub-divider"></div>
           <div class="dash-sub-item">
             <span>Active Package</span>
-            <strong id="active-package" style="color:#1565C0">...</strong>
+            <strong id="active-package" style="color:#f59e0b">...</strong>
           </div>
         </div>
 
@@ -134,66 +133,74 @@ class SolarApp {
         </div>
       `,
       packages: `
-        <div class="page-header-plain">
-          <h2>Packages</h2>
+        <div class="page-header-plain" style="padding: 20px 16px; text-align: center;">
+          <h2 style="font-size: 22px; font-weight: 800;">Packages</h2>
         </div>
         <div class="pkg-list-vertical" id="pkg-list-vertical"></div>
       `,
       team: `
-        <div class="page-header-plain">
-          <h2>Team / Referral</h2>
+        <div class="page-header-plain" style="padding: 20px 16px; display: flex; align-items: center; gap: 12px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="window.location.hash='#dashboard'"><path d="M15 18l-6-6 6-6"/></svg>
+          <h2 style="font-size: 20px; font-weight: 800;">Team / Referral</h2>
         </div>
         <div class="section-block">
-          <p class="section-label">My Referral Link</p>
-          <div class="ref-link-row">
-            <input type="text" id="ref-link" readonly value="" class="ref-link-input" />
-            <button class="ref-copy-btn" onclick="window.app.copyRef()">Copy</button>
+          <div class="ref-card-modern">
+            <p style="font-size: 14px; font-weight: 700; margin-bottom: 12px; color: #374151;">My Referral Link</p>
+            <div class="ref-link-display">
+              <span id="ref-link-text">https://solarafrica.com/ref/USER</span>
+              <button class="btn-copy-small" onclick="window.app.copyRef()">Copy</button>
+              <input type="hidden" id="ref-link" value="" />
+            </div>
           </div>
-        </div>
-        <div class="ref-stats-row">
-          <div class="ref-stat-box">
-            <strong id="ref-count">0</strong>
-            <span>Referrals</span>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 32px;">
+            <div class="dash-sub-item" style="text-align: center;">
+              <span style="font-size: 11px;">Referrals</span>
+              <strong id="ref-count" style="font-size: 18px;">0</strong>
+            </div>
+            <div class="dash-sub-item" style="text-align: center;">
+              <span style="font-size: 11px;">Active</span>
+              <strong id="ref-active" style="font-size: 18px;">0</strong>
+            </div>
+            <div class="dash-sub-item" style="text-align: center; border-color: #16a34a;">
+              <span style="font-size: 11px; color: #16a34a;">Earnings</span>
+              <strong id="ref-bonus" style="font-size: 14px; color: #16a34a;">0 BIF</strong>
+            </div>
           </div>
-          <div class="ref-stat-box">
-            <strong id="ref-active">0</strong>
-            <span>Active</span>
-          </div>
-          <div class="ref-stat-box accent">
-            <strong id="ref-bonus">0 BIF</strong>
-            <span>Total Earnings</span>
-          </div>
-        </div>
-        <div class="section-block">
-          <p class="section-label">Invite Your Friends</p>
-          <p style="font-size:13px;color:#666;margin-bottom:14px;">Share your link and start earning together.</p>
-          <div class="invite-btns">
-            <button class="invite-btn whatsapp" onclick="window.app.shareWhatsApp()">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-              WhatsApp
+
+          <p style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">Invite Your Friends</p>
+          <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">Share your link and start earning together.</p>
+          
+          <div style="display: flex; gap: 10px; margin-bottom: 40px;">
+            <button class="invite-btn whatsapp" onclick="window.app.shareWhatsApp()" style="flex: 1; background: #16a34a; color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px;">
+               <svg width="18" height="18" fill="white" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+               WhatsApp
             </button>
-            <button class="invite-btn telegram" onclick="window.app.shareTelegram()">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-              Telegram
+            <button class="invite-btn telegram" onclick="window.app.shareTelegram()" style="flex: 1; background: #3b82f6; color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px;">
+               <svg width="18" height="18" fill="white" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+               Telegram
             </button>
-            <button class="invite-btn more" onclick="window.app.shareMore()">
-              ••• More
+            <button class="invite-btn more" onclick="window.app.shareMore()" style="background: #f1f5f9; color: #475569; border: none; padding: 12px; border-radius: 12px; font-weight: 700;">
+               More
             </button>
           </div>
-        </div>
-        <div class="section-block">
-          <p class="section-label">Top Referrals</p>
+
+          <p style="font-size: 15px; font-weight: 800; margin-bottom: 16px;">Top Referrals</p>
           <div id="top-referrals-list" class="top-referrals-list"></div>
         </div>
       `,
       profile: `
+        <div class="page-header-plain" style="padding: 20px 16px; display: flex; align-items: center; gap: 12px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="window.location.hash='#dashboard'"><path d="M15 18l-6-6 6-6"/></svg>
+          <h2 style="font-size: 20px; font-weight: 800;">My Profile</h2>
+        </div>
         <div class="profile-hero">
-          <img id="profile-avatar" src="https://ui-avatars.com/api/?name=User&size=200&background=1565C0&color=fff" alt="Avatar" class="profile-avatar-img">
+          <img id="profile-avatar" src="https://ui-avatars.com/api/?name=User&size=200&background=0b6cff&color=fff" alt="Avatar" class="profile-avatar-img">
           <h2 id="profile-name" class="profile-name">Member User</h2>
           <p id="profile-phone" class="profile-phone">+257 60 000 000</p>
           <div class="profile-country">
-            <img src="https://flagcdn.com/w20/bi.png" alt="Burundi" style="width:20px;height:14px;border-radius:2px;">
-            <span>Burundi</span>
+            <img id="profile-flag" src="https://flagcdn.com/w20/bi.png" alt="Burundi" style="width:20px;height:14px;border-radius:2px;">
+            <span id="profile-country-name">Burundi</span>
           </div>
         </div>
         <div class="profile-menu">
@@ -220,7 +227,7 @@ class SolarApp {
         </div>
         <div style="padding: 20px 16px;">
           <button class="logout-btn-red" id="logout-btn" onclick="window.app.logout()">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transform: rotate(180deg);"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
             Logout
           </button>
         </div>
@@ -371,18 +378,25 @@ class SolarApp {
       return;
     }
 
-    list.innerHTML = activities.map(act => `
-      <div class="act-item">
-        <div class="act-icon ${act.type === 'bonus' ? 'green' : 'yellow'}">
-          ${act.type === 'bonus' ? '🎁' : '⚡'}
+    list.innerHTML = activities.map(act => {
+      let iconClass = 'blue';
+      let icon = '⚡';
+      if (act.type === 'bonus') { iconClass = 'green'; icon = '🎁'; }
+      if (act.type === 'deposit') { iconClass = 'yellow'; icon = '💰'; }
+      
+      return `
+        <div class="act-item">
+          <div class="act-icon ${iconClass}">
+            ${icon}
+          </div>
+          <div class="act-details">
+            <strong>${act.title}</strong>
+            <span>Today, 10:30 AM</span>
+          </div>
+          <div class="act-value ${(act.value||act.amount||'').includes('+') ? 'green' : ''}">${act.value||act.amount||''}</div>
         </div>
-        <div class="act-details">
-          <strong>${act.title}</strong>
-          <span>${act.date}</span>
-        </div>
-        <div class="act-value ${(act.value||act.amount||'').includes('+') ? 'green' : ''}">${act.value||act.amount||''}</div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
   }
 
 
@@ -507,7 +521,10 @@ class SolarApp {
     const baseUrl = 'https://solar-africa.vercel.app';
 
     const refLinkInput = document.getElementById('ref-link');
-    if (refLinkInput) refLinkInput.value = `${baseUrl}/register.html?ref=${userId}`;
+    const refLinkText = document.getElementById('ref-link-text');
+    const fullLink = `${baseUrl}/register.html?ref=${userId}`;
+    if (refLinkInput) refLinkInput.value = fullLink;
+    if (refLinkText) refLinkText.textContent = fullLink;
 
     this.updateElement('ref-count', team?.referrals ?? '0');
     this.updateElement('ref-active', team?.activeInvestors ?? '0');
@@ -567,6 +584,16 @@ class SolarApp {
     if (this.state.user) {
       this.updateElement('profile-name', this.state.user.name);
       this.updateElement('profile-phone', this.state.user.phone || '+257 000 000 00');
+      
+      const country = this.state.user.country || 'Burundi';
+      this.updateElement('profile-country-name', country);
+      
+      const flagMap = {
+        'Burundi': 'bi', 'Kenya': 'ke', 'Uganda': 'ug', 'Rwanda': 'rw', 'Tanzania': 'tz'
+      };
+      const flagCode = flagMap[country] || 'bi';
+      const flagImg = document.getElementById('profile-flag');
+      if (flagImg) flagImg.src = `https://flagcdn.com/w20/${flagCode}.png`;
     }
   }
 
