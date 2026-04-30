@@ -401,29 +401,29 @@ class SolarApp {
 
     const mockPkgs = [
       { name: 'Mono Starter', amount: '80,000 BIF', bonus: '210,000 BIF', img: 'https://images.pexels.com/photos/356036/pexels-photo-356036.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Poly Basic', amount: '120,000 BIF', bonus: '320,000 BIF', img: 'https://images.pexels.com/photos/433333/pexels-photo-433333.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Thin Film', amount: '160,000 BIF', bonus: '450,000 BIF', img: 'https://images.pexels.com/photos/2800839/pexels-photo-2800839.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Off-Grid Lite', amount: '200,000 BIF', bonus: '600,000 BIF', img: 'https://images.pexels.com/photos/159397/pexels-photo-159397.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Hybrid Lite', amount: '240,000 BIF', bonus: '800,000 BIF', img: 'https://images.pexels.com/photos/4254898/pexels-photo-4254898.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Grid-Tied Lite', amount: '280,000 BIF', bonus: '1,000,000 BIF', img: 'https://images.pexels.com/photos/159394/pexels-photo-159394.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Solar Storage', amount: '320,000 BIF', bonus: '1,300,000 BIF', img: 'https://images.pexels.com/photos/2850347/pexels-photo-2850347.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Smart Solar', amount: '360,000 BIF', bonus: '1,700,000 BIF', img: 'https://images.pexels.com/photos/2990644/pexels-photo-2990644.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'PV Entry', amount: '400,000 BIF', bonus: '2,100,000 BIF', img: 'https://images.pexels.com/photos/37728/pexels-photo-37728.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'PV Basic', amount: '440,000 BIF', bonus: '2,500,000 BIF', img: 'https://images.pexels.com/photos/1108101/pexels-photo-1108101.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'PV Standard', amount: '480,000 BIF', bonus: '3,000,000 BIF', img: 'https://images.pexels.com/photos/2422265/pexels-photo-2422265.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'PV Plus', amount: '520,000 BIF', bonus: '3,600,000 BIF', img: 'https://images.pexels.com/photos/159375/pexels-photo-159375.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'PV Pro', amount: '560,000 BIF', bonus: '4,200,000 BIF', img: 'https://images.pexels.com/photos/911738/pexels-photo-911738.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'PV Max', amount: '600,000 BIF', bonus: '4,800,000 BIF', img: 'https://images.pexels.com/photos/911758/pexels-photo-911758.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Off-Grid Pro', amount: '640,000 BIF', bonus: '5,200,000 BIF', img: 'https://images.pexels.com/photos/1108119/pexels-photo-1108119.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Hybrid Pro', amount: '680,000 BIF', bonus: '5,600,000 BIF', img: 'https://images.pexels.com/photos/2422256/pexels-photo-2422256.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Grid-Tied Pro', amount: '720,000 BIF', bonus: '6,000,000 BIF', img: 'https://images.pexels.com/photos/159393/pexels-photo-159393.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Solar Battery', amount: '760,000 BIF', bonus: '6,400,000 BIF', img: 'https://images.pexels.com/photos/433311/pexels-photo-433311.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Storage Plus', amount: '800,000 BIF', bonus: '6,800,000 BIF', img: 'https://images.pexels.com/photos/356056/pexels-photo-356056.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Smart Hybrid', amount: '840,000 BIF', bonus: '7,100,000 BIF', img: 'https://images.pexels.com/photos/2800840/pexels-photo-2800840.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'PV Ultra', amount: '880,000 BIF', bonus: '7,400,000 BIF', img: 'https://images.pexels.com/photos/159400/pexels-photo-159400.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Solar Array', amount: '920,000 BIF', bonus: '7,600,000 BIF', img: 'https://images.pexels.com/photos/4254899/pexels-photo-4254899.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Solar Plant', amount: '960,000 BIF', bonus: '7,800,000 BIF', img: 'https://images.pexels.com/photos/159395/pexels-photo-159395.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Commercial Solar', amount: '1,000,000 BIF', bonus: '8,000,000 BIF', img: 'https://images.pexels.com/photos/2850348/pexels-photo-2850348.jpeg?auto=compress&cs=tinysrgb&w=400' }
+      { name: 'Poly Basic', amount: '120,000 BIF', bonus: '320,000 BIF', img: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=400&q=80' },
+      { name: 'Thin Film', amount: '160,000 BIF', bonus: '450,000 BIF', img: 'https://images.pexels.com/photos/433333/pexels-photo-433333.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Off-Grid Lite', amount: '200,000 BIF', bonus: '600,000 BIF', img: 'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=400&q=80' },
+      { name: 'Hybrid Lite', amount: '240,000 BIF', bonus: '800,000 BIF', img: 'https://images.pexels.com/photos/2800839/pexels-photo-2800839.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Grid-Tied Lite', amount: '280,000 BIF', bonus: '1,000,000 BIF', img: 'https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=400&q=80' },
+      { name: 'Solar Storage', amount: '320,000 BIF', bonus: '1,300,000 BIF', img: 'https://images.pexels.com/photos/159397/pexels-photo-159397.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Smart Solar', amount: '360,000 BIF', bonus: '1,700,000 BIF', img: 'https://images.unsplash.com/photo-1548337138-e87d889cc369?w=400&q=80' },
+      { name: 'PV Entry', amount: '400,000 BIF', bonus: '2,100,000 BIF', img: 'https://images.pexels.com/photos/4254898/pexels-photo-4254898.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'PV Basic', amount: '440,000 BIF', bonus: '2,500,000 BIF', img: 'https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=400&q=80' },
+      { name: 'PV Standard', amount: '480,000 BIF', bonus: '3,000,000 BIF', img: 'https://images.pexels.com/photos/159394/pexels-photo-159394.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'PV Plus', amount: '520,000 BIF', bonus: '3,600,000 BIF', img: 'https://images.unsplash.com/photo-1592833159155-c62df1b65634?w=400&q=80' },
+      { name: 'PV Pro', amount: '560,000 BIF', bonus: '4,200,000 BIF', img: 'https://images.pexels.com/photos/2850347/pexels-photo-2850347.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'PV Max', amount: '600,000 BIF', bonus: '4,800,000 BIF', img: 'https://images.unsplash.com/photo-1559302995-f0a1bc19e51f?w=400&q=80' },
+      { name: 'Off-Grid Pro', amount: '640,000 BIF', bonus: '5,200,000 BIF', img: 'https://images.pexels.com/photos/2990644/pexels-photo-2990644.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Hybrid Pro', amount: '680,000 BIF', bonus: '5,600,000 BIF', img: 'https://images.unsplash.com/photo-1611365892117-00ac5efdf03f?w=400&q=80' },
+      { name: 'Grid-Tied Pro', amount: '720,000 BIF', bonus: '6,000,000 BIF', img: 'https://images.pexels.com/photos/37728/pexels-photo-37728.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Solar Battery', amount: '760,000 BIF', bonus: '6,400,000 BIF', img: 'https://images.unsplash.com/photo-1516937622594-c8c7f769d7a7?w=400&q=80' },
+      { name: 'Storage Plus', amount: '800,000 BIF', bonus: '6,800,000 BIF', img: 'https://images.pexels.com/photos/1108101/pexels-photo-1108101.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Smart Hybrid', amount: '840,000 BIF', bonus: '7,100,000 BIF', img: 'https://images.unsplash.com/photo-1501183007981-d4a019f5c93c?w=400&q=80' },
+      { name: 'PV Ultra', amount: '880,000 BIF', bonus: '7,400,000 BIF', img: 'https://images.pexels.com/photos/2422265/pexels-photo-2422265.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Solar Array', amount: '920,000 BIF', bonus: '7,600,000 BIF', img: 'https://images.unsplash.com/photo-1473341304179-c14f39e3b981?w=400&q=80' },
+      { name: 'Solar Plant', amount: '960,000 BIF', bonus: '7,800,000 BIF', img: 'https://images.pexels.com/photos/159375/pexels-photo-159375.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Commercial Solar', amount: '1,000,000 BIF', bonus: '8,000,000 BIF', img: 'https://images.unsplash.com/photo-1581094851215-630978918174?w=400&q=80' }
     ];
 
     const finalData = data && data.length >= 24 ? data : mockPkgs;
@@ -431,7 +431,9 @@ class SolarApp {
     list.innerHTML = finalData.map((p, i) => `
       <div class="pkg-item-row" onclick="window.app.showInvestModal('${p.id || i}','${p.name}','${p.amount}','${p.bonus}','${p.img}')">
         <div style="position:relative;">
-          <img src="${p.img || 'assets/img/packages/pkg-1.jpg'}" class="pkg-item-img" alt="${p.name}">
+          <img src="${p.img || 'assets/img/packages/pkg-1.jpg'}" 
+               onerror="this.src='assets/img/packages/pkg-1.jpg'; this.onerror=null;" 
+               class="pkg-item-img" alt="${p.name}">
           ${p.popular ? '<div style="position:absolute; top:-5px; right:-5px; background:#22c55e; color:white; font-size:8px; font-weight:800; padding:2px 6px; border-radius:4px; transform:rotate(15deg);">POPULAR</div>' : ''}
         </div>
         <div class="pkg-item-info">
@@ -728,29 +730,29 @@ class SolarApp {
 
     const mockPkgs = [
       { name: 'Mono Starter', amount: '80,000 BIF', bonus: '210,000 BIF', img: 'https://images.pexels.com/photos/356036/pexels-photo-356036.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Poly Basic', amount: '120,000 BIF', bonus: '320,000 BIF', img: 'https://images.pexels.com/photos/433333/pexels-photo-433333.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Thin Film', amount: '160,000 BIF', bonus: '450,000 BIF', img: 'https://images.pexels.com/photos/2800839/pexels-photo-2800839.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Off-Grid Lite', amount: '200,000 BIF', bonus: '600,000 BIF', img: 'https://images.pexels.com/photos/159397/pexels-photo-159397.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Hybrid Lite', amount: '240,000 BIF', bonus: '800,000 BIF', img: 'https://images.pexels.com/photos/4254898/pexels-photo-4254898.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Grid-Tied Lite', amount: '280,000 BIF', bonus: '1,000,000 BIF', img: 'https://images.pexels.com/photos/159394/pexels-photo-159394.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Solar Storage', amount: '320,000 BIF', bonus: '1,300,000 BIF', img: 'https://images.pexels.com/photos/2850347/pexels-photo-2850347.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Smart Solar', amount: '360,000 BIF', bonus: '1,700,000 BIF', img: 'https://images.pexels.com/photos/2990644/pexels-photo-2990644.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'PV Entry', amount: '400,000 BIF', bonus: '2,100,000 BIF', img: 'https://images.pexels.com/photos/37728/pexels-photo-37728.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'PV Basic', amount: '440,000 BIF', bonus: '2,500,000 BIF', img: 'https://images.pexels.com/photos/1108101/pexels-photo-1108101.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'PV Standard', amount: '480,000 BIF', bonus: '3,000,000 BIF', img: 'https://images.pexels.com/photos/2422265/pexels-photo-2422265.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'PV Plus', amount: '520,000 BIF', bonus: '3,600,000 BIF', img: 'https://images.pexels.com/photos/159375/pexels-photo-159375.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'PV Pro', amount: '560,000 BIF', bonus: '4,200,000 BIF', img: 'https://images.pexels.com/photos/911738/pexels-photo-911738.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'PV Max', amount: '600,000 BIF', bonus: '4,800,000 BIF', img: 'https://images.pexels.com/photos/911758/pexels-photo-911758.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Off-Grid Pro', amount: '640,000 BIF', bonus: '5,200,000 BIF', img: 'https://images.pexels.com/photos/1108119/pexels-photo-1108119.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Hybrid Pro', amount: '680,000 BIF', bonus: '5,600,000 BIF', img: 'https://images.pexels.com/photos/2422256/pexels-photo-2422256.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Grid-Tied Pro', amount: '720,000 BIF', bonus: '6,000,000 BIF', img: 'https://images.pexels.com/photos/159393/pexels-photo-159393.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Solar Battery', amount: '760,000 BIF', bonus: '6,400,000 BIF', img: 'https://images.pexels.com/photos/433311/pexels-photo-433311.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Storage Plus', amount: '800,000 BIF', bonus: '6,800,000 BIF', img: 'https://images.pexels.com/photos/356056/pexels-photo-356056.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Smart Hybrid', amount: '840,000 BIF', bonus: '7,100,000 BIF', img: 'https://images.pexels.com/photos/2800840/pexels-photo-2800840.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'PV Ultra', amount: '880,000 BIF', bonus: '7,400,000 BIF', img: 'https://images.pexels.com/photos/159400/pexels-photo-159400.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Solar Array', amount: '920,000 BIF', bonus: '7,600,000 BIF', img: 'https://images.pexels.com/photos/4254899/pexels-photo-4254899.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Solar Plant', amount: '960,000 BIF', bonus: '7,800,000 BIF', img: 'https://images.pexels.com/photos/159395/pexels-photo-159395.jpeg?auto=compress&cs=tinysrgb&w=400' },
-      { name: 'Commercial Solar', amount: '1,000,000 BIF', bonus: '8,000,000 BIF', img: 'https://images.pexels.com/photos/2850348/pexels-photo-2850348.jpeg?auto=compress&cs=tinysrgb&w=400' }
+      { name: 'Poly Basic', amount: '120,000 BIF', bonus: '320,000 BIF', img: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=400&q=80' },
+      { name: 'Thin Film', amount: '160,000 BIF', bonus: '450,000 BIF', img: 'https://images.pexels.com/photos/433333/pexels-photo-433333.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Off-Grid Lite', amount: '200,000 BIF', bonus: '600,000 BIF', img: 'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=400&q=80' },
+      { name: 'Hybrid Lite', amount: '240,000 BIF', bonus: '800,000 BIF', img: 'https://images.pexels.com/photos/2800839/pexels-photo-2800839.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Grid-Tied Lite', amount: '280,000 BIF', bonus: '1,000,000 BIF', img: 'https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=400&q=80' },
+      { name: 'Solar Storage', amount: '320,000 BIF', bonus: '1,300,000 BIF', img: 'https://images.pexels.com/photos/159397/pexels-photo-159397.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Smart Solar', amount: '360,000 BIF', bonus: '1,700,000 BIF', img: 'https://images.unsplash.com/photo-1548337138-e87d889cc369?w=400&q=80' },
+      { name: 'PV Entry', amount: '400,000 BIF', bonus: '2,100,000 BIF', img: 'https://images.pexels.com/photos/4254898/pexels-photo-4254898.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'PV Basic', amount: '440,000 BIF', bonus: '2,500,000 BIF', img: 'https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=400&q=80' },
+      { name: 'PV Standard', amount: '480,000 BIF', bonus: '3,000,000 BIF', img: 'https://images.pexels.com/photos/159394/pexels-photo-159394.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'PV Plus', amount: '520,000 BIF', bonus: '3,600,000 BIF', img: 'https://images.unsplash.com/photo-1592833159155-c62df1b65634?w=400&q=80' },
+      { name: 'PV Pro', amount: '560,000 BIF', bonus: '4,200,000 BIF', img: 'https://images.pexels.com/photos/2850347/pexels-photo-2850347.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'PV Max', amount: '600,000 BIF', bonus: '4,800,000 BIF', img: 'https://images.unsplash.com/photo-1559302995-f0a1bc19e51f?w=400&q=80' },
+      { name: 'Off-Grid Pro', amount: '640,000 BIF', bonus: '5,200,000 BIF', img: 'https://images.pexels.com/photos/2990644/pexels-photo-2990644.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Hybrid Pro', amount: '680,000 BIF', bonus: '5,600,000 BIF', img: 'https://images.unsplash.com/photo-1611365892117-00ac5efdf03f?w=400&q=80' },
+      { name: 'Grid-Tied Pro', amount: '720,000 BIF', bonus: '6,000,000 BIF', img: 'https://images.pexels.com/photos/37728/pexels-photo-37728.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Solar Battery', amount: '760,000 BIF', bonus: '6,400,000 BIF', img: 'https://images.unsplash.com/photo-1516937622594-c8c7f769d7a7?w=400&q=80' },
+      { name: 'Storage Plus', amount: '800,000 BIF', bonus: '6,800,000 BIF', img: 'https://images.pexels.com/photos/1108101/pexels-photo-1108101.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Smart Hybrid', amount: '840,000 BIF', bonus: '7,100,000 BIF', img: 'https://images.unsplash.com/photo-1501183007981-d4a019f5c93c?w=400&q=80' },
+      { name: 'PV Ultra', amount: '880,000 BIF', bonus: '7,400,000 BIF', img: 'https://images.pexels.com/photos/2422265/pexels-photo-2422265.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Solar Array', amount: '920,000 BIF', bonus: '7,600,000 BIF', img: 'https://images.unsplash.com/photo-1473341304179-c14f39e3b981?w=400&q=80' },
+      { name: 'Solar Plant', amount: '960,000 BIF', bonus: '7,800,000 BIF', img: 'https://images.pexels.com/photos/159375/pexels-photo-159375.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Commercial Solar', amount: '1,000,000 BIF', bonus: '8,000,000 BIF', img: 'https://images.unsplash.com/photo-1581094851215-630978918174?w=400&q=80' }
     ];
 
     const finalData = data && data.length >= 24 ? data : mockPkgs;
@@ -758,7 +760,9 @@ class SolarApp {
     list.innerHTML = finalData.map((p, i) => `
       <div class="landing-pkg-card">
         ${p.name.includes('Pro') || p.name.includes('Commercial') ? '<div class="popular-ribbon">POPULAR</div>' : ''}
-        <img src="${p.img || 'assets/img/packages/pkg-1.jpg'}" class="landing-pkg-img" alt="${p.name}">
+        <img src="${p.img || 'assets/img/packages/pkg-1.jpg'}" 
+             onerror="this.src='assets/img/packages/pkg-1.jpg'; this.onerror=null;" 
+             class="landing-pkg-img" alt="${p.name}">
         <div class="landing-pkg-content">
           <h3>${p.name}</h3>
           <div class="landing-pkg-price">${p.amount}</div>
