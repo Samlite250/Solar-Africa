@@ -349,7 +349,8 @@ class SolarApp {
     }
   }
 
-  // --- DASHBOARD HYDRATION ---  async hydrateDashboard() {
+  // --- DASHBOARD HYDRATION ---
+  async hydrateDashboard() {
     const data = await this.fetchAPI('dashboard');
     
     // Use Mockup Data if API fails or for initial match
@@ -471,8 +472,6 @@ class SolarApp {
           </div>
           <span style="font-weight:800; color:#1e293b;">${t.amount}</span>
         </div>`).join('');
-    }
-  }';
     }
   }
 
