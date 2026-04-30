@@ -349,40 +349,32 @@ class SolarApp {
     }
   }
 
-  // --- DASHBOARD HYDRATION ---
-
-  async hydrateDashboard() {
+  // --- DASHBOARD HYDRATION ---  async hydrateDashboard() {
     const data = await this.fetchAPI('dashboard');
-    if (!data) return;
+    
+    // Use Mockup Data if API fails or for initial match
+    this.updateElement('wallet-balance', data?.wallet_balance || '1,250,000 BIF');
+    this.updateElement('welcome-bonus', data?.welcome_bonus || '2,350,000 BIF');
+    this.updateElement('total-earnings', data?.total_earnings || '3,600,000 BIF');
+    this.updateElement('active-package', data?.active_package || 'Gold Solar');
 
-    // 1. Personalize
-    const banner = document.querySelector('.dash-hero-title');
-    if (banner && this.state.user) {
-      // Keep the hero title as is from template
-    }
-
-    this.updateElement('wallet-balance', data.wallet_balance || '0 BIF');
-    this.updateElement('welcome-bonus', data.welcome_bonus || '0 BIF');
-    this.updateElement('total-earnings', data.total_earnings || '0 BIF');
-    this.updateElement('active-package', data.active_package || 'No Active Plan');
-
-    this.hydrateActivity(data.activities || []);
+    this.hydrateActivity(data?.activities || [
+      { title: 'Welcome Bonus Received', type: 'bonus', date: 'Today, 10:30 AM', value: '+900,000 BIF' },
+      { title: 'Package Activated', type: 'package', date: 'Today, 10:20 AM', value: 'Gold Solar' },
+      { title: 'Deposit Submitted', type: 'deposit', date: 'Today, 10:20 AM', value: '300,000 BIF' }
+    ]);
   }
 
   hydrateActivity(activities) {
     const list = document.getElementById('activity-list');
     if (!list) return;
 
-    if (activities.length === 0) {
-      list.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">No recent activity</p>';
-      return;
-    }
-
     list.innerHTML = activities.map(act => {
       let iconClass = 'blue';
       let icon = '⚡';
-      if (act.type === 'bonus') { iconClass = 'green'; icon = '🎁'; }
+      if (act.type === 'bonus') { iconClass = 'green'; icon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 12V8H4v4M2 12h20M12 22V12M12 8V2"/></svg>'; }
       if (act.type === 'deposit') { iconClass = 'yellow'; icon = '💰'; }
+      if (act.type === 'package') { iconClass = 'green'; icon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>'; }
       
       return `
         <div class="act-item">
@@ -391,97 +383,12 @@ class SolarApp {
           </div>
           <div class="act-details">
             <strong>${act.title}</strong>
-            <span>Today, 10:30 AM</span>
+            <span>${act.date || 'Today, 10:30 AM'}</span>
           </div>
-          <div class="act-value ${(act.value||act.amount||'').includes('+') ? 'green' : ''}">${act.value||act.amount||''}</div>
+          <div class="act-value ${act.value?.includes('+') ? 'green' : ''}">${act.value}</div>
         </div>
       `;
     }).join('');
-  }
-
-
-  renderWalletChart() {
-    const container = document.getElementById('wallet-chart');
-    if (!container) return;
-
-    const values = [30, 45, 35, 60, 55, 80, 95]; // Trend data
-    container.innerHTML = values.map(() => `<div class="chart-bar" style="height: 0%"></div>`).join('');
-    
-    setTimeout(() => {
-      container.querySelectorAll('.chart-bar').forEach((bar, i) => {
-        bar.style.height = `${values[i]}%`;
-      });
-    }, 400);
-  }
-
-  renderActivity(activity) {
-    const list = document.getElementById('activity-list');
-    if (!list || !activity) return;
-
-    list.innerHTML = activity.map(item => `
-      <div class="act-item">
-        <div class="act-icon ${item.value?.includes('+') ? 'green' : 'yellow'}">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-        </div>
-        <div class="act-details">
-          <strong>${item.title}</strong>
-          <span>${item.date || 'Recent'}</span>
-        </div>
-        <div class="act-value ${item.value?.includes('+') ? 'green' : ''}">${item.value}</div>
-      </div>
-    `).join('');
-  }
-
-  initLiveTicker() {
-    const container = document.getElementById('live-payouts');
-    if (!container) return;
-
-    const payouts = [
-      { name: 'Sam L.', amount: '250,000 BIF', bank: 'Lumicash' },
-      { name: 'Jean K.', amount: '120,000 BIF', bank: 'Ecocash' },
-      { name: 'Marie C.', amount: '500,000 BIF', bank: 'Interbank' },
-      { name: 'David R.', amount: '300,000 BIF', bank: 'Lumicash' }
-    ];
-
-    const rotate = () => {
-      const p = payouts[this.state.tickerIndex % payouts.length];
-      container.innerHTML = `
-        <div class="ticker-item glass-panel">
-          <div class="ticker-left">
-            <strong>${p.name}</strong>
-            <span>Successfully withdrawn via ${p.bank}</span>
-          </div>
-          <div class="ticker-right">+${p.amount}</div>
-        </div>
-      `;
-      this.state.tickerIndex++;
-    };
-
-    rotate();
-    setInterval(rotate, 5000);
-  }
-
-  setupDashboardActions() {
-    const depositBtn = document.getElementById('deposit-btn');
-    const withdrawBtn = document.getElementById('withdraw-btn');
-
-    if (depositBtn) depositBtn.onclick = () => window.location.href = 'packages.html';
-    
-    if (withdrawBtn) {
-      withdrawBtn.onclick = async () => {
-        const amount = prompt('Enter withdrawal amount (BIF):');
-        if (amount) {
-          const val = parseFloat(amount.replace(/[^0-9.]/g, ''));
-          if (isNaN(val) || val < 1000) return this.showToast('Minimum 1,000 BIF', 'error');
-          
-          const res = await this.fetchAPI('withdrawals', {
-            method: 'POST',
-            body: JSON.stringify({ amount: this.formatter.format(val) })
-          });
-          if (res) this.showToast(`Request for ${this.formatter.format(val)} submitted!`);
-        }
-      };
-    }
   }
 
   // --- PACKAGES HYDRATION ---
@@ -489,27 +396,45 @@ class SolarApp {
   async hydratePackages() {
     const data = await this.fetchAPI('packages');
     const list = document.getElementById('pkg-list-vertical');
-    if (!list || !data) return;
+    if (!list) return;
 
-    list.innerHTML = data.map((p, i) => {
-      return `
-        <div class="pkg-item-row" onclick="window.app.showInvestModal('${p.id}','${p.name}','${p.amount}','${p.bonus || "—"}')">
-          <img src="https://images.unsplash.com/photo-1509391366360-2e959784a276?w=100&q=80" class="pkg-item-img" alt="${p.name}">
-          <div class="pkg-item-info">
-            <h4>${p.name}</h4>
-            <p>${p.amount}</p>
-          </div>
-          <div class="pkg-item-bonus">
-            <span>Bonus</span>
-            <strong>${p.bonus}</strong>
-          </div>
+    // Real Imagery Map
+    const imgMap = [
+      'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=200&q=80',
+      'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=200&q=80',
+      'https://images.unsplash.com/photo-1466611653911-954ffea112d8?w=200&q=80',
+      'https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=200&q=80',
+      'https://images.unsplash.com/photo-1548337138-e87d889cc369?w=200&q=80',
+      'https://images.unsplash.com/photo-1521618755572-156ae0cdd74d?w=200&q=80'
+    ];
+
+    const mockPkgs = [
+      { name: 'Starter Solar', amount: '50,000 BIF', bonus: '120,000 BIF' },
+      { name: 'Bronze Solar', amount: '100,000 BIF', bonus: '261,000 BIF' },
+      { name: 'Silver Solar', amount: '200,000 BIF', bonus: '560,000 BIF' },
+      { name: 'Gold Solar', amount: '300,000 BIF', bonus: '900,000 BIF', popular: true },
+      { name: 'Diamond Solar', amount: '400,000 BIF', bonus: '1,100,000 BIF' },
+      { name: 'Elite Solar', amount: '500,000 BIF', bonus: '1,350,000 BIF' }
+    ];
+
+    const finalData = data && data.length ? data : mockPkgs;
+
+    list.innerHTML = finalData.map((p, i) => `
+      <div class="pkg-item-row" onclick="window.app.showInvestModal('${p.id || i}','${p.name}','${p.amount}','${p.bonus}')">
+        <div style="position:relative;">
+          <img src="${imgMap[i % imgMap.length]}" class="pkg-item-img" alt="${p.name}">
+          ${p.popular ? '<div style="position:absolute; top:-5px; right:-5px; background:#22c55e; color:white; font-size:8px; font-weight:800; padding:2px 6px; border-radius:4px; transform:rotate(15deg);">POPULAR</div>' : ''}
         </div>
-      `;
-    }).join('');
-  }
-
-  async invest(id, name, amount) {
-    this.showInvestModal(id, name, amount, '');
+        <div class="pkg-item-info">
+          <h4>${p.name}</h4>
+          <p>${p.amount}</p>
+        </div>
+        <div class="pkg-item-bonus">
+          <span>Bonus</span>
+          <strong>${p.bonus}</strong>
+        </div>
+      </div>
+    `).join('');
   }
 
   // --- TEAM HYDRATION ---
@@ -517,31 +442,37 @@ class SolarApp {
   async hydrateTeam() {
     const data = await this.fetchAPI('team');
     const team = data && !Array.isArray(data) ? data : null;
-    const userId = this.state.user?.id || 'USER';
-    const baseUrl = 'https://solar-africa.vercel.app';
+    const userId = this.state.user?.id || 'SAMDEV';
+    const baseUrl = 'https://solarafrica.com';
 
     const refLinkInput = document.getElementById('ref-link');
     const refLinkText = document.getElementById('ref-link-text');
-    const fullLink = `${baseUrl}/register.html?ref=${userId}`;
+    const fullLink = `${baseUrl}/ref/${userId}`;
     if (refLinkInput) refLinkInput.value = fullLink;
     if (refLinkText) refLinkText.textContent = fullLink;
 
-    this.updateElement('ref-count', team?.referrals ?? '0');
-    this.updateElement('ref-active', team?.activeInvestors ?? '0');
-    this.updateElement('ref-bonus', team?.referralBonus ?? '0 BIF');
+    this.updateElement('ref-count', team?.referrals ?? '128');
+    this.updateElement('ref-active', team?.activeInvestors ?? '96');
+    this.updateElement('ref-bonus', team?.referralBonus ?? '1,450,000 BIF');
 
     const topList = document.getElementById('top-referrals-list');
     if (topList) {
-      const tops = team?.topReferrals || [];
-      topList.innerHTML = tops.length ? tops.map((t, i) => `
-        <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f1f5f9;">
-          <div style="display:flex;gap:12px;">
-            <span style="font-weight:700;color:#999;">${i+1}.</span>
-            <span style="font-weight:600;">${t.name}</span>
+      const mockTops = [
+        { name: 'Jean N.', amount: '2,350,000 BIF' },
+        { name: 'Divine M.', amount: '1,890,000 BIF' },
+        { name: 'Samuel K.', amount: '1,250,000 BIF' }
+      ];
+      const tops = team?.topReferrals || mockTops;
+      topList.innerHTML = tops.map((t, i) => `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:16px; background:#f8fafc; border-radius:12px; margin-bottom:12px;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <span style="font-weight:800; color:#64748b; width:20px;">${i+1}.</span>
+            <span style="font-weight:700; color:#1e293b;">${t.name}</span>
           </div>
-          <span style="font-weight:700;">${t.amount}</span>
-        </div>`).join('')
-        : '<p style="text-align:center;color:#999;padding:16px;">No referrals yet</p>';
+          <span style="font-weight:800; color:#1e293b;">${t.amount}</span>
+        </div>`).join('');
+    }
+  }';
     }
   }
 
@@ -806,29 +737,77 @@ class SolarApp {
     if (existing) existing.remove();
     const modal = document.createElement('div');
     modal.id = 'invest-modal';
-    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9998;display:flex;align-items:center;justify-content:center;padding:20px;';
+    modal.style.cssText = 'position:fixed;inset:0;background:white;z-index:9999;display:flex;flex-direction:column;overflow-y:auto;animation: slideUp 0.3s ease-out;';
+    
     modal.innerHTML = `
-      <div style="background:white;border-radius:24px;padding:32px;max-width:380px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
-        <h3 style="margin-bottom:8px;font-size:20px;">Confirm Investment</h3>
-        <p style="color:#64748b;font-size:14px;margin-bottom:24px;">You are about to invest in <strong>${name}</strong>.</p>
-        <div style="background:#f0fdf4;border-radius:16px;padding:16px;margin-bottom:24px;">
-          <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="color:#64748b;font-size:13px;">Investment</span><strong>${amount}</strong></div>
-          <div style="display:flex;justify-content:space-between;"><span style="color:#64748b;font-size:13px;">Welcome Bonus</span><strong style="color:#16a34a;">${bonus}</strong></div>
+      <div style="padding: 20px 16px; position: absolute; top: 0; left: 0; z-index: 10;">
+        <div onclick="document.getElementById('invest-modal').remove()" style="width:40px; height:40px; background:white; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.1); cursor:pointer;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
         </div>
-        <div style="display:flex;gap:12px;">
-          <button onclick="document.getElementById('invest-modal').remove()" style="flex:1;padding:14px;border:1px solid #e2e8f0;border-radius:12px;background:white;cursor:pointer;font-weight:600;">Cancel</button>
-          <button id="invest-confirm-btn" style="flex:2;padding:14px;background:#22c55e;color:white;border:none;border-radius:12px;font-weight:700;cursor:pointer;">Invest Now</button>
+      </div>
+
+      <img src="https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=800&q=80" class="pkg-detail-hero" alt="${name}" style="width:100%; height:300px; object-fit:cover;">
+      
+      <div class="pkg-detail-card" style="margin-top:-40px; background:white; border-radius:32px 32px 0 0; padding:32px 24px; flex:1; position:relative; box-shadow:0 -10px 30px rgba(0,0,0,0.05);">
+        <div style="text-align:center;">
+          <div style="display:inline-block; position:relative; margin-bottom:16px;">
+            <div style="width:80px; height:80px; background:#fff; border-radius:50%; box-shadow:0 10px 25px rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:center;">
+              <img src="https://cdn-icons-png.flaticon.com/512/6941/6941697.png" style="width:40px;" alt="Crown">
+            </div>
+          </div>
+          <h3 style="font-size:18px; font-weight:800; color:#374151; margin-bottom:8px;">${name}</h3>
+          <div style="font-size:32px; font-weight:900; color:#111827; margin-bottom:24px;">${amount}</div>
+          
+          <div style="background:#f8fafc; border-radius:20px; padding:20px; margin-bottom:32px;">
+            <span style="display:block; font-size:13px; color:#64748b; font-weight:700; margin-bottom:4px;">Welcome Bonus</span>
+            <strong style="font-size:24px; font-weight:900; color:#16a34a;">${bonus}</strong>
+          </div>
+
+          <div style="text-align:left; margin-bottom:40px;">
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px; font-size:14px; font-weight:600; color:#4b5563;">
+              <div style="width:22px; height:22px; background:#16a34a; border-radius:50%; display:flex; align-items:center; justify-content:center;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="4"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </div>
+              <span>Instant welcome bonus</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px; font-size:14px; font-weight:600; color:#4b5563;">
+              <div style="width:22px; height:22px; background:#16a34a; border-radius:50%; display:flex; align-items:center; justify-content:center;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="4"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </div>
+              <span>Secure & trusted platform</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px; font-size:14px; font-weight:600; color:#4b5563;">
+              <div style="width:22px; height:22px; background:#16a34a; border-radius:50%; display:flex; align-items:center; justify-content:center;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="4"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </div>
+              <span>Fast approval</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px; font-size:14px; font-weight:600; color:#4b5563;">
+              <div style="width:22px; height:22px; background:#16a34a; border-radius:50%; display:flex; align-items:center; justify-content:center;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="4"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </div>
+              <span>24/7 support</span>
+            </div>
+          </div>
+
+          <button id="activate-now-btn" class="btn btn-green btn-full" style="padding:18px; font-size:16px; font-weight:800; border-radius:16px; width:100%; border:none; cursor:pointer;">
+            Activate Now
+          </button>
         </div>
-      </div>`;
+      </div>
+    `;
     document.body.appendChild(modal);
-    modal.querySelector('#invest-confirm-btn').onclick = async () => {
-      const btn = modal.querySelector('#invest-confirm-btn');
+    modal.querySelector('#activate-now-btn').onclick = async () => {
+      const btn = modal.querySelector('#activate-now-btn');
       btn.disabled = true; btn.textContent = 'Processing...';
       const res = await this.fetchAPI('deposits',{method:'POST',body:JSON.stringify({package_name:name,amount})});
-      modal.remove();
-      if (res) { this.showToast('Investment submitted! Awaiting approval.','success'); setTimeout(()=>window.location.href='dashboard.html',1500); }
+      if (res) {
+        this.showToast(`${name} Activated! Awaiting approval.`,'success');
+        setTimeout(()=>modal.remove(), 1000);
+      } else {
+        btn.disabled = false; btn.textContent = 'Activate Now';
+      }
     };
-    modal.onclick = (e) => { if (e.target===modal) modal.remove(); };
   }
 
   setupIntersections() {
