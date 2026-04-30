@@ -357,12 +357,12 @@ class SolarApp {
     this.updateElement('wallet-balance', data?.wallet_balance || '1,250,000 BIF');
     this.updateElement('welcome-bonus', data?.welcome_bonus || '2,350,000 BIF');
     this.updateElement('total-earnings', data?.total_earnings || '3,600,000 BIF');
-    this.updateElement('active-package', data?.active_package || 'Gold Solar');
+    this.updateElement('active-package', data?.active_package || 'Mono Starter');
 
     this.hydrateActivity(data?.activities || [
-      { title: 'Welcome Bonus Received', type: 'bonus', date: 'Today, 10:30 AM', value: '+900,000 BIF' },
-      { title: 'Package Activated', type: 'package', date: 'Today, 10:20 AM', value: 'Gold Solar' },
-      { title: 'Deposit Submitted', type: 'deposit', date: 'Today, 10:20 AM', value: '300,000 BIF' }
+      { title: 'Welcome Bonus Received', type: 'bonus', date: 'Today, 10:30 AM', value: '+210,000 BIF' },
+      { title: 'Package Activated', type: 'package', date: 'Today, 10:20 AM', value: 'Mono Starter' },
+      { title: 'Deposit Submitted', type: 'deposit', date: 'Today, 10:20 AM', value: '80,000 BIF' }
     ]);
   }
 
@@ -410,12 +410,30 @@ class SolarApp {
     ];
 
     const mockPkgs = [
-      { name: 'Starter Solar', amount: '50,000 BIF', bonus: '120,000 BIF' },
-      { name: 'Bronze Solar', amount: '100,000 BIF', bonus: '261,000 BIF' },
-      { name: 'Silver Solar', amount: '200,000 BIF', bonus: '560,000 BIF' },
-      { name: 'Gold Solar', amount: '300,000 BIF', bonus: '900,000 BIF', popular: true },
-      { name: 'Diamond Solar', amount: '400,000 BIF', bonus: '1,100,000 BIF' },
-      { name: 'Elite Solar', amount: '500,000 BIF', bonus: '1,350,000 BIF' }
+      { name: 'Mono Starter', amount: '80,000 BIF', bonus: '210,000 BIF' },
+      { name: 'Poly Basic', amount: '120,000 BIF', bonus: '320,000 BIF' },
+      { name: 'Thin Film', amount: '160,000 BIF', bonus: '450,000 BIF' },
+      { name: 'Off-Grid Lite', amount: '200,000 BIF', bonus: '600,000 BIF' },
+      { name: 'Hybrid Lite', amount: '240,000 BIF', bonus: '800,000 BIF' },
+      { name: 'Grid-Tied Lite', amount: '280,000 BIF', bonus: '1,000,000 BIF' },
+      { name: 'Solar Storage', amount: '320,000 BIF', bonus: '1,300,000 BIF' },
+      { name: 'Smart Solar', amount: '360,000 BIF', bonus: '1,700,000 BIF' },
+      { name: 'PV Entry', amount: '400,000 BIF', bonus: '2,100,000 BIF' },
+      { name: 'PV Basic', amount: '440,000 BIF', bonus: '2,500,000 BIF' },
+      { name: 'PV Standard', amount: '480,000 BIF', bonus: '3,000,000 BIF' },
+      { name: 'PV Plus', amount: '520,000 BIF', bonus: '3,600,000 BIF' },
+      { name: 'PV Pro', amount: '560,000 BIF', bonus: '4,200,000 BIF' },
+      { name: 'PV Max', amount: '600,000 BIF', bonus: '4,800,000 BIF' },
+      { name: 'Off-Grid Pro', amount: '640,000 BIF', bonus: '5,200,000 BIF' },
+      { name: 'Hybrid Pro', amount: '680,000 BIF', bonus: '5,600,000 BIF' },
+      { name: 'Grid-Tied Pro', amount: '720,000 BIF', bonus: '6,000,000 BIF' },
+      { name: 'Solar Battery', amount: '760,000 BIF', bonus: '6,400,000 BIF' },
+      { name: 'Storage Plus', amount: '800,000 BIF', bonus: '6,800,000 BIF' },
+      { name: 'Smart Hybrid', amount: '840,000 BIF', bonus: '7,100,000 BIF' },
+      { name: 'PV Ultra', amount: '880,000 BIF', bonus: '7,400,000 BIF' },
+      { name: 'Solar Array', amount: '920,000 BIF', bonus: '7,600,000 BIF' },
+      { name: 'Solar Plant', amount: '960,000 BIF', bonus: '7,800,000 BIF' },
+      { name: 'Commercial Solar', amount: '1,000,000 BIF', bonus: '8,000,000 BIF' }
     ];
 
     const finalData = data && data.length ? data : mockPkgs;
@@ -716,10 +734,40 @@ class SolarApp {
   async hydrateLandingPackages() {
     const data = await this.fetchAPI('packages');
     const list = document.querySelector('.pkg-list');
-    if (!list || !data) return;
-    list.innerHTML = data.slice(0, 5).map((p, i) => `
+    if (!list) return;
+
+    const mockPkgs = [
+      { name: 'Mono Starter', amount: '80,000 BIF', bonus: '210,000 BIF' },
+      { name: 'Poly Basic', amount: '120,000 BIF', bonus: '320,000 BIF' },
+      { name: 'Thin Film', amount: '160,000 BIF', bonus: '450,000 BIF' },
+      { name: 'Off-Grid Lite', amount: '200,000 BIF', bonus: '600,000 BIF' },
+      { name: 'Hybrid Lite', amount: '240,000 BIF', bonus: '800,000 BIF' },
+      { name: 'Grid-Tied Lite', amount: '280,000 BIF', bonus: '1,000,000 BIF' },
+      { name: 'Solar Storage', amount: '320,000 BIF', bonus: '1,300,000 BIF' },
+      { name: 'Smart Solar', amount: '360,000 BIF', bonus: '1,700,000 BIF' },
+      { name: 'PV Entry', amount: '400,000 BIF', bonus: '2,100,000 BIF' },
+      { name: 'PV Basic', amount: '440,000 BIF', bonus: '2,500,000 BIF' },
+      { name: 'PV Standard', amount: '480,000 BIF', bonus: '3,000,000 BIF' },
+      { name: 'PV Plus', amount: '520,000 BIF', bonus: '3,600,000 BIF' },
+      { name: 'PV Pro', amount: '560,000 BIF', bonus: '4,200,000 BIF' },
+      { name: 'PV Max', amount: '600,000 BIF', bonus: '4,800,000 BIF' },
+      { name: 'Off-Grid Pro', amount: '640,000 BIF', bonus: '5,200,000 BIF' },
+      { name: 'Hybrid Pro', amount: '680,000 BIF', bonus: '5,600,000 BIF' },
+      { name: 'Grid-Tied Pro', amount: '720,000 BIF', bonus: '6,000,000 BIF' },
+      { name: 'Solar Battery', amount: '760,000 BIF', bonus: '6,400,000 BIF' },
+      { name: 'Storage Plus', amount: '800,000 BIF', bonus: '6,800,000 BIF' },
+      { name: 'Smart Hybrid', amount: '840,000 BIF', bonus: '7,100,000 BIF' },
+      { name: 'PV Ultra', amount: '880,000 BIF', bonus: '7,400,000 BIF' },
+      { name: 'Solar Array', amount: '920,000 BIF', bonus: '7,600,000 BIF' },
+      { name: 'Solar Plant', amount: '960,000 BIF', bonus: '7,800,000 BIF' },
+      { name: 'Commercial Solar', amount: '1,000,000 BIF', bonus: '8,000,000 BIF' }
+    ];
+
+    const finalData = data && data.length >= 24 ? data : mockPkgs;
+
+    list.innerHTML = finalData.map((p, i) => `
       <div class="landing-pkg-card">
-        ${i === 4 ? '<div class="popular-ribbon">POPULAR</div>' : ''}
+        ${p.name.includes('Pro') || p.name.includes('Commercial') ? '<div class="popular-ribbon">POPULAR</div>' : ''}
         <img src="https://images.unsplash.com/photo-1509391366360-2e959784a276?w=400&q=80" class="landing-pkg-img" alt="${p.name}">
         <div class="landing-pkg-content">
           <h3>${p.name}</h3>
