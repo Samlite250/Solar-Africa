@@ -89,7 +89,9 @@ class SolarApp {
         await this.hydrate();
       }, 200);
     }
-   getTemplate(page) {
+  }
+
+  getTemplate(page) {
     const templates = {
       dashboard: `
         <div class="dash-hero-banner">
@@ -246,7 +248,7 @@ class SolarApp {
       case 'team':      await this.hydrateTeam(); break;
       case 'profile':   await this.hydrateProfile(); break;
       case 'admin':     await this.hydrateAdmin(); break;
-      case 'home':      this.animateLandingStats(); break;
+      case 'home':      this.animateLandingStats(); this.hydrateLandingPackages(); break;
       case 'auth':      this.hydrateAuth(); break;
     }
   }
@@ -376,23 +378,11 @@ class SolarApp {
           <strong>${act.title}</strong>
           <span>${act.date}</span>
         </div>
-        <div class="act-value ${act.amount.includes('+') ? 'green' : ''}">${act.amount}</div>
+        <div class="act-value ${(act.value||act.amount||'').includes('+') ? 'green' : ''}">${act.value||act.amount||''}</div>
       </div>
     `).join('');
   }
 
-    // 2. Metrics (with soft update)
-    this.updateElement('wallet-balance', data.wallet_balance);
-    this.updateElement('welcome-bonus', data.welcome_bonus);
-    this.updateElement('total-earnings', data.total_earnings);
-    this.updateElement('active-package', data.active_package);
-
-    // 3. Components
-    this.renderWalletChart();
-    this.renderActivity(data.activity || data.recentActivity);
-    this.initLiveTicker();
-    this.setupDashboardActions();
-  }
 
   renderWalletChart() {
     const container = document.getElementById('wallet-chart');
@@ -487,7 +477,7 @@ class SolarApp {
 
     list.innerHTML = data.map((p, i) => {
       return `
-        <div class="pkg-item-row" onclick="window.app.invest('${p.id}', '${p.name}', '${p.amount}')">
+        <div class="pkg-item-row" onclick="window.app.showInvestModal('${p.id}','${p.name}','${p.amount}','${p.bonus || "—"}')">
           <img src="https://images.unsplash.com/photo-1509391366360-2e959784a276?w=100&q=80" class="pkg-item-img" alt="${p.name}">
           <div class="pkg-item-info">
             <h4>${p.name}</h4>
@@ -501,54 +491,41 @@ class SolarApp {
       `;
     }).join('');
   }
-  }
 
   async invest(id, name, amount) {
-    if (confirm(`Invest ${amount} in ${name}?`)) {
-      const res = await this.fetchAPI('deposits', {
-        method: 'POST',
-        body: JSON.stringify({ package_name: name, amount })
-      });
-      if (res) {
-        this.showToast('Investment request submitted! Awaiting approval.');
-        setTimeout(() => window.location.href = 'dashboard.html', 1500);
-      }
-    }
+    this.showInvestModal(id, name, amount, '');
   }
 
   // --- TEAM HYDRATION ---
 
   async hydrateTeam() {
-    // Populate referral link
-    const refLinkInput = document.getElementById('ref-link');
-    if (refLinkInput && this.state.user) {
-      refLinkInput.value = `https://solarafrica.com/ref/${this.state.user.id || 'USER123'}`;
-    }
-    
-    // Populate stats
-    this.updateElement('ref-count', '128');
-    this.updateElement('ref-active', '96');
-    this.updateElement('ref-bonus', '1,450,000 BIF');
+    const data = await this.fetchAPI('team');
+    const team = data && !Array.isArray(data) ? data : null;
+    const userId = this.state.user?.id || 'USER';
+    const baseUrl = 'https://solar-africa.vercel.app';
 
-    // Top Referrals List
+    const refLinkInput = document.getElementById('ref-link');
+    if (refLinkInput) refLinkInput.value = `${baseUrl}/register.html?ref=${userId}`;
+
+    this.updateElement('ref-count', team?.referrals ?? '0');
+    this.updateElement('ref-active', team?.activeInvestors ?? '0');
+    this.updateElement('ref-bonus', team?.referralBonus ?? '0 BIF');
+
     const topList = document.getElementById('top-referrals-list');
     if (topList) {
-      const tops = [
-        { name: 'Jean N.', amount: '2,350,000 BIF' },
-        { name: 'Divine M.', amount: '1,890,000 BIF' },
-        { name: 'Samuel K.', amount: '1,250,000 BIF' }
-      ];
-      topList.innerHTML = tops.map((t, i) => `
-        <div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid #f1f5f9;">
-          <div style="display:flex; gap:12px;">
+      const tops = team?.topReferrals || [];
+      topList.innerHTML = tops.length ? tops.map((t, i) => `
+        <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f1f5f9;">
+          <div style="display:flex;gap:12px;">
             <span style="font-weight:700;color:#999;">${i+1}.</span>
             <span style="font-weight:600;">${t.name}</span>
           </div>
           <span style="font-weight:700;">${t.amount}</span>
-        </div>
-      `).join('');
+        </div>`).join('')
+        : '<p style="text-align:center;color:#999;padding:16px;">No referrals yet</p>';
     }
   }
+
 
   shareWhatsApp() {
     const text = `Join Solar Africa and start earning! ${document.getElementById('ref-link')?.value}`;
@@ -639,18 +616,69 @@ class SolarApp {
 
   // Admin Management Views
   initTransactionLedger() {
-    console.log("Admin: Initializing Transaction Ledger...");
-    // Ideally this would fetch from 'admin/transactions'
+    const tbody = document.getElementById('full-transaction-ledger');
+    if (!tbody || !this.adminData?.deposits) return;
+    tbody.innerHTML = this.adminData.deposits.map(d => `
+      <tr>
+        <td>#${d.id}</td>
+        <td>Deposit</td>
+        <td>${d.user_name}</td>
+        <td>${d.amount}</td>
+        <td>${d.created_at ? new Date(d.created_at).toLocaleDateString() : '—'}</td>
+        <td>
+          <span style="padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;background:${d.status==='approved'||d.status==='Approved'?'#dcfce7;color:#16a34a':d.status==='pending'||d.status==='Pending'?'#fef9c3;color:#b45309':'#fee2e2;color:#dc2626'}">${d.status}</span>
+          ${(d.status==='pending'||d.status==='Pending')?`
+          <button onclick="window.app.approveDeposit('${d.id}')" style="margin-left:6px;padding:3px 8px;background:#16a34a;color:white;border:none;border-radius:6px;cursor:pointer;font-size:11px;">✓ Approve</button>
+          <button onclick="window.app.rejectDeposit('${d.id}')" style="padding:3px 8px;background:#dc2626;color:white;border:none;border-radius:6px;cursor:pointer;font-size:11px;">✗ Reject</button>`:''}
+        </td>
+      </tr>`).join('');
   }
 
   initUserManagement() {
-    console.log("Admin: Initializing User Management...");
-    // Ideally this would fetch from 'admin/users'
+    const tbody = document.getElementById('full-user-list');
+    if (!tbody || !this.adminData?.users) return;
+    tbody.innerHTML = this.adminData.users.map(u => `
+      <tr>
+        <td><strong>${u.name}</strong></td>
+        <td>${u.email||'—'}</td>
+        <td>${u.created_at ? new Date(u.created_at).toLocaleDateString() : '—'}</td>
+        <td>${u.balance||'—'}</td>
+        <td><span style="padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;background:${u.status==='active'?'#dcfce7;color:#16a34a':'#fee2e2;color:#dc2626'}">${u.status}</span></td>
+        <td><button onclick="window.app.toggleUser('${u.id}','${u.status}')" style="padding:4px 10px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;cursor:pointer;font-size:12px;">${u.status==='active'?'Suspend':'Activate'}</button></td>
+      </tr>`).join('');
   }
 
   initPackageManagement() {
-    console.log("Admin: Initializing Package Management...");
-    // Ideally this would fetch from 'admin/packages'
+    const tbody = document.getElementById('admin-package-mgmt');
+    if (!tbody || !this.adminData?.packages) return;
+    tbody.innerHTML = this.adminData.packages.map(p => `
+      <tr>
+        <td><strong>${p.name}</strong></td>
+        <td>${p.amount}</td>
+        <td>${p.bonus}</td>
+        <td>${p.active??'—'}</td>
+        <td><span style="padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;background:#dcfce7;color:#16a34a">Active</span></td>
+        <td><button onclick="window.app.deletePackage('${p.id}')" style="padding:4px 10px;background:#fee2e2;color:#dc2626;border:none;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button></td>
+      </tr>`).join('');
+  }
+
+  async approveDeposit(id) {
+    const r = await this.fetchAPI(`admin/deposits/${id}`,{method:'PUT',body:JSON.stringify({status:'approved'})});
+    if (r) { this.showToast('Deposit approved!','success'); await this.hydrateAdmin(); }
+  }
+  async rejectDeposit(id) {
+    const r = await this.fetchAPI(`admin/deposits/${id}`,{method:'PUT',body:JSON.stringify({status:'rejected'})});
+    if (r) { this.showToast('Deposit rejected.','error'); await this.hydrateAdmin(); }
+  }
+  async toggleUser(id, status) {
+    const ns = status==='active'?'suspended':'active';
+    const r = await this.fetchAPI(`admin/users/${id}`,{method:'PUT',body:JSON.stringify({status:ns})});
+    if (r) { this.showToast(`User ${ns}.`,'success'); await this.hydrateAdmin(); }
+  }
+  async deletePackage(id) {
+    if (!confirm('Delete this package?')) return;
+    const r = await this.fetchAPI(`admin/packages/${id}`,{method:'DELETE'});
+    if (r) { this.showToast('Package deleted.','success'); await this.hydrateAdmin(); }
   }
 
   // Admin Modals
@@ -718,6 +746,60 @@ class SolarApp {
         }
       }, 30);
     });
+  }
+
+  async hydrateLandingPackages() {
+    const data = await this.fetchAPI('packages');
+    const list = document.querySelector('.pkg-list');
+    if (!list || !data) return;
+    list.innerHTML = data.slice(0, 6).map((p, i) => `
+      <div class="package-card pkg-variant-${i % 6}">
+        <div class="pkg-header">
+          <div>
+            <div class="pkg-icon-wrap">☀️</div>
+            <h3>${p.name}</h3>
+          </div>
+          <div class="pkg-price-tag">
+            <strong>${p.amount}</strong>
+            <span>Invest</span>
+          </div>
+        </div>
+        <div class="pkg-reward-box">
+          <strong>${p.bonus}</strong>
+          <span>Welcome Bonus</span>
+        </div>
+        <a href="register.html" class="btn-choose">Get Started →</a>
+      </div>`).join('');
+  }
+
+  showInvestModal(id, name, amount, bonus) {
+    const existing = document.getElementById('invest-modal');
+    if (existing) existing.remove();
+    const modal = document.createElement('div');
+    modal.id = 'invest-modal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9998;display:flex;align-items:center;justify-content:center;padding:20px;';
+    modal.innerHTML = `
+      <div style="background:white;border-radius:24px;padding:32px;max-width:380px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+        <h3 style="margin-bottom:8px;font-size:20px;">Confirm Investment</h3>
+        <p style="color:#64748b;font-size:14px;margin-bottom:24px;">You are about to invest in <strong>${name}</strong>.</p>
+        <div style="background:#f0fdf4;border-radius:16px;padding:16px;margin-bottom:24px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="color:#64748b;font-size:13px;">Investment</span><strong>${amount}</strong></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:#64748b;font-size:13px;">Welcome Bonus</span><strong style="color:#16a34a;">${bonus}</strong></div>
+        </div>
+        <div style="display:flex;gap:12px;">
+          <button onclick="document.getElementById('invest-modal').remove()" style="flex:1;padding:14px;border:1px solid #e2e8f0;border-radius:12px;background:white;cursor:pointer;font-weight:600;">Cancel</button>
+          <button id="invest-confirm-btn" style="flex:2;padding:14px;background:#22c55e;color:white;border:none;border-radius:12px;font-weight:700;cursor:pointer;">Invest Now</button>
+        </div>
+      </div>`;
+    document.body.appendChild(modal);
+    modal.querySelector('#invest-confirm-btn').onclick = async () => {
+      const btn = modal.querySelector('#invest-confirm-btn');
+      btn.disabled = true; btn.textContent = 'Processing...';
+      const res = await this.fetchAPI('deposits',{method:'POST',body:JSON.stringify({package_name:name,amount})});
+      modal.remove();
+      if (res) { this.showToast('Investment submitted! Awaiting approval.','success'); setTimeout(()=>window.location.href='dashboard.html',1500); }
+    };
+    modal.onclick = (e) => { if (e.target===modal) modal.remove(); };
   }
 
   setupIntersections() {
