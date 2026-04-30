@@ -426,7 +426,7 @@ class SolarApp {
       { name: 'Commercial Solar', amount: '1,000,000 BIF', bonus: '8,000,000 BIF', img: 'assets/img/packages/pkg-24.jpg' }
     ];
 
-    const finalData = data && data.length ? data : mockPkgs;
+    const finalData = data && data.length >= 24 ? data : mockPkgs;
 
     list.innerHTML = finalData.map((p, i) => `
       <div class="pkg-item-row" onclick="window.app.showInvestModal('${p.id || i}','${p.name}','${p.amount}','${p.bonus}','${p.img}')">
