@@ -218,25 +218,26 @@ body {
 .logo-container {
   display: flex;
   align-items: center;
-  gap: 6px; /* Reduced from 8px */
+  gap: 8px; /* Balanced for the new image logo */
 }
 
-.logo-container svg {
-  width: 44px; /* Increased from 32px */
-  height: 44px;
-  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.05));
+.logo-container img {
+  height: 42px; /* Balanced prominence */
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.08));
 }
 
 .logo-text-blue { 
   color: var(--primary-blue); 
   font-weight: 800; 
-  font-size: 1.1rem; 
+  font-size: 1.15rem; 
   letter-spacing: -0.02em;
 }
 .logo-text-green { 
   color: var(--primary-green); 
   font-weight: 800; 
-  font-size: 1.1rem; 
+  font-size: 1.15rem; 
   letter-spacing: -0.02em;
 }
 
