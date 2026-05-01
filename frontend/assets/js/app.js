@@ -769,96 +769,92 @@ class SolarApp {
     if (existing) existing.remove();
     const modal = document.createElement('div');
     modal.id = 'invest-modal';
-    modal.style.cssText = 'position:fixed;inset:0;background:white;z-index:9999;display:flex;flex-direction:column;overflow-y:auto;animation: slideUp 0.3s ease-out;';
+    modal.style.cssText = 'position:fixed;inset:0;background:var(--bg-main);z-index:9999;display:flex;flex-direction:column;overflow-y:auto;animation: slideUp 0.3s ease-out;';
     
+    // Create base layout which is more compact
     modal.innerHTML = `
-      <div style="padding: 20px 16px; position: absolute; top: 0; left: 0; z-index: 10;">
-        <div onclick="document.getElementById('invest-modal').remove()" style="width:40px; height:40px; background:white; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.1); cursor:pointer;">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+      <div style="padding: 12px 16px; position: absolute; top: 0; left: 0; z-index: 10;">
+        <div onclick="document.getElementById('invest-modal').remove()" style="width:36px; height:36px; background:rgba(255,255,255,0.9); border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.15); cursor:pointer; backdrop-filter:blur(4px);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
         </div>
       </div>
 
-      <img src="https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=800&q=80" class="pkg-detail-hero" alt="${name}" style="width:100%; height:300px; object-fit:cover;">
+      <img src="https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=800&q=80" class="pkg-detail-hero" alt="${name}" style="width:100%; height:200px; object-fit:cover;">
       
-      <div class="pkg-detail-card" style="margin-top:-40px; background:white; border-radius:32px 32px 0 0; padding:32px 24px; flex:1; position:relative; box-shadow:0 -10px 30px rgba(0,0,0,0.05);">
+      <div class="pkg-detail-card" style="margin-top:-24px; background:white; border-radius:24px 24px 0 0; padding:24px 20px; flex:1; position:relative; box-shadow:0 -10px 30px rgba(0,0,0,0.05);">
         <div style="text-align:center;">
-          <div style="display:inline-block; position:relative; margin-bottom:16px;">
-            <div style="width:80px; height:80px; background:#fff; border-radius:50%; box-shadow:0 10px 25px rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:center;">
-              <img src="https://cdn-icons-png.flaticon.com/512/6941/6941697.png" style="width:40px;" alt="Crown">
+          <div style="display:inline-block; position:relative; margin-bottom:12px;">
+            <div style="width:60px; height:60px; background:#fff; border-radius:50%; box-shadow:0 10px 25px rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:center;">
+              <img src="https://cdn-icons-png.flaticon.com/512/6941/6941697.png" style="width:30px;" alt="Crown">
             </div>
           </div>
-          <h3 style="font-size:18px; font-weight:800; color:#374151; margin-bottom:8px;">${name}</h3>
-          <div style="font-size:32px; font-weight:900; color:#111827; margin-bottom:24px;">${amount}</div>
+          <h3 style="font-size:16px; font-weight:800; color:#374151; margin-bottom:4px;">${name}</h3>
+          <div style="font-size:28px; font-weight:900; color:#111827; margin-bottom:16px;">${amount}</div>
           
-          <div style="background:#f8fafc; border-radius:20px; padding:20px; margin-bottom:32px;">
-            <span style="display:block; font-size:13px; color:#64748b; font-weight:700; margin-bottom:4px;">Welcome Bonus</span>
-            <strong style="font-size:24px; font-weight:900; color:#16a34a;">${bonus}</strong>
+          <div style="background:#f8fafc; border-radius:16px; padding:16px; margin-bottom:24px;">
+            <span style="display:block; font-size:12px; color:#64748b; font-weight:700; margin-bottom:2px;">Welcome Bonus</span>
+            <strong style="font-size:20px; font-weight:900; color:#16a34a;">${bonus}</strong>
           </div>
 
-          <div style="text-align:left; margin-bottom:40px;">
-            <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px; font-size:14px; font-weight:600; color:#4b5563;">
-              <div style="width:22px; height:22px; background:#16a34a; border-radius:50%; display:flex; align-items:center; justify-content:center;">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="4"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <div style="text-align:left; margin-bottom:24px;">
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; font-size:13px; font-weight:600; color:#4b5563;">
+              <div style="width:20px; height:20px; background:#16a34a; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="4"><polyline points="20 6 9 17 4 12"></polyline></svg>
               </div>
-              <span>Instant welcome bonus</span>
+              <span>Instant welcome bonus upon approval</span>
             </div>
-            <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px; font-size:14px; font-weight:600; color:#4b5563;">
-              <div style="width:22px; height:22px; background:#16a34a; border-radius:50%; display:flex; align-items:center; justify-content:center;">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="4"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; font-size:13px; font-weight:600; color:#4b5563;">
+              <div style="width:20px; height:20px; background:#16a34a; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="4"><polyline points="20 6 9 17 4 12"></polyline></svg>
               </div>
-              <span>Secure & trusted platform</span>
+              <span>Secure & trusted payments</span>
             </div>
-            <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px; font-size:14px; font-weight:600; color:#4b5563;">
-              <div style="width:22px; height:22px; background:#16a34a; border-radius:50%; display:flex; align-items:center; justify-content:center;">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="4"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <div style="display:flex; align-items:center; gap:12px; font-size:13px; font-weight:600; color:#4b5563;">
+              <div style="width:20px; height:20px; background:#16a34a; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="4"><polyline points="20 6 9 17 4 12"></polyline></svg>
               </div>
-              <span>Fast approval</span>
-            </div>
-            <div style="display:flex; align-items:center; gap:12px; font-size:14px; font-weight:600; color:#4b5563;">
-              <div style="width:22px; height:22px; background:#16a34a; border-radius:50%; display:flex; align-items:center; justify-content:center;">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="4"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              </div>
-              <span>24/7 support</span>
+              <span>24/7 priority user support</span>
             </div>
           </div>
 
-          <button id="activate-now-btn" class="btn btn-green btn-full" style="padding:18px; font-size:16px; font-weight:800; border-radius:16px; width:100%; border:none; cursor:pointer;">
+          <button id="activate-now-btn" class="btn btn-green btn-full" style="padding:16px; font-size:15px; font-weight:800; border-radius:14px; width:100%; border:none; cursor:pointer;">
             Activate Now
           </button>
         </div>
       </div>
     `;
     document.body.appendChild(modal);
+
     modal.querySelector('#activate-now-btn').onclick = () => {
       const card = modal.querySelector('.pkg-detail-card');
       card.innerHTML = `
         <div style="text-align:center;">
-          <h3 style="font-size:20px; font-weight:800; color:#374151; margin-bottom:16px;">Complete Your Investment</h3>
-          <p style="font-size:14px; color:#64748b; margin-bottom:24px;">Please follow these steps to securely fund your <strong>${name}</strong> package.</p>
+          <h3 style="font-size:18px; font-weight:800; color:#374151; margin-bottom:12px;">Complete Your Investment</h3>
+          <p style="font-size:13px; color:#64748b; margin-bottom:20px; padding:0 10px;">Please follow these steps to securely fund your <strong>${name}</strong> package.</p>
           
-          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:20px; padding:20px; text-align:left; margin-bottom:32px; box-shadow:inset 0 2px 4px rgba(0,0,0,0.02);">
-            <h4 style="font-size:14px; font-weight:800; color:#0f172a; margin-bottom:16px; border-bottom:1px solid #e2e8f0; padding-bottom:12px; text-transform:uppercase; letter-spacing:0.5px;">UKO UGURAPACKAGE MURI SOLAR AFRICA</h4>
-            <ol style="margin:0; padding-left:20px; color:#334155; font-size:14.5px; font-weight:600; line-height:1.9;">
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:16px; padding:16px; text-align:left; margin-bottom:24px; box-shadow:inset 0 2px 4px rgba(0,0,0,0.02);">
+            <h4 style="font-size:12px; font-weight:800; color:#0f172a; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:10px; text-transform:uppercase; letter-spacing:0.5px;">UKO UGURA MURI SOLAR AFRICA</h4>
+            <ol style="margin:0; padding-left:16px; color:#334155; font-size:13.5px; font-weight:600; line-height:1.7;">
               <li>Pfonda <strong>*163#</strong></li>
               <li>Hitamo <strong>Kurungika</strong></li>
               <li>Inimero: 
-                <div style="display:inline-flex; align-items:center; gap:8px; background:#f0fdf4; padding:2px 8px; border-radius:6px; margin-top:4px;">
-                  <strong style="color:#16a34a; font-size:18px; user-select:all;" id="payment-number">67270398</strong>
-                  <button onclick="navigator.clipboard.writeText('67270398'); window.app?.showToast('Number Copied!','success'); this.innerHTML='<svg width=\\'16\\' height=\\'16\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'#16a34a\\' stroke-width=\\'2\\'><polyline points=\\'20 6 9 17 4 12\\'></polyline></svg>'; setTimeout(()=>{this.innerHTML='<svg width=\\'16\\' height=\\'16\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'2\\'><rect x=\\'9\\' y=\\'9\\' width=\\'13\\' height=\\'13\\' rx=\\'2\\' ry=\\'2\\'/><path d=\\'M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1\\'/></svg>'}, 2000)" style="background:none; border:none; color:#16a34a; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:4px;" title="Copy Number">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                <div style="display:inline-flex; align-items:center; gap:6px; background:#f0fdf4; padding:2px 6px; border-radius:6px; margin-top:2px;">
+                  <strong style="color:#16a34a; font-size:16px; user-select:all;" id="payment-number">67270398</strong>
+                  <button onclick="navigator.clipboard.writeText('67270398'); window.app?.showToast('Number Copied!','success'); this.innerHTML='<svg width=\\'14\\' height=\\'14\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'#16a34a\\' stroke-width=\\'2\\'><polyline points=\\'20 6 9 17 4 12\\'></polyline></svg>'; setTimeout(()=>{this.innerHTML='<svg width=\\'14\\' height=\\'14\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'2\\'><rect x=\\'9\\' y=\\'9\\' width=\\'13\\' height=\\'13\\' rx=\\'2\\' ry=\\'2\\'/><path d=\\'M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1\\'/></svg>'}, 2000)" style="background:none; border:none; color:#16a34a; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:2px;" title="Copy Number">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                   </button>
                 </div>
               </li>
-              <li>Amazina: <strong style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px;">RUKUNDO LOAUNGE</strong></li>
-              <li>Shiramwo Amahera: <strong style="color:#16a34a;">${amount.replace(/[^0-9]/g, '')}</strong> BIF</li>
-              <li>Shiramwo mot de passe hama <strong>Wemeze</strong></li>
+              <li>Amazina: <strong style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-size:12px;">RUKUNDO LOAUNGE</strong></li>
+              <li>Amahera: <strong style="color:#16a34a;">${amount.replace(/[^0-9]/g, '')}</strong> BIF</li>
+              <li>Hama <strong>Wemeze</strong></li>
             </ol>
           </div>
 
-          <button id="confirm-payment-btn" class="btn btn-green btn-full" style="padding:18px; font-size:16px; font-weight:800; border-radius:16px; width:100%; border:none; cursor:pointer; margin-bottom:16px;">
+          <button id="confirm-payment-btn" class="btn btn-green btn-full" style="padding:16px; font-size:15px; font-weight:800; border-radius:14px; width:100%; border:none; cursor:pointer; margin-bottom:12px;">
             I Have Paid
           </button>
-          <button id="cancel-payment-btn" style="background:none; border:none; color:#64748b; font-size:14px; font-weight:700; cursor:pointer; padding:8px;">
+          <button id="cancel-payment-btn" style="background:none; border:none; color:#64748b; font-size:13px; font-weight:700; cursor:pointer; padding:8px;">
             Cancel & Go Back
           </button>
         </div>
@@ -870,11 +866,26 @@ class SolarApp {
 
       modal.querySelector('#confirm-payment-btn').onclick = async () => {
         const btn = modal.querySelector('#confirm-payment-btn');
-        btn.disabled = true; btn.textContent = 'Confirming...';
+        btn.disabled = true; btn.textContent = 'Submitting...';
         const res = await this.fetchAPI('deposits',{method:'POST',body:JSON.stringify({package_name:name,amount})});
         if (res) {
-          this.showToast(`${name} Activated! Awaiting approval.`,'success');
-          setTimeout(() => modal.remove(), 1000);
+          // Success view
+          card.innerHTML = `
+            <div style="text-align:center; padding: 20px 0;">
+              <div style="width:80px; height:80px; background:#dcfce7; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px; box-shadow: 0 10px 20px rgba(22, 163, 74, 0.15);">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </div>
+              <h3 style="font-size:22px; font-weight:800; color:#111827; margin-bottom:12px;">Payment Successful!</h3>
+              <p style="font-size:14px; color:#4b5563; line-height:1.6; margin-bottom:24px; padding:0 10px;">
+                Your deposit for the <strong>${name}</strong> package has been received and is currently under review. 
+                <br><br>
+                Please wait while our team verifies your payment. Once approved, your <strong>${bonus} Welcome Bonus</strong> will be instantly accredited to your balance and will be available for withdrawal!
+              </p>
+              <button onclick="document.getElementById('invest-modal').remove()" class="btn btn-blue btn-full" style="padding:16px; font-size:15px; font-weight:800; border-radius:14px; width:100%; border:none; cursor:pointer;">
+                Return to Dashboard
+              </button>
+            </div>
+          `;
         } else {
           btn.disabled = false; btn.textContent = 'I Have Paid';
         }
