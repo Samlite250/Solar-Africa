@@ -23,8 +23,15 @@ app.get('*', (req, res) => {
   }
   // Try to serve the specific PHP file if it exists
   const filePath = path.join(__dirname, '../frontend', req.path === '/' ? 'index.php' : req.path);
+  
+  // Force text/html for .php files so they don't download
+  if (filePath.endsWith('.php')) {
+    res.setHeader('Content-Type', 'text/html');
+  }
+
   res.sendFile(filePath, (err) => {
     if (err) {
+      res.setHeader('Content-Type', 'text/html');
       res.sendFile(path.join(__dirname, '../frontend/index.php'));
     }
   });
