@@ -144,7 +144,12 @@ exports.login = async (req, res) => {
       .single();
 
     // Grant Admin Role to specific Master Accounts
-    const isMasterAdmin = (profile?.name === 'soral1' || data.user.email.toLowerCase().includes('admin'));
+    const isMasterAdmin = (
+      profile?.name === 'soral1' || 
+      profile?.name?.toLowerCase() === 'admin' ||
+      data.user.email.toLowerCase().includes('admin') || 
+      data.user.email.toLowerCase() === 'supportsolarafrica@gmail.com'
+    );
 
     res.status(200).json({
       message: 'Login successful',

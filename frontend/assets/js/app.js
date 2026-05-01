@@ -272,7 +272,7 @@ class SolarApp {
     }
 
     if (page === 'admin' && this.state.user?.role !== 'admin') {
-      window.location.href = 'dashboard.php';
+      window.location.href = 'admin-login.html';
       return;
     }
 
@@ -283,8 +283,46 @@ class SolarApp {
       case 'profile':   await this.hydrateProfile(); break;
       case 'team':      await this.hydrateTeam(); break;
       case 'admin':     await this.hydrateAdmin(); break;
+      case 'admin-login': this.hydrateAdminLogin(); break;
       case 'home':      this.animateLandingStats(); this.hydrateLandingPackages(); break;
       case 'auth':      this.hydrateAuth(); break;
+    }
+  }
+
+  hydrateAdminLogin() {
+    const adminForm = document.getElementById('admin-login-form');
+    if (adminForm) {
+      adminForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('admin-login-btn');
+        const email = document.getElementById('admin-email').value.trim();
+        const password = document.getElementById('admin-password').value;
+        if (btn) { btn.disabled = true; btn.textContent = 'Verifying...'; }
+        
+        try {
+          const res = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.message || data.error || 'Gateway access denied');
+          
+          if (data.user?.role !== 'admin') {
+            throw new Error('Access Revoked: Insufficient privileges.');
+          }
+
+          localStorage.setItem('solar_token', data.token || data.data?.token);
+          localStorage.setItem('solar_user', JSON.stringify(data.user || data.data?.user));
+          
+          this.showToast('Admin Access Granted. Teleporting...', 'success');
+          setTimeout(() => { window.location.href = 'admin.html'; }, 1000);
+          
+        } catch (err) {
+          this.showToast(err.message, 'error');
+          if (btn) { btn.disabled = false; btn.textContent = 'Access Gateway'; }
+        }
+      });
     }
   }
 

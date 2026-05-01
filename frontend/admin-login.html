@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solar Africa | Admin Gateway</title>
+  <link rel="stylesheet" href="assets/css/main.css">
+  <style>
+    body {
+      background: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      font-family: 'Outfit', sans-serif;
+    }
+    .admin-login-card {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+    .admin-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .admin-header img {
+      height: 60px;
+      margin-bottom: 10px;
+    }
+    .admin-header h1 {
+      font-weight: 900;
+      color: #0f172a;
+      font-size: 24px;
+      margin: 0;
+    }
+    .admin-header p {
+      color: #dc2626;
+      font-weight: 700;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body data-page="admin-login">
+  <div class="admin-login-card">
+    <div class="admin-header">
+      <img src="assets/img/solarlogo.png" alt="Solar Africa">
+      <h1>Portal Administration</h1>
+      <p>Authorized Personnel Only</p>
+    </div>
+    
+    <form id="admin-login-form">
+      <div class="form-group" style="margin-bottom: 20px;">
+        <label style="display:block;margin-bottom:8px;font-size:13px;font-weight:700;color:#334155;">Admin Credential (Email / Username)</label>
+        <input type="text" id="admin-email" required placeholder="Enter master identity" style="width:100%;padding:14px;border-radius:12px;border:2px solid #e2e8f0;background:#f8fafc;font-family:inherit;font-weight:600;">
+      </div>
+      <div class="form-group" style="margin-bottom: 30px;">
+        <label style="display:block;margin-bottom:8px;font-size:13px;font-weight:700;color:#334155;">Passkey</label>
+        <input type="password" id="admin-password" required placeholder="•••••••••" style="width:100%;padding:14px;border-radius:12px;border:2px solid #e2e8f0;background:#f8fafc;font-family:inherit;font-weight:600;">
+      </div>
+      <button type="submit" id="admin-login-btn" class="btn btn-blue btn-full" style="width:100%;padding:16px;border-radius:12px;border:none;font-weight:800;font-size:15px;background:#0f172a;cursor:pointer;">Access Gateway</button>
+    </form>
+  </div>
+
+  <script src="assets/js/app.js?v=20260427_admin"></script>
+</body>
+</html>
