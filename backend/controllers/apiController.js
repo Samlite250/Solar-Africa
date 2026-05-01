@@ -522,3 +522,64 @@ exports.markNotificationRead = async (req, res) => {
   
   res.json({ message: 'Notification marked as read server-side' });
 };
+
+// ==================== PAYMENT METHODS CRUD ====================
+
+// GET: Fetch all payment methods (admin) or by country (public)
+exports.getPaymentMethods = async (req, res) => {
+  if (!isConfigured) return res.json({ data: [] });
+  try {
+    const { country } = req.query;
+    let query = client.from('payment_methods').select('*').order('country');
+    if (country) query = query.eq('country', country);
+    const { data, error } = await query;
+    if (error) throw error;
+    res.json({ data: data || [] });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// POST: Create a new payment method
+exports.createPaymentMethod = async (req, res) => {
+  if (!isConfigured) return res.status(503).json({ error: 'Supabase not configured' });
+  try {
+    const { country, provider, dial_code, phone, account_name } = req.body;
+    const { data, error } = await client.from('payment_methods').insert([{
+      country, provider, dial_code, phone, account_name
+    }]).select().single();
+    if (error) throw error;
+    res.status(201).json({ message: 'Payment method created', data });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// PUT: Update a payment method
+exports.updatePaymentMethod = async (req, res) => {
+  if (!isConfigured) return res.status(503).json({ error: 'Supabase not configured' });
+  try {
+    const { id } = req.params;
+    const { country, provider, dial_code, phone, account_name } = req.body;
+    const { data, error } = await client.from('payment_methods').update({
+      country, provider, dial_code, phone, account_name
+    }).eq('id', id).select().single();
+    if (error) throw error;
+    res.json({ message: 'Payment method updated', data });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// DELETE: Remove a payment method
+exports.deletePaymentMethod = async (req, res) => {
+  if (!isConfigured) return res.status(503).json({ error: 'Supabase not configured' });
+  try {
+    const { id } = req.params;
+    const { error } = await client.from('payment_methods').delete().eq('id', id);
+    if (error) throw error;
+    res.json({ message: 'Payment method deleted' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

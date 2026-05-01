@@ -27,5 +27,11 @@ router.post('/admin/notifications', protect, apiController.adminPushNotification
 router.delete('/admin/packages/:id', protect, apiController.adminDeletePackage);
 router.put('/admin/users/:userId/balance', protect, apiController.adminUpdateBalance);
 
+// Payment Methods
+router.get('/payment-methods', apiController.getPaymentMethods); // Public (users need this)
+router.post('/admin/payment-methods', protect, apiController.createPaymentMethod);
+router.put('/admin/payment-methods/:id', protect, apiController.updatePaymentMethod);
+router.delete('/admin/payment-methods/:id', protect, apiController.deletePaymentMethod);
+
 
 module.exports = router;

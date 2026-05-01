@@ -524,6 +524,56 @@ class SolarApp {
       });
       balanceForm.dataset.bound = 'true';
     }
+
+    // 11. Populate Payment Methods Table
+    const pmRes = await this.fetchAPI('payment-methods');
+    const paymentTable = document.getElementById('payment-methods-list');
+    if (paymentTable && pmRes?.data) {
+      const flags = { Burundi:'🇧🇮', Uganda:'🇺🇬', Kenya:'🇰🇪', Rwanda:'🇷🇼', Tanzania:'🇹🇿', Congo:'🇨🇩' };
+      paymentTable.innerHTML = pmRes.data.map(p => `
+        <tr>
+          <td><strong>${flags[p.country]||'🌍'} ${p.country}</strong></td>
+          <td style="color:#0b6cff;font-weight:700;">${p.provider}</td>
+          <td style="font-family:monospace;font-weight:700;">${p.dial_code}</td>
+          <td style="color:#16a34a;font-weight:800;font-size:15px;">${p.phone}</td>
+          <td style="font-weight:700;">${p.account_name}</td>
+          <td style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button onclick="window.app.openEditPaymentModal(${p.id},'${p.country}','${p.provider}','${p.dial_code}','${p.phone}','${p.account_name}')" class="btn-admin btn-admin-primary" style="padding:6px 12px;font-size:11px;">Edit</button>
+            <button onclick="window.app.deletePaymentMethod(${p.id})" class="btn-admin" style="background:#fee2e2;color:#dc2626;border:none;padding:6px 12px;font-size:11px;cursor:pointer;">Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // 12. Bind Payment Method Form
+    const pmForm = document.getElementById('payment-method-form');
+    if (pmForm && !pmForm.dataset.bound) {
+      pmForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = e.target.querySelector('.btn-save');
+        btn.disabled = true; btn.textContent = 'Saving...';
+        const id = document.getElementById('pm-id').value;
+        const payload = {
+          country: document.getElementById('pm-country').value,
+          provider: document.getElementById('pm-provider').value,
+          dial_code: document.getElementById('pm-dial').value,
+          phone: document.getElementById('pm-phone').value,
+          account_name: document.getElementById('pm-account').value
+        };
+        const endpoint = id ? `admin/payment-methods/${id}` : 'admin/payment-methods';
+        const method = id ? 'PUT' : 'POST';
+        const res = await this.fetchAPI(endpoint, { method, body: JSON.stringify(payload) });
+        if (res) {
+          this.showToast(id ? 'Payment method updated!' : 'Payment method created!', 'success');
+          document.getElementById('payment-modal-overlay').style.display = 'none';
+          e.target.reset();
+          document.getElementById('pm-id').value = '';
+          this.hydrateAdmin();
+        }
+        btn.disabled = false; btn.textContent = 'Save Payment Method';
+      });
+      pmForm.dataset.bound = 'true';
+    }
   }
 
   // Admin Actions
@@ -535,6 +585,30 @@ class SolarApp {
     document.getElementById('edit-total-earnings').value = totalEarnings;
     document.getElementById('balance-modal-overlay').style.display = 'flex';
   }
+
+  // Payment Method Actions
+  openAddPaymentModal() {
+    document.getElementById('pm-id').value = '';
+    document.getElementById('payment-modal-title').textContent = 'Add Payment Method';
+    document.getElementById('payment-method-form').reset();
+    document.getElementById('payment-modal-overlay').style.display = 'flex';
+  }
+  openEditPaymentModal(id, country, provider, dial_code, phone, account_name) {
+    document.getElementById('pm-id').value = id;
+    document.getElementById('payment-modal-title').textContent = 'Edit Payment Method';
+    document.getElementById('pm-country').value = country;
+    document.getElementById('pm-provider').value = provider;
+    document.getElementById('pm-dial').value = dial_code;
+    document.getElementById('pm-phone').value = phone;
+    document.getElementById('pm-account').value = account_name;
+    document.getElementById('payment-modal-overlay').style.display = 'flex';
+  }
+  async deletePaymentMethod(id) {
+    if (!confirm('Delete this payment method?')) return;
+    const res = await this.fetchAPI(`admin/payment-methods/${id}`, { method: 'DELETE' });
+    if (res) { this.showToast('Payment method deleted!', 'success'); this.hydrateAdmin(); }
+  }
+
   async updateDeposit(id, status) {
     if (!confirm(`Are you sure you want to mark deposit #${id} as ${status.toUpperCase()}?`)) return;
     const res = await this.fetchAPI(`admin/deposits/${id}`, { method: 'PUT', body: JSON.stringify({ status }) });
@@ -1559,27 +1633,46 @@ class SolarApp {
     `;
     document.body.appendChild(modal);
 
-    modal.querySelector('#activate-now-btn').onclick = () => {
+    modal.querySelector('#activate-now-btn').onclick = async () => {
       const card = modal.querySelector('.pkg-detail-card');
+      card.innerHTML = `<div style="text-align:center;padding:20px;"><p style="color:#64748b;">Loading payment info...</p></div>`;
+
+      // Fetch dynamic payment info for user's country
+      const userCountry = this.state.user?.country || 'Burundi';
+      let paymentPhone = '67270398';
+      let paymentAccount = 'RUKUNDO LOAUNGE';
+      let paymentDial = '*163#';
+      let paymentProvider = 'Lumicash';
+      try {
+        const pmData = await fetch(`/api/payment-methods?country=${encodeURIComponent(userCountry)}`).then(r => r.json());
+        if (pmData?.data?.length > 0) {
+          const pm = pmData.data[0];
+          paymentPhone = pm.phone;
+          paymentAccount = pm.account_name;
+          paymentDial = pm.dial_code;
+          paymentProvider = pm.provider;
+        }
+      } catch(e) { console.warn('Payment method fetch failed, using defaults'); }
+
       card.innerHTML = `
         <div style="text-align:center;">
           <h3 style="font-size:18px; font-weight:800; color:#374151; margin-bottom:12px;">Complete Your Investment</h3>
-          <p style="font-size:13px; color:#64748b; margin-bottom:20px; padding:0 10px;">Please follow these steps to securely fund your <strong>${name}</strong> package.</p>
+          <p style="font-size:13px; color:#64748b; margin-bottom:20px; padding:0 10px;">Please follow these steps to securely fund your <strong>${name}</strong> package via <strong>${paymentProvider}</strong>.</p>
           
           <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:16px; padding:16px; text-align:left; margin-bottom:24px; box-shadow:inset 0 2px 4px rgba(0,0,0,0.02);">
             <h4 style="font-size:12px; font-weight:800; color:#0f172a; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:10px; text-transform:uppercase; letter-spacing:0.5px;">UKO UGURA MURI SOLAR AFRICA</h4>
             <ol style="margin:0; padding-left:16px; color:#334155; font-size:13.5px; font-weight:600; line-height:1.7;">
-              <li>Pfonda <strong>*163#</strong></li>
+              <li>Pfonda <strong>${paymentDial}</strong></li>
               <li>Hitamo <strong>Kurungika</strong></li>
               <li>Inimero: 
                 <div style="display:inline-flex; align-items:center; gap:6px; background:#f0fdf4; padding:2px 6px; border-radius:6px; margin-top:2px;">
-                  <strong style="color:#16a34a; font-size:16px; user-select:all;" id="payment-number">67270398</strong>
-                  <button onclick="navigator.clipboard.writeText('67270398'); window.app?.showToast('Number Copied!','success'); this.innerHTML='<svg width=\\'14\\' height=\\'14\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'#16a34a\\' stroke-width=\\'2\\'><polyline points=\\'20 6 9 17 4 12\\'></polyline></svg>'; setTimeout(()=>{this.innerHTML='<svg width=\\'14\\' height=\\'14\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'2\\'><rect x=\\'9\\' y=\\'9\\' width=\\'13\\' height=\\'13\\' rx=\\'2\\' ry=\\'2\\'/><path d=\\'M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1\\'/></svg>'}, 2000)" style="background:none; border:none; color:#16a34a; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:2px;" title="Copy Number">
+                  <strong style="color:#16a34a; font-size:16px; user-select:all;" id="payment-number">${paymentPhone}</strong>
+                  <button onclick="navigator.clipboard.writeText('${paymentPhone}'); window.app?.showToast('Number Copied!','success');" style="background:none; border:none; color:#16a34a; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:2px;" title="Copy Number">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                   </button>
                 </div>
               </li>
-              <li>Amazina: <strong style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-size:12px;">RUKUNDO LOAUNGE</strong></li>
+              <li>Amazina: <strong style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-size:12px;">${paymentAccount}</strong></li>
               <li>Amahera: <strong style="color:#16a34a;">${amount.replace(/[^0-9]/g, '')}</strong> BIF</li>
               <li>Hama <strong>Wemeze</strong></li>
             </ol>

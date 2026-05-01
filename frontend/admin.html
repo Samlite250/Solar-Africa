@@ -267,8 +267,24 @@
       </div>
 
       <div id="view-settings" class="admin-view" style="display: none; padding: 40px;">
-        <div class="panel-card" style="max-width: 800px;">
-          <div class="panel-header"><h4 class="panel-title">Platform Settings</h4></div>
+        <!-- Payment Methods Per Country -->
+        <div class="panel-card" style="max-width: 900px; margin: 0 auto 32px;">
+          <div class="panel-header">
+            <h4 class="panel-title">💳 Payment Methods Per Country</h4>
+            <button class="btn-admin btn-admin-primary" onclick="window.app.openAddPaymentModal()">+ Add Payment Method</button>
+          </div>
+          <p style="font-size:13px; color:#64748b; margin-bottom:24px;">Configure how users pay in each country. Changes are reflected to users instantly.</p>
+          <div class="table-container">
+            <table>
+              <thead><tr><th>Country</th><th>Provider</th><th>Dial Code</th><th>Phone Number</th><th>Account Name</th><th>Actions</th></tr></thead>
+              <tbody id="payment-methods-list"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Platform Settings -->
+        <div class="panel-card" style="max-width: 900px; margin: 0 auto;">
+          <div class="panel-header"><h4 class="panel-title">⚙️ Platform Settings</h4></div>
           <div style="display: flex; flex-direction: column; gap: 24px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span>Maintenance Mode</span>
@@ -343,6 +359,48 @@
       </div>
     </div>
 
-    <script src="assets/js/app.js?v=20260501_admin" defer></script>
+    <!-- Payment Method Modal -->
+    <div id="payment-modal-overlay" class="balance-modal-overlay" style="display:none;">
+      <div class="balance-modal">
+        <h3 id="payment-modal-title">Add Payment Method</h3>
+        <p class="modal-sub">Set the payment details users will see when investing from this country.</p>
+        <form id="payment-method-form">
+          <input type="hidden" id="pm-id">
+          <div class="field">
+            <label>Country</label>
+            <select id="pm-country" required style="width:100%;padding:14px 16px;border-radius:12px;border:2px solid #f1f5f9;font-size:15px;font-weight:700;font-family:inherit;background:white;">
+              <option value="Burundi">🇧🇮 Burundi</option>
+              <option value="Uganda">🇺🇬 Uganda</option>
+              <option value="Kenya">🇰🇪 Kenya</option>
+              <option value="Rwanda">🇷🇼 Rwanda</option>
+              <option value="Tanzania">🇹🇿 Tanzania</option>
+              <option value="Congo">🇨🇩 Congo</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Provider Name</label>
+            <input type="text" id="pm-provider" placeholder="e.g. Lumicash, MTN MoMo, M-Pesa" required>
+          </div>
+          <div class="field">
+            <label>Dial Code (USSD)</label>
+            <input type="text" id="pm-dial" placeholder="e.g. *163#" required>
+          </div>
+          <div class="field">
+            <label>Phone Number</label>
+            <input type="text" id="pm-phone" placeholder="e.g. 67270398" required>
+          </div>
+          <div class="field">
+            <label>Account Name</label>
+            <input type="text" id="pm-account" placeholder="e.g. RUKUNDO LOAUNGE" required>
+          </div>
+          <div class="modal-btns">
+            <button type="button" class="btn-cancel" onclick="document.getElementById('payment-modal-overlay').style.display='none'">Cancel</button>
+            <button type="submit" class="btn-save">Save Payment Method</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="assets/js/app.js?v=20260501_pay" defer></script>
   </body>
 </html>
