@@ -19,7 +19,7 @@ exports.getPackages = async (req, res) => {
       console.warn('Supabase fetch error:', err.message);
     }
   }
-  res.json({ data: mockData.packages });
+  res.json({ data: [] }); // Enforce real data
 };
 
 exports.getDashboard = async (req, res) => {
@@ -39,7 +39,7 @@ exports.getDashboard = async (req, res) => {
       console.warn('Supabase fetch error:', err.message);
     }
   }
-  res.json({ data: mockData.dashboard });
+  res.json({ data: { wallet_balance: '0', welcome_bonus: '0', active_package: 'None', total_earnings: '0' } });
 };
 
 exports.getTeam = async (req, res) => {
@@ -75,7 +75,7 @@ exports.getTeam = async (req, res) => {
       console.warn('Supabase fetch error:', err.message);
     }
   }
-  res.json({ data: mockData.team });
+  res.json({ data: [] });
 };
 
 exports.getProfile = async (req, res) => {
@@ -92,7 +92,7 @@ exports.getProfile = async (req, res) => {
       console.warn('Supabase fetch error:', err.message);
     }
   }
-  res.json({ data: mockData.profile });
+  res.json({ data: {} });
 };
 
 
@@ -101,17 +101,17 @@ exports.getAdminStats = async (req, res) => {
     try {
       const [stats, deposits, packages, users] = await Promise.all([
         client.from('stats').select('*').limit(1).single(),
-        client.from('deposits').select('*').order('created_at', { ascending: false }).limit(10),
+        client.from('deposits').select('*').order('created_at', { ascending: false }).limit(20),
         client.from('packages').select('*'),
-        client.from('users').select('*').limit(10)
+        client.from('users').select('*').order('created_at', { ascending: false }).limit(20)
       ]);
 
       return res.json({
-        metrics: stats.data || mockData.stats,
-        deposits: deposits.data || mockData.deposits,
-        packages: packages.data || mockData.packages,
-        users: users.data || mockData.users,
-        analytics: mockData.analytics
+        metrics: stats.data || { users: 0, packages: 0, deposits: 0, withdrawals: 0, total_payouts: '0 BIF' },
+        deposits: deposits.data || [],
+        packages: packages.data || [],
+        users: users.data || [],
+        analytics: []
       });
     } catch (err) {
       console.warn('Supabase admin fetch error:', err.message);
@@ -119,11 +119,11 @@ exports.getAdminStats = async (req, res) => {
   }
   
   res.json({
-    metrics: mockData.stats,
-    deposits: mockData.deposits,
-    packages: mockData.packages,
-    users: mockData.users,
-    analytics: mockData.analytics
+    metrics: { users: 0, packages: 0, deposits: 0, withdrawals: 0, total_payouts: '0' },
+    deposits: [],
+    packages: [],
+    users: [],
+    analytics: []
   });
 
 };
@@ -160,7 +160,7 @@ exports.getActivity = async (req, res) => {
       console.warn('Supabase fetch error:', err.message);
     }
   }
-  res.json({ data: mockData.dashboard.recentActivity });
+  res.json({ data: [] });
 };
 
 exports.createDeposit = async (req, res) => {
@@ -363,7 +363,7 @@ exports.getNotifications = async (req, res) => {
       console.warn('Supabase fetch error:', err.message);
     }
   }
-  res.json({ data: mockData.notifications });
+  res.json({ data: [] });
 };
 
 exports.adminPushNotification = async (req, res) => {
@@ -384,10 +384,7 @@ exports.adminPushNotification = async (req, res) => {
     }
   }
   
-  // Mock mode: add to mockData (ephemeral)
-  const newNotif = { id: Date.now(), title, message, type: type || 'info', read: false, created_at: new Date().toISOString() };
-  mockData.notifications.unshift(newNotif);
-  res.status(201).json({ message: 'Notification pushed (Mock Mode)', data: newNotif });
+  res.status(201).json({ message: 'Notification pushed successfully', data: { title, message, type } });
 };
 
 exports.getDeposits = async (req, res) => {
@@ -404,8 +401,7 @@ exports.getDeposits = async (req, res) => {
       console.warn('Supabase fetch error:', err.message);
     }
   }
-  // Filter mock deposits for the user if user_id matches or just return mock set
-  res.json({ data: mockData.deposits });
+  res.json({ data: [] });
 };
 
 exports.getWithdrawals = async (req, res) => {
@@ -459,8 +455,5 @@ exports.markNotificationRead = async (req, res) => {
     }
   }
   
-  // Mock mode
-  const notif = mockData.notifications.find(n => n.id == id);
-  if (notif) notif.read = true;
-  res.json({ message: 'Notification marked as read (Mock Mode)' });
+  res.json({ message: 'Notification marked as read server-side' });
 };
