@@ -399,10 +399,13 @@ class SolarApp {
 
     const finalData = data && data.length >= 24 ? data : mockPkgs;
 
+    // Helper: cycle through 14 unique images by index
+    const getImg = (p, i) => p.img || `assets/img/packages/pkg_${(i % 14) + 1}.jpg`;
+
     list.innerHTML = finalData.map((p, i) => `
-      <div class="pkg-item-row" onclick="window.app.showInvestModal('${p.id || i}','${p.name}','${p.amount}','${p.bonus}','${p.img}')">
+      <div class="pkg-item-row" onclick="window.app.showInvestModal('${p.id || i}','${p.name}','${p.amount}','${p.bonus}','${getImg(p, i)}')">
         <div style="position:relative;">
-          <img src="${p.img || 'assets/img/packages/pkg_1.jpg'}" 
+          <img src="${getImg(p, i)}" 
                onerror="this.src='assets/img/packages/pkg_1.jpg'; this.onerror=null;" 
                class="pkg-item-img" alt="${p.name}">
           ${p.popular ? '<div style="position:absolute; top:-5px; right:-5px; background:#22c55e; color:white; font-size:8px; font-weight:800; padding:2px 6px; border-radius:4px; transform:rotate(15deg);">POPULAR</div>' : ''}
