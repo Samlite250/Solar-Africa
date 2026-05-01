@@ -144,7 +144,12 @@ exports.getActivity = async (req, res) => {
 };
 
 exports.createDeposit = async (req, res) => {
-  if (!isConfigured) return res.status(503).json({ error: 'Supabase not configured' });
+  if (!isConfigured) {
+    return res.status(201).json({ 
+      message: 'Deposit request submitted (Mock Mode)', 
+      data: { id: Date.now(), status: 'pending', amount: req.body.amount, package_name: req.body.package_name } 
+    });
+  }
 
   try {
     const { amount, package_name } = req.body;
@@ -277,7 +282,9 @@ exports.adminUpdateUser = async (req, res) => {
 };
 
 exports.createWithdrawal = async (req, res) => {
-  if (!isConfigured) return res.status(503).json({ error: 'Supabase not configured' });
+  if (!isConfigured) {
+    return res.status(201).json({ message: 'Withdrawal request submitted (Mock Mode)', data: { status: 'pending', amount: req.body.amount } });
+  }
 
   try {
     const { amount } = req.body;
