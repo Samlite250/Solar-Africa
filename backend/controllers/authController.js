@@ -139,9 +139,12 @@ exports.login = async (req, res) => {
     // Fetch extended profile data
     const { data: profile } = await client
       .from('profiles')
-      .select('country, phone')
+      .select('name, country, phone')
       .eq('user_id', data.user.id)
       .single();
+
+    // Grant Admin Role to specific Master Accounts
+    const isMasterAdmin = (profile?.name === 'soral1' || data.user.email.toLowerCase().includes('admin'));
 
     res.status(200).json({
       message: 'Login successful',
@@ -149,9 +152,10 @@ exports.login = async (req, res) => {
       user: { 
         id: data.user.id, 
         email: data.user.email, 
-        name: data.user.user_metadata.full_name,
+        name: profile?.name || data.user.user_metadata.full_name,
         country: profile?.country || 'Burundi',
-        phone: profile?.phone || ''
+        phone: profile?.phone || '',
+        role: isMasterAdmin ? 'admin' : 'user'
       }
     });
   } catch (error) {
