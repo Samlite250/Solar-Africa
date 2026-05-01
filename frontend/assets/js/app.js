@@ -40,7 +40,10 @@ class SolarApp {
     // 3. Start Notification Polling
     this.startNotificationPolling();
 
-    // 4. Visual Polish
+    // 4. Header Hydration
+    this.hydrateHeader();
+
+    // 5. Visual Polish
     document.body.style.opacity = '1';
     this.setupIntersections();
   }
@@ -99,7 +102,10 @@ class SolarApp {
       dashboard: `
         <div class="dash-hero-banner">
           <div class="dash-hero-text">
-            <p class="dash-hero-sub">Welcome to</p>
+            <p class="dash-hero-sub" style="display: flex; align-items: center; gap: 6px;">
+              Welcome, ${this.state.user?.name?.split(' ')[0] || 'Investor'}
+              <img src="https://flagcdn.com/w20/${((c) => ({'Burundi':'bi','Rwanda':'rw','Kenya':'ke','Uganda':'ug','Tanzania':'tz'})[c] || 'bi')(this.state.user?.country || 'Burundi')}.png" alt="Country Flag" style="width:16px;height:12px;border-radius:2px;display:inline-block;box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+            </p>
             <h2 class="dash-hero-title">Invest in clean energy,<br>earn a bright future.</h2>
           </div>
         </div>
@@ -132,12 +138,12 @@ class SolarApp {
           </div>
           <div style="background: white; border: 1px solid #e2e8f0; border-radius: 20px; padding: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);">
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px;">
-              <div style="flex: 1; background: linear-gradient(135deg, #111827 0%, #374151 100%); border: 1px solid rgba(255,255,255,0.1); padding: 12px 14px; border-radius: 14px; display: flex; align-items: center; justify-content: space-between; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">
-                <span style="font-size: 12px; color: rgba(255,255,255,0.8); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; font-family: monospace;">...register.php?ref=${this.state.user?.name || 'user'}</span>
-                <button onclick="window.app.copyRefLink()" style="background: #0b6cff; border: none; color: white; font-weight: 800; font-size: 10px; cursor: pointer; padding: 6px 12px; border-radius: 8px; margin-left: 8px; letter-spacing: 0.5px; box-shadow: 0 4px 8px rgba(11, 108, 255, 0.3);">COPY</button>
+              <div style="flex: 1; background: linear-gradient(135deg, #0b6cff 0%, #00b0ff 100%); border: 1px solid rgba(255,255,255,0.1); padding: 12px 14px; border-radius: 14px; display: flex; align-items: center; justify-content: space-between; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">
+                <span style="font-size: 12px; color: rgba(255,255,255,0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; font-family: monospace;">...register.php?ref=${this.state.user?.name || 'user'}</span>
+                <button onclick="window.app.copyRefLink()" style="background: white; border: none; color: #0b6cff; font-weight: 800; font-size: 10px; cursor: pointer; padding: 6px 12px; border-radius: 8px; margin-left: 8px; letter-spacing: 0.5px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">COPY</button>
               </div>
             </div>
-            <button onclick="window.location.hash = '#team'" class="btn" style="width: 100%; justify-content: center; background: linear-gradient(135deg, #111827 0%, #374151 100%); color: white; border: none; border-radius: 14px; font-weight: 800; font-size: 14px; padding: 14px; display: flex; align-items: center; gap: 10px; transition: transform 0.2s; box-shadow: 0 4px 12px rgba(17, 24, 39, 0.2);">
+            <button onclick="window.location.hash = '#team'" class="btn" style="width: 100%; justify-content: center; background: linear-gradient(135deg, #0b6cff 0%, #00b0ff 100%); color: white; border: none; border-radius: 14px; font-weight: 800; font-size: 14px; padding: 14px; display: flex; align-items: center; gap: 10px; transition: transform 0.2s; box-shadow: 0 8px 16px rgba(11, 108, 255, 0.25);">
                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                View My Team
             </button>
@@ -282,6 +288,32 @@ class SolarApp {
       case 'admin':     await this.hydrateAdmin(); break;
       case 'home':      this.animateLandingStats(); this.hydrateLandingPackages(); break;
       case 'auth':      this.hydrateAuth(); break;
+    }
+  }
+
+  hydrateHeader() {
+    const headerProfile = document.getElementById('header-user-profile');
+    if (headerProfile && this.state.user) {
+      const country = this.state.user.country || 'Burundi';
+      const flagMap = {
+        'Burundi': 'bi', 'Rwanda': 'rw', 'Kenya': 'ke', 'Uganda': 'ug', 'Tanzania': 'tz'
+      };
+      const flagCode = flagMap[country] || 'bi';
+      const firstName = this.state.user.name?.split(' ')[0] || 'User';
+      const initials = this.state.user.name?.substring(0, 2).toUpperCase() || 'U';
+      
+      headerProfile.innerHTML = `
+        <div style="display: flex; flex-direction: column; align-items: flex-end; justify-content: center;">
+          <span style="font-size: 13px; font-weight: 800; color: #1e293b; line-height: 1.2;">${firstName}</span>
+          <div style="display: flex; align-items: center; gap: 4px; margin-top: 2px;">
+            <img src="https://flagcdn.com/w20/${flagCode}.png" alt="${country}" style="width: 12px; height: 8px; border-radius: 1px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">
+            <span style="font-size: 10px; font-weight: 700; color: #64748b; line-height: 1; text-transform: uppercase;">${country}</span>
+          </div>
+        </div>
+        <div onclick="window.location.hash='#profile'" style="width: 36px; height: 36px; background: #eff6ff; border: 1px solid #dbeafe; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #0b6cff; font-weight: 800; font-size: 14px; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(11, 108, 255, 0.1);">
+          ${initials}
+        </div>
+      `;
     }
   }
 
@@ -772,6 +804,7 @@ class SolarApp {
         localStorage.setItem('solar_user', JSON.stringify(this.state.user));
         this.showToast('Profile updated!', 'success');
         document.getElementById('app-modal').remove();
+        this.hydrateHeader(); // Refresh header
         this.handleRoute(); // Refresh template
       } else {
         btn.disabled = false; btn.textContent = 'Update Information';
