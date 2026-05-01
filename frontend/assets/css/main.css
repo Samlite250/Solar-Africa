@@ -218,11 +218,27 @@ body {
 .logo-container {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px; /* Reduced from 8px */
 }
 
-.logo-text-blue { color: var(--primary-blue); font-weight: 800; }
-.logo-text-green { color: var(--primary-green); font-weight: 800; }
+.logo-container svg {
+  width: 44px; /* Increased from 32px */
+  height: 44px;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.05));
+}
+
+.logo-text-blue { 
+  color: var(--primary-blue); 
+  font-weight: 800; 
+  font-size: 1.1rem; 
+  letter-spacing: -0.02em;
+}
+.logo-text-green { 
+  color: var(--primary-green); 
+  font-weight: 800; 
+  font-size: 1.1rem; 
+  letter-spacing: -0.02em;
+}
 
 .desktop-nav {
   display: flex;
