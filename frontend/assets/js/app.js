@@ -841,7 +841,14 @@ class SolarApp {
             <ol style="margin:0; padding-left:20px; color:#334155; font-size:14.5px; font-weight:600; line-height:1.9;">
               <li>Pfonda <strong>*163#</strong></li>
               <li>Hitamo <strong>Kurungika</strong></li>
-              <li>Inimero: <strong style="color:#16a34a; font-size:18px; user-select:all; display:inline-block; margin-top:2px;">67270398</strong></li>
+              <li>Inimero: 
+                <div style="display:inline-flex; align-items:center; gap:8px; background:#f0fdf4; padding:2px 8px; border-radius:6px; margin-top:4px;">
+                  <strong style="color:#16a34a; font-size:18px; user-select:all;" id="payment-number">67270398</strong>
+                  <button onclick="navigator.clipboard.writeText('67270398'); window.app?.showToast('Number Copied!','success'); this.innerHTML='<svg width=\\'16\\' height=\\'16\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'#16a34a\\' stroke-width=\\'2\\'><polyline points=\\'20 6 9 17 4 12\\'></polyline></svg>'; setTimeout(()=>{this.innerHTML='<svg width=\\'16\\' height=\\'16\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'2\\'><rect x=\\'9\\' y=\\'9\\' width=\\'13\\' height=\\'13\\' rx=\\'2\\' ry=\\'2\\'/><path d=\\'M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1\\'/></svg>'}, 2000)" style="background:none; border:none; color:#16a34a; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:4px;" title="Copy Number">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  </button>
+                </div>
+              </li>
               <li>Amazina: <strong style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px;">RUKUNDO LOAUNGE</strong></li>
               <li>Shiramwo Amahera: <strong style="color:#16a34a;">${amount.replace(/[^0-9]/g, '')}</strong> BIF</li>
               <li>Shiramwo mot de passe hama <strong>Wemeze</strong></li>

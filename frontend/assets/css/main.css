@@ -56,9 +56,12 @@ body {
    CLEAN RESPONSIVE LAYOUT (NO SIDEBAR)
    ========================================= */
 .app-container {
-  max-width: 1440px;
+  max-width: 500px;
   margin: 0 auto;
   min-height: 100vh;
+  box-shadow: 0 0 50px rgba(0,0,0,0.08); /* Premium shadow wrapper */
+  background: var(--bg-main);
+  position: relative;
 }
 
 .main-content {
@@ -102,23 +105,10 @@ body {
 
 .header-stats-row {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: 1fr;
   gap: 16px;
-  padding: 24px 5%;
+  padding: 16px;
   background: #f8fafc;
-}
-
-@media (max-width: 1024px) {
-  .header-stats-row {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 600px) {
-  .header-stats-row {
-    grid-template-columns: 1fr;
-    padding: 16px;
-  }
 }
 
 .top-badge {
@@ -160,14 +150,10 @@ body {
 /* Plan Grid Overrides */
 .pkg-list {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 20px;
-  padding: 30px 5%;
+  padding: 20px 5%;
 }
-
-@media (max-width: 1200px) { .pkg-list { grid-template-columns: repeat(4, 1fr); } }
-@media (max-width: 900px) { .pkg-list { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 480px) { .pkg-list { grid-template-columns: 1fr; } }
 
 /* =========================================
    BUTTONS
@@ -261,6 +247,8 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
+  max-width: 500px;
+  margin: 0 auto;
   background: white;
   display: flex;
   justify-content: space-around;
@@ -268,6 +256,8 @@ body {
   padding: 0 10px 15px; /* Extra bottom padding for home indicator */
   z-index: 1000;
   box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.03);
+  border-left: 1px solid var(--border-subtle);
+  border-right: 1px solid var(--border-subtle);
 }
 
 .nav-item {
@@ -318,11 +308,6 @@ body {
 
 @media (max-width: 768px) {
   .desktop-nav { display: none; }
-}
-
-@media (min-width: 769px) {
-  .bottom-nav { display: none; }
-  .app-container { padding-bottom: 0 !important; }
 }
 
 /* Package Cards (From Image) */
