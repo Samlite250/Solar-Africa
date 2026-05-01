@@ -369,3 +369,38 @@ exports.adminPushNotification = async (req, res) => {
   mockData.notifications.unshift(newNotif);
   res.status(201).json({ message: 'Notification pushed (Mock Mode)', data: newNotif });
 };
+
+exports.getDeposits = async (req, res) => {
+  if (isConfigured) {
+    try {
+      const { data, error } = await client
+        .from('deposits')
+        .select('*')
+        .eq('user_id', req.user.id)
+        .order('created_at', { ascending: false });
+      
+      if (!error && data) return res.json({ data });
+    } catch (err) {
+      console.warn('Supabase fetch error:', err.message);
+    }
+  }
+  // Filter mock deposits for the user if user_id matches or just return mock set
+  res.json({ data: mockData.deposits });
+};
+
+exports.getWithdrawals = async (req, res) => {
+  if (isConfigured) {
+    try {
+      const { data, error } = await client
+        .from('withdrawals')
+        .select('*')
+        .eq('user_id', req.user.id)
+        .order('created_at', { ascending: false });
+      
+      if (!error && data) return res.json({ data });
+    } catch (err) {
+      console.warn('Supabase fetch error:', err.message);
+    }
+  }
+  res.json({ data: [] }); // Default empty if no mock withdrawals
+};

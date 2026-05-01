@@ -168,12 +168,14 @@ class SolarApp {
           <h2 style="font-size: 20px; font-weight: 800;">My Profile</h2>
         </div>
         <div class="profile-hero">
-          <img id="profile-avatar" src="https://ui-avatars.com/api/?name=User&size=200&background=0b6cff&color=fff" alt="Avatar" class="profile-avatar-img">
-          <h2 id="profile-name" class="profile-name">Member User</h2>
-          <p id="profile-phone" class="profile-phone">+257 60 000 000</p>
+          <div id="profile-avatar-initials" style="width: 80px; height: 80px; background: #0b6cff; border-radius: 50%; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 800; color: white; box-shadow: 0 10px 20px rgba(11, 108, 255, 0.2);">
+            ${this.state.user?.name?.substring(0, 2).toUpperCase() || 'U'}
+          </div>
+          <h2 id="profile-name" class="profile-name">${this.state.user?.name || 'Member User'}</h2>
+          <p id="profile-phone" class="profile-phone">${this.state.user?.phone || '+257 000 000 00'}</p>
           <div class="profile-country">
-            <img id="profile-flag" src="https://flagcdn.com/w20/bi.png" alt="Burundi" style="width:20px;height:14px;border-radius:2px;">
-            <span id="profile-country-name">Burundi</span>
+            <img id="profile-flag" src="https://flagcdn.com/w20/${(this.state.user?.country || 'Burundi').toLowerCase().substring(0,2) === 'bu' ? 'bi' : 'rw'}.png" alt="Country" style="width:20px;height:14px;border-radius:2px;">
+            <span id="profile-country-name">${this.state.user?.country || 'Burundi'}</span>
           </div>
         </div>
         <div class="profile-menu">
@@ -181,19 +183,19 @@ class SolarApp {
             <span>Profile Information</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
           </div>
-          <div class="profile-menu-item" onclick="window.location.hash='#packages'">
+          <div class="profile-menu-item" onclick="window.app.showDepositHistory()">
             <span>Deposit History</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
           </div>
-          <div class="profile-menu-item">
+          <div class="profile-menu-item" onclick="window.app.showWithdrawalHistory()">
             <span>Withdrawals</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
           </div>
-          <div class="profile-menu-item">
+          <div class="profile-menu-item" onclick="window.app.showChangePassword()">
             <span>Change Password</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
           </div>
-          <div class="profile-menu-item">
+          <div class="profile-menu-item" onclick="window.app.showSupportCenter()">
             <span>Support Center</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
           </div>
@@ -615,6 +617,8 @@ class SolarApp {
 
   // --- PROFILE HYDRATION ---
 
+  // --- PROFILE HYDRATION ---
+
   async hydrateProfile() {
     if (this.state.user) {
       this.updateElement('profile-name', this.state.user.name);
@@ -628,8 +632,186 @@ class SolarApp {
       };
       const flagCode = flagMap[country] || 'bi';
       const flagImg = document.getElementById('profile-flag');
-      if (flagImg) flagImg.src = `https://flagcdn.com/w20/${flagCode}.jpg`;
+      if (flagImg) flagImg.src = `https://flagcdn.com/w20/${flagCode}.png`;
+
+      const initialsEl = document.getElementById('profile-avatar-initials');
+      if (initialsEl) initialsEl.textContent = this.state.user.name.substring(0, 2).toUpperCase();
     }
+  }
+
+  editProfile() {
+    const u = this.state.user || {};
+    const html = `
+      <div style="padding: 20px;">
+        <div class="modern-form-group">
+          <label class="modern-form-label">Full Name</label>
+          <input type="text" id="edit-name" class="modern-form-control" value="${u.name || ''}">
+        </div>
+        <div class="modern-form-group">
+          <label class="modern-form-label">Phone Number</label>
+          <input type="text" id="edit-phone" class="modern-form-control" value="${u.phone || ''}">
+        </div>
+        <div class="modern-form-group">
+          <label class="modern-form-label">Country</label>
+          <select id="edit-country" class="modern-form-control">
+            <option value="Burundi" ${u.country==='Burundi'?'selected':''}>Burundi</option>
+            <option value="Rwanda" ${u.country==='Rwanda'?'selected':''}>Rwanda</option>
+            <option value="Kenya" ${u.country==='Kenya'?'selected':''}>Kenya</option>
+          </select>
+        </div>
+        <button id="save-profile-btn" class="btn btn-blue btn-full" style="padding:16px; margin-top:10px;">Update Information</button>
+      </div>
+    `;
+    this.showModal('Edit Profile', html);
+    
+    document.getElementById('save-profile-btn').onclick = async () => {
+      const name = document.getElementById('edit-name').value;
+      const phone = document.getElementById('edit-phone').value;
+      const country = document.getElementById('edit-country').value;
+      
+      const btn = document.getElementById('save-profile-btn');
+      btn.disabled = true; btn.textContent = 'Saving...';
+      
+      const res = await this.fetchAPI('profile', {
+        method: 'PUT',
+        body: JSON.stringify({ name, phone, country })
+      });
+      
+      if (res) {
+        this.state.user = { ...this.state.user, name, phone, country };
+        localStorage.setItem('solar_user', JSON.stringify(this.state.user));
+        this.showToast('Profile updated!', 'success');
+        document.getElementById('app-modal').remove();
+        this.handleRoute(); // Refresh template
+      } else {
+        btn.disabled = false; btn.textContent = 'Update Information';
+      }
+    };
+  }
+
+  async showDepositHistory() {
+    const res = await this.fetchAPI('deposits');
+    const data = res?.data || res || [];
+    const html = `
+      <div style="padding: 10px;">
+        ${data.length > 0 ? data.map(d => `
+          <div style="padding: 16px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <strong style="display: block; font-size: 14px;">${d.package_name || 'Generic Deposit'}</strong>
+              <span style="font-size: 11px; color: #64748b;">${new Date(d.created_at).toLocaleDateString()}</span>
+            </div>
+            <div style="text-align: right;">
+              <strong style="display: block; color: #16a34a;">${d.amount}</strong>
+              <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: ${d.status==='approved'?'#16a34a':d.status==='pending'?'#f59e0b':'#dc2626'}">${d.status}</span>
+            </div>
+          </div>
+        `).join('') : '<p style="text-align:center; padding: 40px; color:#64748b;">No deposits found.</p>'}
+      </div>
+    `;
+    this.showModal('Deposit History', html);
+  }
+
+  async showWithdrawalHistory() {
+    const res = await this.fetchAPI('withdrawals');
+    const data = res?.data || res || [];
+    const html = `
+      <div style="padding: 10px;">
+        ${data.length > 0 ? data.map(w => `
+          <div style="padding: 16px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <strong style="display: block; font-size: 14px;">Withdrawal Request</strong>
+              <span style="font-size: 11px; color: #64748b;">${new Date(w.created_at).toLocaleDateString()}</span>
+            </div>
+            <div style="text-align: right;">
+              <strong style="display: block; color: #dc2626;">-${w.amount}</strong>
+              <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: ${w.status==='approved'?'#16a34a':w.status==='pending'?'#f59e0b':'#dc2626'}">${w.status}</span>
+            </div>
+          </div>
+        `).join('') : `
+          <div style="padding: 40px; text-align: center;">
+            <p style="color:#64748b; margin-bottom: 20px;">No withdrawal history found.</p>
+            <button onclick="document.getElementById('app-modal').remove(); window.app.showWithdrawModal()" class="btn btn-green" style="padding: 10px 20px; font-size: 13px;">Request Withdrawal</button>
+          </div>
+        `}
+      </div>
+    `;
+    this.showModal('Withdrawal History', html);
+  }
+
+  showChangePassword() {
+    const html = `
+      <div style="padding: 20px;">
+        <div class="modern-form-group">
+          <label class="modern-form-label">Current Password</label>
+          <input type="password" id="old-pass" class="modern-form-control" placeholder="••••••••">
+        </div>
+        <div class="modern-form-group">
+          <label class="modern-form-label">New Password</label>
+          <input type="password" id="new-pass" class="modern-form-control" placeholder="••••••••">
+        </div>
+        <button id="change-pass-btn" class="btn btn-green btn-full" style="padding:16px; margin-top:10px;">Change Password</button>
+      </div>
+    `;
+    this.showModal('Change Password', html);
+    document.getElementById('change-pass-btn').onclick = () => {
+      this.showToast('Feature coming soon in full release!', 'info');
+    };
+  }
+
+  showSupportCenter() {
+    const html = `
+      <div style="padding: 24px; text-align: center;">
+        <div style="font-size: 48px; margin-bottom: 16px;">🎧</div>
+        <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 12px;">How can we help?</h3>
+        <p style="font-size: 14px; color: #64748b; margin-bottom: 24px; line-height: 1.6;">Our support team is available 24/7 to assist you with your investments and account issues.</p>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <a href="https://wa.me/25760000000" target="_blank" class="btn" style="background:#25D366; color:white; font-weight:800; gap:8px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.01 2.01c-5.52 0-9.99 4.47-9.99 9.99 0 1.77.46 3.44 1.28 4.91L2 22l5.24-1.37c1.41.77 3.01 1.21 4.7 1.21 5.52 0 9.99-4.47 9.99-9.99s-4.47-9.99-9.92-9.99z"/></svg> 
+            Chat on WhatsApp
+          </a>
+          <a href="https://t.me/solarafrica" target="_blank" class="btn" style="background:#0088cc; color:white; font-weight:800; gap:8px;">
+            Telegram Channel
+          </a>
+        </div>
+      </div>
+    `;
+    this.showModal('Support Center', html);
+  }
+
+  showWithdrawModal() {
+    const html = `
+      <div style="padding: 20px;">
+        <div style="background:#f0fdf4; border:1px solid #dcfce7; padding:16px; border-radius:12px; margin-bottom:20px;">
+          <span style="display:block; font-size:11px; color:#16a34a; font-weight:800; text-transform:uppercase; margin-bottom:4px;">Withdrawable Balance</span>
+          <strong style="font-size:20px; color:#111827;">${this.state.dashboard?.wallet_balance || '1,250,000 BIF'}</strong>
+        </div>
+        <div class="modern-form-group">
+          <label class="modern-form-label">Withdrawal Amount (BIF)</label>
+          <input type="number" id="withdraw-amount" class="modern-form-control" placeholder="Min. 5,000 BIF">
+        </div>
+        <button id="submit-withdraw-btn" class="btn btn-green btn-full" style="padding:16px;">Request Withdrawal</button>
+      </div>
+    `;
+    this.showModal('Withdraw Funds', html);
+    document.getElementById('submit-withdraw-btn').onclick = async () => {
+      const amount = document.getElementById('withdraw-amount').value;
+      if (!amount || amount < 5000) return this.showToast('Minimum withdrawal is 5,000 BIF', 'warning');
+      
+      const btn = document.getElementById('submit-withdraw-btn');
+      btn.disabled = true; btn.textContent = 'Processing...';
+      
+      const res = await this.fetchAPI('withdrawals', {
+        method: 'POST',
+        body: JSON.stringify({ amount: amount + ' BIF' })
+      });
+      
+      if (res) {
+        this.showToast('Withdrawal request submitted!', 'success');
+        document.getElementById('app-modal').remove();
+      } else {
+        btn.disabled = false; btn.textContent = 'Request Withdrawal';
+      }
+    };
   }
 
   // --- ADMIN ENGINE ---
