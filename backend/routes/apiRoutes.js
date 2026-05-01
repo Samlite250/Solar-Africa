@@ -15,6 +15,7 @@ router.get('/deposits', protect, apiController.getDeposits);
 router.post('/withdrawals', protect, apiController.createWithdrawal);
 router.get('/withdrawals', protect, apiController.getWithdrawals);
 router.get('/notifications', protect, apiController.getNotifications);
+router.put('/notifications/:id/read', protect, apiController.markNotificationRead);
 
 // Admin Routes
 router.get('/admin/stats', protect, apiController.getAdminStats);

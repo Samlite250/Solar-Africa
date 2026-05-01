@@ -28,11 +28,12 @@ exports.register = async (req, res) => {
 
     const userId = authData.user.id;
 
-    // 2. Initialize Profile
+    // 2. Initialize Profile (Now including email for username lookup)
     const { error: profileError } = await client.from('profiles').insert([
       { 
         user_id: userId, 
-        name, 
+        name, // This is the Username
+        email,
         phone,
         country,
         member_since: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) 
@@ -88,18 +89,34 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email: identifier, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password required' });
+    if (!identifier || !password) {
+      return res.status(400).json({ error: 'Identifier and password required' });
     }
 
     if (!isConfigured) {
       return res.status(503).json({ error: 'Supabase is not configured' });
     }
 
+    let loginEmail = identifier;
+
+    // If identifier is not an email, lookup in profiles table
+    if (!identifier.includes('@')) {
+      const { data: profile, error: lookupError } = await client
+        .from('profiles')
+        .select('email')
+        .eq('name', identifier)
+        .single();
+      
+      if (lookupError || !profile) {
+        return res.status(401).json({ error: 'Username not found' });
+      }
+      loginEmail = profile.email;
+    }
+
     const { data, error } = await client.auth.signInWithPassword({
-      email,
+      email: loginEmail,
       password,
     });
 

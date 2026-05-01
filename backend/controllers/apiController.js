@@ -404,3 +404,43 @@ exports.getWithdrawals = async (req, res) => {
   }
   res.json({ data: [] }); // Default empty if no mock withdrawals
 };
+
+exports.markNotificationRead = async (req, res) => {
+  const { id } = req.params;
+  
+  if (isConfigured) {
+    try {
+      const { data, error } = await client
+        .from('notifications')
+        .update({ read: true })
+        .eq('id', id)
+        .eq('user_id', req.user.id) // Security check
+        .select()
+        .single();
+      
+      if (error) {
+        // If it was a global notification (user_id is null), we handle it differently 
+        // usually by a junction table, but for MVP we just allow updating if null
+        const { data: globalData, error: globalError } = await client
+          .from('notifications')
+          .update({ read: true })
+          .eq('id', id)
+          .is('user_id', null)
+          .select()
+          .single();
+        
+        if (globalError) throw globalError;
+        return res.json({ message: 'Global notification marked as read', data: globalData });
+      }
+      
+      return res.json({ message: 'Notification marked as read', data });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
+  
+  // Mock mode
+  const notif = mockData.notifications.find(n => n.id == id);
+  if (notif) notif.read = true;
+  res.json({ message: 'Notification marked as read (Mock Mode)' });
+};

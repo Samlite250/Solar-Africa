@@ -814,7 +814,45 @@ class SolarApp {
     };
   }
 
-  // --- ADMIN ENGINE ---
+  showNotifications() {
+    const list = document.getElementById('notif-list');
+    if (!list) return;
+
+    if (this.state.notifications.length === 0) {
+      list.innerHTML = '<div style="padding:40px;text-align:center;color:#64748b;">No new notifications</div>';
+      return;
+    }
+
+    list.innerHTML = this.state.notifications.map(n => `
+      <div class="notif-item ${n.read ? '' : 'unread'}" onclick="window.app.markAsRead('${n.id}', this)" style="padding: 16px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.2s; ${n.read ? '' : 'background: #f0f7ff;'}">
+        <div style="display: flex; gap: 12px;">
+          <div style="width: 10px; height: 10px; border-radius: 50%; background: ${n.read ? 'transparent' : '#0b6cff'}; margin-top: 4px; flex-shrink: 0;"></div>
+          <div>
+            <strong style="display: block; font-size: 14px; margin-bottom: 2px;">${n.title}</strong>
+            <p style="font-size: 13px; color: #4b5563; line-height: 1.4; margin-bottom: 4px;">${n.message}</p>
+            <span style="font-size: 11px; color: #94a3b8;">${new Date(n.created_at).toLocaleDateString()}</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  async markAsRead(id, el) {
+    const notif = this.state.notifications.find(n => n.id == id);
+    if (!notif || notif.read) return;
+
+    // Optimistic UI update
+    notif.read = true;
+    if (el) {
+      el.style.background = 'transparent';
+      const dot = el.querySelector('div[style*="background: #0b6cff"]');
+      if (dot) dot.style.background = 'transparent';
+    }
+    this.updateNotificationBadge();
+
+    // Persist to server
+    await this.fetchAPI(`notifications/${id}/read`, { method: 'PUT' });
+  }
 
   async hydrateAdmin() {
     const data = await this.fetchAPI('admin/stats');
