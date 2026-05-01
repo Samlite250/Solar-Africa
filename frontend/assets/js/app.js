@@ -103,7 +103,7 @@ class SolarApp {
         <div class="dash-hero-banner">
           <div class="dash-hero-text">
             <p class="dash-hero-sub" style="display: flex; align-items: center; gap: 6px;">
-              Welcome, ${this.state.user?.name?.split(' ')[0] || 'Investor'}
+              Welcome, <strong style="font-weight: 900; font-size: 1.1em;">${this.state.user?.name || 'Investor'}</strong>
               <img src="https://flagcdn.com/w20/${((c) => ({'Burundi':'bi','Rwanda':'rw','Kenya':'ke','Uganda':'ug','Tanzania':'tz'})[c] || 'bi')(this.state.user?.country || 'Burundi')}.png" alt="Country Flag" style="width:16px;height:12px;border-radius:2px;display:inline-block;box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
             </p>
             <h2 class="dash-hero-title">Invest in clean energy,<br>earn a bright future.</h2>
