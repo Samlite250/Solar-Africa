@@ -99,7 +99,6 @@ class SolarApp {
             <p class="dash-hero-sub">Welcome to</p>
             <h2 class="dash-hero-title">Invest in clean energy,<br>earn a bright future.</h2>
           </div>
-          <img class="dash-hero-img" src="https://images.unsplash.com/photo-1509391366360-2e959784a276?w=300&q=80" alt="Solar Panel">
         </div>
 
         <div class="dash-metrics-row">
