@@ -77,7 +77,7 @@ exports.register = async (req, res) => {
         ? 'Registration successful!' 
         : 'Registration successful! Please check your email to verify your account before logging in.',
       token: authData.session ? authData.session.access_token : null,
-      user: { id: userId, name, email }
+      user: { id: userId, name, email, country, phone }
     });
 
 
@@ -123,13 +123,22 @@ exports.login = async (req, res) => {
 
     if (error) return res.status(401).json({ error: error.message });
 
+    // Fetch extended profile data
+    const { data: profile } = await client
+      .from('profiles')
+      .select('country, phone')
+      .eq('user_id', data.user.id)
+      .single();
+
     res.status(200).json({
       message: 'Login successful',
       token: data.session.access_token,
       user: { 
         id: data.user.id, 
         email: data.user.email, 
-        name: data.user.user_metadata.full_name 
+        name: data.user.user_metadata.full_name,
+        country: profile?.country || 'Burundi',
+        phone: profile?.phone || ''
       }
     });
   } catch (error) {
