@@ -78,5 +78,15 @@
       </div>
     </div>
     <script src="assets/js/app.js" defer></script>
+    <script>
+      // Capture referral code from URL
+      document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const ref = urlParams.get('ref');
+        if (ref) {
+          window.localStorage.setItem('solar_ref', ref);
+        }
+      });
+    </script>
   </body>
 </html>

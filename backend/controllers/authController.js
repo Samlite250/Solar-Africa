@@ -5,7 +5,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'solar-africa-super-secret-key-2026
 
 exports.register = async (req, res) => {
   try {
-    const { name, email, phone, country, password } = req.body;
+    const { name, email, phone, country, password, referred_by } = req.body;
 
     if (!name || !email || !password || !phone || !country) {
       return res.status(400).json({ error: 'All fields are required' });
@@ -28,7 +28,7 @@ exports.register = async (req, res) => {
 
     const userId = authData.user.id;
 
-    // 2. Initialize Profile (Now including email for username lookup)
+    // 2. Initialize Profile (Now including email for username lookup and referral tracking)
     const { error: profileError } = await client.from('profiles').insert([
       { 
         user_id: userId, 
@@ -36,6 +36,7 @@ exports.register = async (req, res) => {
         email,
         phone,
         country,
+        referred_by: referred_by || 'Solar Africa',
         member_since: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) 
       }
     ]);

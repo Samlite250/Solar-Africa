@@ -45,12 +45,32 @@ exports.getDashboard = async (req, res) => {
 exports.getTeam = async (req, res) => {
   if (isConfigured) {
     try {
-      const { data, error } = await client
-        .from('referrals')
-        .select('*')
-        .eq('user_id', req.user.id);
-      
-      if (!error && data) return res.json({ data });
+      // 1. Get current user's profile to get their username (name)
+      const { data: profile } = await client
+        .from('profiles')
+        .select('name')
+        .eq('user_id', req.user.id)
+        .single();
+
+      if (profile) {
+        // 2. Find everyone who was referred by this username
+        const { data: teamMembers, error } = await client
+          .from('profiles')
+          .select('name, country, created_at, member_since')
+          .eq('referred_by', profile.name);
+        
+        if (!error && teamMembers) {
+          return res.json({ 
+            data: teamMembers.map(m => ({
+              id: m.id,
+              name: m.name,
+              status: 'Active',
+              joined: m.member_since || new Date(m.created_at).toLocaleDateString(),
+              contribution: '—'
+            }))
+          });
+        }
+      }
     } catch (err) {
       console.warn('Supabase fetch error:', err.message);
     }

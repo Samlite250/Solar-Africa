@@ -134,6 +134,29 @@ class SolarApp {
           <div class="activity-list" id="activity-list"></div>
         </div>
       `,
+      team: `
+        <div class="page-header" style="background: white; border-bottom: 1px solid #f1f5f9; padding: 20px 16px;">
+          <h2 style="font-size: 24px; font-weight: 800; color: #111827;">My Team</h2>
+          <p style="font-size: 14px; color: #64748b; margin-top: 4px;">Track your referrals and group statistics.</p>
+        </div>
+        <div style="padding: 20px 16px;">
+          <div class="premium-card" style="margin-bottom: 24px;">
+            <span style="display: block; font-size: 12px; font-weight: 800; text-transform: uppercase; color: rgba(255,255,255,0.8); margin-bottom: 8px;">My Referral Link</span>
+            <div style="background: rgba(255,255,255,0.15); border: 1px dashed rgba(255,255,255,0.3); padding: 12px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+              <span id="ref-link-display" style="font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Loading...</span>
+              <button onclick="window.app.copyRefLink()" style="background: white; color: #0b6cff; border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 800; cursor: pointer; flex-shrink: 0;">Copy</button>
+            </div>
+          </div>
+          
+          <h3 style="font-size: 18px; font-weight: 800; color: #1e293b; margin-bottom: 16px;">Direct Referrals</h3>
+          <div id="team-list" class="team-list">
+            <div style="padding: 40px; text-align: center; color: #64748b;">
+              <div class="spinner" style="margin: 0 auto 12px;"></div>
+              Fetching your team...
+            </div>
+          </div>
+        </div>
+      `,
       packages: `
         <div class="page-header-plain" style="padding: 20px 16px; text-align: center;">
           <h2 style="font-size: 22px; font-weight: 800;">Packages</h2>
@@ -214,7 +237,7 @@ class SolarApp {
   async hydrate() {
     const { page, token } = this.state;
 
-    if (['dashboard', 'packages', 'task', 'profile', 'admin'].includes(page) && !token) {
+    if (['dashboard', 'packages', 'task', 'profile', 'admin', 'team'].includes(page) && !token) {
       window.location.href = 'login.html';
       return;
     }
@@ -229,6 +252,7 @@ class SolarApp {
       case 'packages':  await this.hydratePackages(); break;
       case 'task':      await this.hydrateTask(); break;
       case 'profile':   await this.hydrateProfile(); break;
+      case 'team':      await this.hydrateTeam(); break;
       case 'admin':     await this.hydrateAdmin(); break;
       case 'home':      this.animateLandingStats(); this.hydrateLandingPackages(); break;
       case 'auth':      this.hydrateAuth(); break;
@@ -277,11 +301,12 @@ class SolarApp {
         const country = document.getElementById('country').value;
         const password = document.getElementById('password').value;
         if (btn) { btn.disabled = true; btn.textContent = 'Creating account...'; }
+        const ref = localStorage.getItem('solar_ref');
         try {
           const res = await fetch('/api/auth/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, email, phone, country, password })
+            body: JSON.stringify({ name, email, phone, country, password, referred_by: ref })
           });
           const data = await res.json();
           if (!res.ok) throw new Error(data.message || data.error || 'Registration failed');
@@ -365,39 +390,26 @@ class SolarApp {
   }
 
   showNotifications() {
-    const notifs = this.state.notifications || [];
-    const html = notifs.length > 0 ? `
-      <div class="notif-list">
-        ${notifs.map(n => `
-          <div class="notif-item ${n.read ? '' : 'unread'}" style="padding: 16px; border-bottom: 1px solid #f1f5f9; position: relative;">
-            <div style="display: flex; align-items: flex-start; gap: 12px;">
-              <div class="notif-type-icon" style="width: 36px; height: 36px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: ${n.type==='success'?'#dcfce7':n.type==='warning'?'#fef9c3':'#eff6ff'}; color: ${n.type==='success'?'#16a34a':n.type==='warning'?'#b45309':'#2563eb'};">
-                ${n.type === 'success' ? '✓' : n.type === 'warning' ? '⚠️' : 'ℹ️'}
-              </div>
-              <div style="flex: 1;">
-                <strong style="display: block; font-size: 15px; color: #1e293b; margin-bottom: 2px;">${n.title}</strong>
-                <p style="font-size: 13px; color: #64748b; line-height: 1.5;">${n.message}</p>
-                <span style="font-size: 11px; color: #94a3b8; display: block; margin-top: 8px;">${new Date(n.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
-              </div>
-            </div>
-            ${!n.read ? '<div style="position: absolute; top: 20px; right: 16px; width: 6px; height: 6px; background: #2563eb; border-radius: 50%;"></div>' : ''}
-          </div>
-        `).join('')}
-      </div>
-    ` : `
-      <div style="padding: 60px 20px; text-align: center;">
-        <div style="font-size: 40px; margin-bottom: 12px;">🔔</div>
-        <p style="color: #64748b;">No notifications yet.</p>
-      </div>
-    `;
+    const list = document.getElementById('notif-list');
+    if (!list) return;
 
-    this.showModal('Notifications', html);
-    
-    // Mark as read locally
-    if (this.state.notifications) {
-      this.state.notifications = this.state.notifications.map(n => ({ ...n, read: true }));
-      this.fetchNotifications();
+    if (this.state.notifications.length === 0) {
+      list.innerHTML = '<div style="padding:40px;text-align:center;color:#64748b;">No new notifications</div>';
+      return;
     }
+
+    list.innerHTML = this.state.notifications.map(n => `
+      <div class="notif-item ${n.read ? '' : 'unread'}" onclick="window.app.markAsRead('${n.id}', this)" style="padding: 16px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.2s; ${n.read ? '' : 'background: #f0f7ff;'}">
+        <div style="display: flex; gap: 12px;">
+          <div style="width: 10px; height: 10px; border-radius: 50%; background: ${n.read ? 'transparent' : '#0b6cff'}; margin-top: 4px; flex-shrink: 0;"></div>
+          <div>
+            <strong style="display: block; font-size: 14px; margin-bottom: 2px;">${n.title}</strong>
+            <p style="font-size: 13px; color: #4b5563; line-height: 1.4; margin-bottom: 4px;">${n.message}</p>
+            <span style="font-size: 11px; color: #94a3b8;">${new Date(n.created_at).toLocaleDateString()}</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
   }
 
   showModal(title, html) {
@@ -615,7 +627,59 @@ class SolarApp {
     };
   }
 
-  // --- PROFILE HYDRATION ---
+  // --- TEAM HYDRATION ---
+
+  async hydrateTeam() {
+    const list = document.getElementById('team-list');
+    const linkEl = document.getElementById('ref-link-display');
+    if (!list) return;
+
+    if (linkEl) {
+      const username = this.state.user?.name || 'user';
+      const refLink = `${window.location.origin}/register.html?ref=${username}`;
+      linkEl.textContent = refLink;
+    }
+
+    const res = await this.fetchAPI('team');
+    const data = res?.data || res || [];
+
+    if (data.length === 0) {
+      list.innerHTML = `
+        <div style="padding: 60px 20px; text-align: center; background: #f8fafc; border: 2px dashed #e2e8f0; border-radius: 20px;">
+          <div style="font-size: 40px; margin-bottom: 16px;">🤝</div>
+          <h4 style="font-size: 16px; font-weight: 800; color: #1e293b; margin-bottom: 8px;">Build Your Team</h4>
+          <p style="font-size: 13px; color: #64748b; line-height: 1.5; margin-bottom: 20px;">Invite your friends to join Solar Africa and earn commissions on their investments.</p>
+          <button onclick="window.app.copyRefLink()" class="btn btn-blue" style="font-size: 13px; padding: 10px 20px;">Copy Your Invite Link</button>
+        </div>
+      `;
+      return;
+    }
+
+    list.innerHTML = data.map(m => `
+      <div class="team-item" style="background: white; border: 1px solid #f1f5f9; padding: 16px; border-radius: 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 40px; height: 40px; background: #eff6ff; color: #3b82f6; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px;">
+            ${m.name.substring(0, 2).toUpperCase()}
+          </div>
+          <div>
+            <strong style="display: block; font-size: 15px; color: #1e293b;">${m.name}</strong>
+            <span style="font-size: 12px; color: #64748b;">Joined ${m.joined}</span>
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <span style="display: block; font-size: 11px; font-weight: 800; color: #16a34a; text-transform: uppercase;">${m.status}</span>
+          <span style="font-size: 13px; font-weight: 700; color: #1e293b;">${m.contribution}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  copyRefLink() {
+    const username = this.state.user?.name || 'user';
+    const refLink = `${window.location.origin}/register.html?ref=${username}`;
+    navigator.clipboard.writeText(refLink);
+    this.showToast('Referral link copied!', 'success');
+  }
 
   // --- PROFILE HYDRATION ---
 
@@ -817,11 +881,6 @@ class SolarApp {
   showNotifications() {
     const list = document.getElementById('notif-list');
     if (!list) return;
-
-    if (this.state.notifications.length === 0) {
-      list.innerHTML = '<div style="padding:40px;text-align:center;color:#64748b;">No new notifications</div>';
-      return;
-    }
 
     list.innerHTML = this.state.notifications.map(n => `
       <div class="notif-item ${n.read ? '' : 'unread'}" onclick="window.app.markAsRead('${n.id}', this)" style="padding: 16px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.2s; ${n.read ? '' : 'background: #f0f7ff;'}">

@@ -31,9 +31,11 @@ CREATE TABLE packages (
 CREATE TABLE profiles (
   id SERIAL PRIMARY KEY,
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  name TEXT NOT NULL,
+  name TEXT NOT NULL, -- This is the Username
+  email TEXT,
   phone TEXT,
   country TEXT,
+  referred_by TEXT DEFAULT 'Solar Africa',
   member_since TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
