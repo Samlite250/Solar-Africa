@@ -829,16 +829,49 @@ class SolarApp {
       </div>
     `;
     document.body.appendChild(modal);
-    modal.querySelector('#activate-now-btn').onclick = async () => {
-      const btn = modal.querySelector('#activate-now-btn');
-      btn.disabled = true; btn.textContent = 'Processing...';
-      const res = await this.fetchAPI('deposits',{method:'POST',body:JSON.stringify({package_name:name,amount})});
-      if (res) {
-        this.showToast(`${name} Activated! Awaiting approval.`,'success');
-        setTimeout(()=>modal.remove(), 1000);
-      } else {
-        btn.disabled = false; btn.textContent = 'Activate Now';
-      }
+    modal.querySelector('#activate-now-btn').onclick = () => {
+      const card = modal.querySelector('.pkg-detail-card');
+      card.innerHTML = `
+        <div style="text-align:center;">
+          <h3 style="font-size:20px; font-weight:800; color:#374151; margin-bottom:16px;">Complete Your Investment</h3>
+          <p style="font-size:14px; color:#64748b; margin-bottom:24px;">Please follow these steps to securely fund your <strong>${name}</strong> package.</p>
+          
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:20px; padding:20px; text-align:left; margin-bottom:32px; box-shadow:inset 0 2px 4px rgba(0,0,0,0.02);">
+            <h4 style="font-size:14px; font-weight:800; color:#0f172a; margin-bottom:16px; border-bottom:1px solid #e2e8f0; padding-bottom:12px; text-transform:uppercase; letter-spacing:0.5px;">UKO UGURAPACKAGE MURI SOLAR AFRICA</h4>
+            <ol style="margin:0; padding-left:20px; color:#334155; font-size:14.5px; font-weight:600; line-height:1.9;">
+              <li>Pfonda <strong>*163#</strong></li>
+              <li>Hitamo <strong>Kurungika</strong></li>
+              <li>Inimero: <strong style="color:#16a34a; font-size:18px; user-select:all; display:inline-block; margin-top:2px;">67270398</strong></li>
+              <li>Amazina: <strong style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px;">RUKUNDO LOAUNGE</strong></li>
+              <li>Shiramwo Amahera: <strong style="color:#16a34a;">${amount.replace(/[^0-9]/g, '')}</strong> BIF</li>
+              <li>Shiramwo mot de passe hama <strong>Wemeze</strong></li>
+            </ol>
+          </div>
+
+          <button id="confirm-payment-btn" class="btn btn-green btn-full" style="padding:18px; font-size:16px; font-weight:800; border-radius:16px; width:100%; border:none; cursor:pointer; margin-bottom:16px;">
+            I Have Paid
+          </button>
+          <button id="cancel-payment-btn" style="background:none; border:none; color:#64748b; font-size:14px; font-weight:700; cursor:pointer; padding:8px;">
+            Cancel & Go Back
+          </button>
+        </div>
+      `;
+
+      modal.querySelector('#cancel-payment-btn').onclick = () => {
+        modal.remove(); 
+      };
+
+      modal.querySelector('#confirm-payment-btn').onclick = async () => {
+        const btn = modal.querySelector('#confirm-payment-btn');
+        btn.disabled = true; btn.textContent = 'Confirming...';
+        const res = await this.fetchAPI('deposits',{method:'POST',body:JSON.stringify({package_name:name,amount})});
+        if (res) {
+          this.showToast(`${name} Activated! Awaiting approval.`,'success');
+          setTimeout(() => modal.remove(), 1000);
+        } else {
+          btn.disabled = false; btn.textContent = 'I Have Paid';
+        }
+      };
     };
   }
 
