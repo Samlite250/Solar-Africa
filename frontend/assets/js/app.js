@@ -402,8 +402,8 @@ class SolarApp {
     list.innerHTML = finalData.map((p, i) => `
       <div class="pkg-item-row" onclick="window.app.showInvestModal('${p.id || i}','${p.name}','${p.amount}','${p.bonus}','${p.img}')">
         <div style="position:relative;">
-          <img src="${p.img || 'assets/img/packages/pkg-1.jpg'}" 
-               onerror="this.src='assets/img/packages/pkg-1.jpg'; this.onerror=null;" 
+          <img src="${p.img || 'assets/img/packages/pkg_1.jpg'}" 
+               onerror="this.src='assets/img/packages/pkg_1.jpg'; this.onerror=null;" 
                class="pkg-item-img" alt="${p.name}">
           ${p.popular ? '<div style="position:absolute; top:-5px; right:-5px; background:#22c55e; color:white; font-size:8px; font-weight:800; padding:2px 6px; border-radius:4px; transform:rotate(15deg);">POPULAR</div>' : ''}
         </div>
