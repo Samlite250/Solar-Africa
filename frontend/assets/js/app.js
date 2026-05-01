@@ -466,7 +466,7 @@ class SolarApp {
 
   showToast(msg, type = 'info') {
     const toast = document.createElement('div');
-    toast.style.cssText = `position:fixed;top:20px;left:50%;transform:translateX(-50%);background:${type==='error'?'#dc2626':'#16a34a'};color:white;padding:12px 24px;border-radius:12px;font-weight:700;font-size:14px;z-index:999999;box-shadow:0 10px 25px rgba(0,0,0,0.2);transition:all 0.3s ease;text-align:center;width:90%;max-width:400px;`;
+    toast.style.cssText = `position:fixed;top:80px;left:50%;transform:translateX(-50%);background:${type==='error'?'#dc2626':'#16a34a'};color:white;padding:16px;border-radius:12px;font-weight:700;font-size:14px;z-index:999999;box-shadow:0 10px 25px rgba(0,0,0,0.2);transition:all 0.3s ease;text-align:center;width:90%;max-width:400px;line-height:1.5;word-wrap:break-word;box-sizing:border-box;`;
     toast.textContent = msg;
     document.body.appendChild(toast);
     
@@ -474,7 +474,7 @@ class SolarApp {
       toast.style.opacity = '0';
       toast.style.transform = 'translate(-50%, -10px)';
       setTimeout(() => toast.remove(), 300);
-    }, 4000);
+    }, 5000);
   }
 
   // --- DASHBOARD HYDRATION ---
