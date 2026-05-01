@@ -290,6 +290,206 @@ class SolarApp {
 
   // --- AUTH HYDRATION ---
 
+  async hydrateAdmin() {
+    // 1. Setup Admin Sidebar Navigation
+    const navLinks = document.querySelectorAll('.sidebar-nav-link');
+    const views = document.querySelectorAll('.admin-view');
+    const viewTitle = document.getElementById('current-view-title');
+    const viewSub = document.getElementById('current-view-subtitle');
+    
+    if (navLinks.length > 0) {
+      navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          navLinks.forEach(nav => nav.classList.remove('active'));
+          link.classList.add('active');
+          const target = link.getAttribute('data-target');
+          views.forEach(v => v.style.display = 'none');
+          const targetView = document.getElementById(target);
+          if (targetView) {
+            targetView.style.display = 'block';
+            targetView.style.animation = 'slideUp 0.4s ease-out';
+          }
+          if (viewTitle) {
+            viewTitle.textContent = link.textContent.trim();
+            const subs = {
+              'view-dashboard': 'Overview of Solar Africa Platform',
+              'view-users': 'Manage platform members globally',
+              'view-packages': 'Control investment tiers',
+              'view-transactions': 'Approve or reject deposits/withdrawals',
+              'view-notifications': 'Send global alerts to users',
+              'view-settings': 'Configure platform rules'
+            };
+            if (viewSub) viewSub.textContent = subs[target] || '';
+          }
+        });
+      });
+    }
+
+    // 2. Fetch Admin Stats securely
+    const data = await this.fetchAPI('admin/stats');
+    if (!data) return; // if 401 it will logout
+    
+    // 3. Populate Metrics View
+    const { metrics, deposits, packages, users } = data;
+    if (metrics) {
+      const e = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+      e('admin-total-users', (metrics.users||0).toLocaleString());
+      e('admin-total-deposits', (metrics.deposits||0).toLocaleString());
+      e('admin-total-bonuses', metrics.total_payouts || '0 BIF');
+      e('admin-total-withdrawals', (metrics.withdrawals||0).toLocaleString());
+      // dummy profit calculation
+      e('admin-total-profit', ((metrics.deposits * 1000) || 0).toLocaleString() + ' BIF');
+    }
+
+    // 4. Populate Users Table
+    const userTable = document.getElementById('full-user-list');
+    if (userTable && users) {
+      userTable.innerHTML = users.map(u => `
+        <tr>
+          <td><div style="display:flex;align-items:center;gap:12px;">
+            <img src="https://ui-avatars.com/api/?name=${u.name}&background=eff6ff&color=0b6cff" style="width:36px;height:36px;border-radius:10px;">
+            <strong style="color:#0f172a;">${u.name}</strong>
+          </div></td>
+          <td style="color:#64748b;font-size:13px;">${u.email||'N/A'}</td>
+          <td style="color:#64748b;font-size:13px;">${new Date(u.created_at).toLocaleDateString()}</td>
+          <td><strong style="color:#10b981;">Active User</strong></td>
+          <td><span style="background:${u.status==='active'?'#dcfce7':'#fee2e2'};color:${u.status==='active'?'#16a34a':'#dc2626'};padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;">${(u.status||'active').toUpperCase()}</span></td>
+          <td><button onclick="window.app.toggleUserStatus(${u.id}, '${u.status==='active'?'suspended':'active'}')" class="btn-admin ${u.status==='active'?'btn-admin-outline':'btn-admin-primary'}" style="padding:6px 12px;font-size:11px;">${u.status==='active'?'Suspend':'Activate'}</button></td>
+        </tr>
+      `).join('');
+    }
+
+    // 5. Populate Packages Table
+    const pkgTable = document.getElementById('admin-package-mgmt');
+    if (pkgTable && packages) {
+      pkgTable.innerHTML = packages.map(p => `
+        <tr>
+          <td><strong style="color:#0f172a;">${p.name}</strong></td>
+          <td style="color:#10b981;font-weight:700;">${p.amount}</td>
+          <td style="color:#0b6cff;font-weight:700;">${p.bonus}</td>
+          <td><span style="background:#eff6ff;color:#0b6cff;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;">${p.active} active</span></td>
+          <td><span style="background:#dcfce7;color:#16a34a;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;">LIVE</span></td>
+          <td><button onclick="window.app.deletePackage(${p.id})" class="btn-admin" style="background:#fee2e2;color:#dc2626;border:none;padding:6px 12px;font-size:11px;cursor:pointer;">Delete</button></td>
+        </tr>
+      `).join('');
+    }
+
+    // 6. Populate Transactions Ledger
+    const transTable = document.getElementById('full-transaction-ledger');
+    if (transTable && deposits) {
+      transTable.innerHTML = deposits.map(d => `
+        <tr>
+          <td style="color:#64748b;font-family:monospace;font-size:12px;">#DEP-${d.id}</td>
+          <td><span style="background:#eff6ff;color:#0b6cff;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:800;">DEPOSIT</span></td>
+          <td><strong>${d.user_name}</strong></td>
+          <td style="color:#10b981;font-weight:700;">${d.amount}</td>
+          <td style="color:#64748b;font-size:13px;">${new Date(d.created_at).toLocaleDateString()}</td>
+          <td><span style="background:${d.status==='approved'?'#dcfce7':(d.status==='rejected'?'#fee2e2':'#fef3c7')};color:${d.status==='approved'?'#16a34a':(d.status==='rejected'?'#dc2626':'#d97706')};padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;">${d.status.toUpperCase()}</span></td>
+          <td>
+            ${d.status === 'pending' ? `
+              <button class="btn-admin btn-admin-primary" onclick="window.app.updateDeposit(${d.id}, 'approved')" style="padding:6px 12px;font-size:11px;">Approve</button>
+              <button class="btn-admin btn-admin-outline" onclick="window.app.updateDeposit(${d.id}, 'rejected')" style="padding:6px 12px;font-size:11px;">Reject</button>
+            ` : `<span style="color:#94a3b8;font-size:12px;">Processed</span>`}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // 7. Bind Push Notification Form
+    const notifForm = document.getElementById('push-notif-form');
+    if (notifForm && !notifForm.dataset.bound) {
+      notifForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = e.target.querySelector('button');
+        btn.disabled = true; btn.textContent = 'Pushing...';
+        const title = document.getElementById('notif-title').value;
+        const message = document.getElementById('notif-message').value;
+        const type = document.getElementById('notif-type').value;
+        const res = await this.fetchAPI('admin/notifications', {
+          method: 'POST',
+          body: JSON.stringify({ title, message, type })
+        });
+        if (res) {
+          this.showToast('Global Notification Pushed!', 'success');
+          e.target.reset();
+        }
+        btn.disabled = false; btn.textContent = 'Push Notification Now';
+      });
+      notifForm.dataset.bound = 'true';
+    }
+
+    // 8. Bind Package Creation Form
+    const packageForm = document.getElementById('package-form');
+    if (packageForm && !packageForm.dataset.bound) {
+      packageForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = e.target.querySelector('button[type="submit"]');
+        btn.disabled = true; btn.textContent = 'Creating...';
+        
+        const name = document.getElementById('pkg-name').value;
+        const amount = document.getElementById('pkg-amount').value;
+        const bonus = document.getElementById('pkg-bonus').value;
+        const description = document.getElementById('pkg-desc').value;
+        const active = 0; // Default active users
+
+        const res = await this.fetchAPI('admin/packages', {
+          method: 'POST',
+          body: JSON.stringify({ name, amount, bonus, description, active })
+        });
+
+        if (res) {
+          this.showToast('Package created successfully!', 'success');
+          e.target.reset();
+          this.closePackageModal();
+          this.hydrateAdmin(); // Refresh the table
+        }
+        btn.disabled = false; btn.textContent = 'Create Package';
+      });
+      packageForm.dataset.bound = 'true';
+    }
+
+    // 9. Bind Logout Button
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn && !logoutBtn.dataset.bound) {
+      logoutBtn.addEventListener('click', () => this.logout());
+      logoutBtn.dataset.bound = 'true';
+    }
+  }
+
+  // Admin Actions
+  async updateDeposit(id, status) {
+    if (!confirm(`Are you sure you want to mark deposit #${id} as ${status.toUpperCase()}?`)) return;
+    const res = await this.fetchAPI(`admin/deposits/${id}`, { method: 'PUT', body: JSON.stringify({ status }) });
+    if (res) {
+      this.showToast(`Deposit ${status} successfully`, 'success');
+      this.hydrateAdmin(); // Refresh
+    }
+  }
+  
+  async deletePackage(id) {
+    if (!confirm('Are you sure you want to delete this package?')) return;
+    const res = await this.fetchAPI(`admin/packages/${id}`, { method: 'DELETE' });
+    if (res) {
+      this.showToast('Package deleted!', 'success');
+      this.hydrateAdmin();
+    }
+  }
+
+  async toggleUserStatus(id, status) {
+    if (!confirm(`Are you sure you want to ${status==='active'?'ACTIVATE':'SUSPEND'} this user?`)) return;
+    const res = await this.fetchAPI(`admin/users/${id}`, { method: 'PUT', body: JSON.stringify({ status }) });
+    if (res) {
+      this.showToast(`User ${status}`, 'success');
+      this.hydrateAdmin();
+    }
+  }
+
+  openPackageModal() { document.getElementById('package-modal').style.display = 'flex'; }
+  closePackageModal() { document.getElementById('package-modal').style.display = 'none'; }
+
+  // --- AUTH HYDRATION ---
+
   hydrateAuth() {
     // LOGIN FORM
     const loginForm = document.getElementById('login-form');
