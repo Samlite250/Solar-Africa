@@ -126,6 +126,22 @@ class SolarApp {
           </div>
         </div>
 
+        <div class="section-block" style="margin-bottom: 24px;">
+          <div class="section-block-header">
+            <h3 style="font-size: 16px; font-weight: 800; color: #1e293b;">Build Your Team</h3>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
+            <div class="premium-card" style="padding: 20px 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; cursor: pointer; background: linear-gradient(135deg, #0b6cff 0%, #00b0ff 100%); border: none; box-shadow: 0 4px 12px rgba(11, 108, 255, 0.2);" onclick="window.app.copyRefLink()">
+              <div style="font-size: 24px;">🔗</div>
+              <strong style="font-size: 14px; color: white;">Copy Link</strong>
+            </div>
+            <div class="premium-card" style="padding: 20px 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; cursor: pointer; background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%); border: none; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2);" onclick="window.location.hash = '#team'">
+              <div style="font-size: 24px;">👥</div>
+              <strong style="font-size: 14px; color: white;">My Team</strong>
+            </div>
+          </div>
+        </div>
+
         <div class="section-block">
           <div class="section-block-header">
             <h3>Recent Activity</h3>
