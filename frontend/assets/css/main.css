@@ -730,10 +730,10 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: 75%;
+  height: 80%;
   background: url('../img/packages/pkg_1.jpg') center/cover no-repeat;
-  mask-image: linear-gradient(to bottom, black 25%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, black 25%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
   z-index: 1;
 }
 
@@ -742,7 +742,7 @@ body {
   z-index: 2;
   padding: 24px 20px;
   width: 100%;
-  background: linear-gradient(to top, var(--primary-blue) 60%, transparent 100%);
+  background: linear-gradient(to top, var(--primary-blue) 75%, transparent 100%);
 }
 
 .dash-hero-sub {
