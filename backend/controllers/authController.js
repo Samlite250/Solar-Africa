@@ -111,7 +111,7 @@ exports.login = async (req, res) => {
         .single();
       
       if (lookupError || !profile) {
-        return res.status(401).json({ error: 'Username not found' });
+        return res.status(401).json({ error: 'Username not found. Please ensure you registered properly.' });
       }
       loginEmail = profile.email;
     }
@@ -121,7 +121,7 @@ exports.login = async (req, res) => {
       password,
     });
 
-    if (error) return res.status(401).json({ error: error.message });
+    if (error) return res.status(401).json({ error: `Authentication failed: ${error.message}` });
 
     // Fetch extended profile data
     const { data: profile } = await client
