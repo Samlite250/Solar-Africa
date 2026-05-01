@@ -105,16 +105,28 @@ exports.login = async (req, res) => {
 
     // If identifier is not an email, lookup in profiles table
     if (!identifier.includes('@')) {
-      const { data: profile, error: lookupError } = await client
-        .from('profiles')
-        .select('email')
-        .eq('name', identifier)
-        .single();
+      let emailFound = null;
       
-      if (lookupError || !profile) {
-        return res.status(401).json({ error: 'Username not found. Please ensure you registered properly.' });
+      // Try RPC first (which bypasses RLS safely if the SQL function was created)
+      const { data: rpcData, error: rpcError } = await client.rpc('get_email_by_username', { p_name: identifier });
+      
+      if (!rpcError && rpcData) {
+        emailFound = rpcData;
+      } else {
+        // Fallback to normal query which might be blocked by RLS
+        const { data: profile, error: lookupError } = await client
+          .from('profiles')
+          .select('email')
+          .eq('name', identifier)
+          .single();
+        
+        if (profile) emailFound = profile.email;
       }
-      loginEmail = profile.email;
+      
+      if (!emailFound) {
+        return res.status(401).json({ error: 'Username not found. Please log in with Email, or run fix_auth.sql in Supabase.' });
+      }
+      loginEmail = emailFound;
     }
 
     const { data, error } = await client.auth.signInWithPassword({
