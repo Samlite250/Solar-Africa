@@ -40,10 +40,7 @@ class SolarApp {
     // 3. Start Notification Polling
     this.startNotificationPolling();
 
-    // 4. Header Hydration
-    this.hydrateHeader();
-
-    // 5. Visual Polish
+    // 4. Visual Polish
     document.body.style.opacity = '1';
     this.setupIntersections();
   }
@@ -288,32 +285,6 @@ class SolarApp {
       case 'admin':     await this.hydrateAdmin(); break;
       case 'home':      this.animateLandingStats(); this.hydrateLandingPackages(); break;
       case 'auth':      this.hydrateAuth(); break;
-    }
-  }
-
-  hydrateHeader() {
-    const headerProfile = document.getElementById('header-user-profile');
-    if (headerProfile && this.state.user) {
-      const country = this.state.user.country || 'Burundi';
-      const flagMap = {
-        'Burundi': 'bi', 'Rwanda': 'rw', 'Kenya': 'ke', 'Uganda': 'ug', 'Tanzania': 'tz'
-      };
-      const flagCode = flagMap[country] || 'bi';
-      const firstName = this.state.user.name?.split(' ')[0] || 'User';
-      const initials = this.state.user.name?.substring(0, 2).toUpperCase() || 'U';
-      
-      headerProfile.innerHTML = `
-        <div style="display: flex; flex-direction: column; align-items: flex-end; justify-content: center;">
-          <span style="font-size: 13px; font-weight: 800; color: #1e293b; line-height: 1.2;">${firstName}</span>
-          <div style="display: flex; align-items: center; gap: 4px; margin-top: 2px;">
-            <img src="https://flagcdn.com/w20/${flagCode}.png" alt="${country}" style="width: 12px; height: 8px; border-radius: 1px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">
-            <span style="font-size: 10px; font-weight: 700; color: #64748b; line-height: 1; text-transform: uppercase;">${country}</span>
-          </div>
-        </div>
-        <div onclick="window.location.hash='#profile'" style="width: 36px; height: 36px; background: #eff6ff; border: 1px solid #dbeafe; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #0b6cff; font-weight: 800; font-size: 14px; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(11, 108, 255, 0.1);">
-          ${initials}
-        </div>
-      `;
     }
   }
 
@@ -804,7 +775,6 @@ class SolarApp {
         localStorage.setItem('solar_user', JSON.stringify(this.state.user));
         this.showToast('Profile updated!', 'success');
         document.getElementById('app-modal').remove();
-        this.hydrateHeader(); // Refresh header
         this.handleRoute(); // Refresh template
       } else {
         btn.disabled = false; btn.textContent = 'Update Information';
