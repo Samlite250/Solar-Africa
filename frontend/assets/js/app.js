@@ -37,7 +37,10 @@ class SolarApp {
     // 2. Route Protection & Hydration
     await this.hydrate();
 
-    // 3. Visual Polish
+    // 3. Start Notification Polling
+    this.startNotificationPolling();
+
+    // 4. Visual Polish
     document.body.style.opacity = '1';
     this.setupIntersections();
   }
@@ -319,6 +322,105 @@ class SolarApp {
     }
   }
 
+  // --- NOTIFICATION SYSTEM ---
+  startNotificationPolling() {
+    if (!this.state.token) return;
+    this.fetchNotifications();
+    setInterval(() => this.fetchNotifications(), 30000);
+  }
+
+  async fetchNotifications() {
+    if (!this.state.token) return;
+    const res = await this.fetchAPI('notifications');
+    const data = res?.data || res;
+    if (!Array.isArray(data)) return;
+    
+    this.state.notifications = data;
+    const unreadCount = data.filter(n => !n.read).length;
+    
+    const badges = document.querySelectorAll('#notif-badge, .notif-badge');
+    badges.forEach(badge => {
+      if (unreadCount > 0) {
+        badge.style.display = 'flex';
+        badge.style.alignItems = 'center';
+        badge.style.justifyContent = 'center';
+        badge.style.fontSize = '10px';
+        badge.style.fontWeight = '800';
+        badge.style.color = 'white';
+        badge.style.width = '16px';
+        badge.style.height = '16px';
+        badge.style.background = '#dc2626';
+        badge.style.borderRadius = '50%';
+        badge.style.border = '2px solid white';
+        badge.style.position = 'absolute';
+        badge.style.top = '-4px';
+        badge.style.right = '-4px';
+        badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+      } else {
+        badge.style.display = 'none';
+      }
+    });
+  }
+
+  showNotifications() {
+    const notifs = this.state.notifications || [];
+    const html = notifs.length > 0 ? `
+      <div class="notif-list">
+        ${notifs.map(n => `
+          <div class="notif-item ${n.read ? '' : 'unread'}" style="padding: 16px; border-bottom: 1px solid #f1f5f9; position: relative;">
+            <div style="display: flex; align-items: flex-start; gap: 12px;">
+              <div class="notif-type-icon" style="width: 36px; height: 36px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: ${n.type==='success'?'#dcfce7':n.type==='warning'?'#fef9c3':'#eff6ff'}; color: ${n.type==='success'?'#16a34a':n.type==='warning'?'#b45309':'#2563eb'};">
+                ${n.type === 'success' ? '✓' : n.type === 'warning' ? '⚠️' : 'ℹ️'}
+              </div>
+              <div style="flex: 1;">
+                <strong style="display: block; font-size: 15px; color: #1e293b; margin-bottom: 2px;">${n.title}</strong>
+                <p style="font-size: 13px; color: #64748b; line-height: 1.5;">${n.message}</p>
+                <span style="font-size: 11px; color: #94a3b8; display: block; margin-top: 8px;">${new Date(n.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+              </div>
+            </div>
+            ${!n.read ? '<div style="position: absolute; top: 20px; right: 16px; width: 6px; height: 6px; background: #2563eb; border-radius: 50%;"></div>' : ''}
+          </div>
+        `).join('')}
+      </div>
+    ` : `
+      <div style="padding: 60px 20px; text-align: center;">
+        <div style="font-size: 40px; margin-bottom: 12px;">🔔</div>
+        <p style="color: #64748b;">No notifications yet.</p>
+      </div>
+    `;
+
+    this.showModal('Notifications', html);
+    
+    // Mark as read locally
+    if (this.state.notifications) {
+      this.state.notifications = this.state.notifications.map(n => ({ ...n, read: true }));
+      this.fetchNotifications();
+    }
+  }
+
+  showModal(title, html) {
+    const existing = document.getElementById('app-modal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'app-modal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.4);backdrop-filter:blur(4px);z-index:99999;display:flex;align-items:flex-end;justify-content:center;';
+    
+    modal.innerHTML = `
+      <div style="background:white; width:100%; max-width:500px; border-radius:32px 32px 0 0; overflow:hidden; animation: slideUp 0.3s ease-out;">
+        <div style="padding: 20px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #f1f5f9;">
+          <strong style="font-size:18px;">${title}</strong>
+          <button onclick="document.getElementById('app-modal').remove()" style="background:#f1f5f9; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">Close</button>
+        </div>
+        <div style="max-height:70vh; overflow-y:auto;">
+          ${html}
+        </div>
+      </div>
+    `;
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+    document.body.appendChild(modal);
+  }
+
   // --- DASHBOARD HYDRATION ---
   async hydrateDashboard() {
     const data = await this.fetchAPI('dashboard');
@@ -572,8 +674,40 @@ class SolarApp {
         if (target === 'view-transactions') this.initTransactionLedger();
         if (target === 'view-users') this.initUserManagement();
         if (target === 'view-packages') this.initPackageManagement();
+        if (target === 'view-notifications') this.initNotificationAdmin();
       };
     });
+  }
+
+  initNotificationAdmin() {
+    const form = document.getElementById('push-notif-form');
+    if (!form || form.dataset.init) return;
+    form.dataset.init = 'true';
+
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const title = document.getElementById('notif-title').value;
+      const message = document.getElementById('notif-message').value;
+      const type = document.getElementById('notif-type').value;
+
+      const btn = form.querySelector('button[type="submit"]');
+      const originalBtnText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Pushing...';
+
+      const res = await this.fetchAPI('admin/notifications', {
+        method: 'POST',
+        body: JSON.stringify({ title, message, type })
+      });
+
+      btn.disabled = false;
+      btn.textContent = originalBtnText;
+
+      if (res) {
+        this.showToast('Notification pushed to all users!', 'success');
+        form.reset();
+      }
+    };
   }
 
   // Admin Management Views

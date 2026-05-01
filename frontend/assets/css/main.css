@@ -87,6 +87,11 @@ body {
   gap: 20px;
 }
 
+/* Surgical suppression of the persistent search icon by its unique SVG style signature */
+svg[style*="cursor:pointer"] {
+  display: none !important;
+}
+
 .country-selector {
   display: flex;
   align-items: center;

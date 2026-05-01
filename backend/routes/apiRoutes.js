@@ -12,12 +12,14 @@ router.put('/profile', protect, apiController.updateProfile);
 router.get('/activity', protect, apiController.getActivity);
 router.post('/deposits', protect, apiController.createDeposit);
 router.post('/withdrawals', protect, apiController.createWithdrawal);
+router.get('/notifications', protect, apiController.getNotifications);
 
 // Admin Routes
 router.get('/admin/stats', protect, apiController.getAdminStats);
 router.put('/admin/deposits/:id', protect, apiController.adminUpdateDeposit);
 router.put('/admin/users/:id', protect, apiController.adminUpdateUser);
 router.post('/admin/packages', protect, apiController.adminCreatePackage);
+router.post('/admin/notifications', protect, apiController.adminPushNotification);
 
 router.delete('/admin/packages/:id', protect, apiController.adminDeletePackage);
 

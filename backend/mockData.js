@@ -144,4 +144,10 @@ const analytics = {
   ]
 };
 
-module.exports = { packages, stats, dashboard, profile, team, deposits, users, analytics };
+const notifications = [
+  { id: 1, title: 'Welcome to Solar Africa', message: 'Thank you for joining the clean energy revolution! Explore our packages to start earning.', type: 'info', read: false, created_at: '2026-04-26T10:00:00Z' },
+  { id: 2, title: 'Identity Verified', message: 'Your account has been successfully verified. You can now activate any solar package.', type: 'success', read: false, created_at: '2026-04-25T12:00:00Z' },
+  { id: 3, title: 'Maintenance Update', message: 'We will be performing a brief system maintenance tonight at 2 AM. Your investments will not be affected.', type: 'warning', read: false, created_at: '2026-04-26T15:30:00Z' },
+];
+
+module.exports = { packages, stats, dashboard, profile, team, deposits, users, analytics, notifications };

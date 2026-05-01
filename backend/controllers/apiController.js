@@ -328,3 +328,44 @@ exports.createWithdrawal = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.getNotifications = async (req, res) => {
+  if (isConfigured) {
+    try {
+      const { data, error } = await client
+        .from('notifications')
+        .select('*')
+        .or(`user_id.eq.${req.user.id},user_id.is.null`)
+        .order('created_at', { ascending: false });
+      
+      if (!error && data) return res.json({ data });
+    } catch (err) {
+      console.warn('Supabase fetch error:', err.message);
+    }
+  }
+  res.json({ data: mockData.notifications });
+};
+
+exports.adminPushNotification = async (req, res) => {
+  const { title, message, type, user_id } = req.body;
+  
+  if (isConfigured) {
+    try {
+      const { data, error } = await client
+        .from('notifications')
+        .insert([{ title, message, type: type || 'info', user_id: user_id || null }])
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return res.status(201).json({ message: 'Notification pushed', data });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
+  
+  // Mock mode: add to mockData (ephemeral)
+  const newNotif = { id: Date.now(), title, message, type: type || 'info', read: false, created_at: new Date().toISOString() };
+  mockData.notifications.unshift(newNotif);
+  res.status(201).json({ message: 'Notification pushed (Mock Mode)', data: newNotif });
+};
