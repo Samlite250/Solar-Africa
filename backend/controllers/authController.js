@@ -41,8 +41,9 @@ exports.register = async (req, res) => {
       }
     ]);
     if (profileError) {
-      console.warn('⚠️ Profile creation skipped (likely RLS policy missing):', profileError.message);
-      // We do NOT return a 400 error here. We allow registration to succeed.
+      console.warn('⚠️ Profile creation error:', profileError.message);
+      // Abort and return error so user knows DB insert failed
+      return res.status(400).json({ error: `Profile creation failed: ${profileError.message} (Check Supabase RLS policies)` });
     }
 
     // 3. Initialize Dashboard
