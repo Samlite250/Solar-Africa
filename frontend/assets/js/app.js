@@ -127,18 +127,20 @@ class SolarApp {
         </div>
 
         <div class="section-block" style="margin-bottom: 24px;">
-          <div class="section-block-header">
-            <h3 style="font-size: 16px; font-weight: 800; color: #1e293b;">Build Your Team</h3>
+          <div class="section-block-header" style="margin-bottom:12px;">
+            <h3 style="font-size: 15px; font-weight: 800; color: #1e293b;">Team Management</h3>
           </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
-            <div class="premium-card" style="padding: 20px 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; cursor: pointer; background: linear-gradient(135deg, #0b6cff 0%, #00b0ff 100%); border: none; box-shadow: 0 4px 12px rgba(11, 108, 255, 0.2);" onclick="window.app.copyRefLink()">
-              <div style="font-size: 24px;">🔗</div>
-              <strong style="font-size: 14px; color: white;">Copy Link</strong>
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 20px; padding: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px;">
+              <div style="flex: 1; background: #f8fafc; border: 1px solid #f1f5f9; padding: 12px 14px; border-radius: 14px; display: flex; align-items: center; justify-content: space-between; overflow: hidden;">
+                <span style="font-size: 12px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; font-family: monospace;">...register.php?ref=${this.state.user?.name || 'user'}</span>
+                <button onclick="window.app.copyRefLink()" style="background: #0b6cff; border: none; color: white; font-weight: 800; font-size: 10px; cursor: pointer; padding: 6px 12px; border-radius: 8px; margin-left: 8px; letter-spacing: 0.5px;">COPY</button>
+              </div>
             </div>
-            <div class="premium-card" style="padding: 20px 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; cursor: pointer; background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%); border: none; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2);" onclick="window.location.hash = '#team'">
-              <div style="font-size: 24px;">👥</div>
-              <strong style="font-size: 14px; color: white;">My Team</strong>
-            </div>
+            <button onclick="window.location.hash = '#team'" class="btn" style="width: 100%; justify-content: center; background: linear-gradient(135deg, #111827 0%, #374151 100%); color: white; border: none; border-radius: 14px; font-weight: 800; font-size: 14px; padding: 14px; display: flex; align-items: center; gap: 10px; transition: transform 0.2s;">
+               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+               View My Team
+            </button>
           </div>
         </div>
 
@@ -151,16 +153,24 @@ class SolarApp {
         </div>
       `,
       team: `
-        <div class="page-header" style="background: white; border-bottom: 1px solid #f1f5f9; padding: 20px 16px;">
-          <h2 style="font-size: 24px; font-weight: 800; color: #111827;">My Team</h2>
-          <p style="font-size: 14px; color: #64748b; margin-top: 4px;">Track your referrals and group statistics.</p>
+        <div class="page-header" style="background: white; border-bottom: 1px solid #f1f5f9; padding: 24px 16px;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 48px; height: 48px; background: #0b6cff; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; box-shadow: 0 8px 16px rgba(11, 108, 255, 0.2);">🚀</div>
+            <div>
+              <h2 style="font-size: 22px; font-weight: 800; color: #111827;">Business Center</h2>
+              <p style="font-size: 13px; color: #64748b;">Manage your network earnings & team growth.</p>
+            </div>
+          </div>
         </div>
         <div style="padding: 20px 16px;">
-          <div class="premium-card" style="margin-bottom: 24px;">
-            <span style="display: block; font-size: 12px; font-weight: 800; text-transform: uppercase; color: rgba(255,255,255,0.8); margin-bottom: 8px;">My Referral Link</span>
-            <div style="background: rgba(255,255,255,0.15); border: 1px dashed rgba(255,255,255,0.3); padding: 12px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
-              <span id="ref-link-display" style="font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Loading...</span>
-              <button onclick="window.app.copyRefLink()" style="background: white; color: #0b6cff; border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 800; cursor: pointer; flex-shrink: 0;">Copy</button>
+          <div class="premium-card" style="margin-bottom: 24px; background: linear-gradient(135deg, #0b6cff 0%, #00b0ff 100%); border: none; box-shadow: 0 10px 25px rgba(11, 108, 255, 0.25);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+              <span style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: rgba(255,255,255,0.8); letter-spacing: 1px;">Network Invite Link</span>
+              <div style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 6px; font-size: 10px; color: white; font-weight: 700;">ACTIVE</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); padding: 14px; border-radius: 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+              <span id="ref-link-display" style="font-size: 13px; font-weight: 700; color: white; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: monospace;">...register.php?ref=${this.state.user?.name || 'user'}</span>
+              <button onclick="window.app.copyRefLink()" style="background: white; color: #0b6cff; border: none; padding: 8px 14px; border-radius: 10px; font-size: 12px; font-weight: 800; cursor: pointer; flex-shrink: 0; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">COPY</button>
             </div>
           </div>
           
@@ -652,8 +662,8 @@ class SolarApp {
 
     if (linkEl) {
       const username = this.state.user?.name || 'user';
-      const refLink = `${window.location.origin}/register.php?ref=${username}`;
-      linkEl.textContent = refLink;
+      const shortLink = `...register.php?ref=${username}`;
+      linkEl.textContent = shortLink;
     }
 
     const res = await this.fetchAPI('team');
