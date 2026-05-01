@@ -21,14 +21,21 @@ app.get('*', (req, res) => {
   if (req.path.startsWith('/api/')) {
     return res.status(404).json({ error: 'API endpoint not found' });
   }
-  // Try to serve the specific file if it exists
-  const filePath = path.join(__dirname, '../frontend', req.path === '/' ? 'index.html' : req.path);
-  
-  // Force text/html for .php files so they don't download
-  if (filePath.endsWith('.php')) {
+
+  // URL Virtualization: If request ends in .php, serve the .html version
+  if (req.path.endsWith('.php')) {
+    const htmlFile = req.path.replace('.php', '.html');
+    const filePath = path.join(__dirname, '../frontend', htmlFile);
     res.setHeader('Content-Type', 'text/html');
+    return res.sendFile(filePath, (err) => {
+      if (err) {
+        res.sendFile(path.join(__dirname, '../frontend/index.html'));
+      }
+    });
   }
 
+  // Standard static serving fallback
+  const filePath = path.join(__dirname, '../frontend', req.path === '/' ? 'index.html' : req.path);
   res.sendFile(filePath, (err) => {
     if (err) {
       res.setHeader('Content-Type', 'text/html');
