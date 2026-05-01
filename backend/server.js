@@ -21,8 +21,8 @@ app.get('*', (req, res) => {
   if (req.path.startsWith('/api/')) {
     return res.status(404).json({ error: 'API endpoint not found' });
   }
-  // Try to serve the specific PHP file if it exists
-  const filePath = path.join(__dirname, '../frontend', req.path === '/' ? 'index.php' : req.path);
+  // Try to serve the specific file if it exists
+  const filePath = path.join(__dirname, '../frontend', req.path === '/' ? 'index.html' : req.path);
   
   // Force text/html for .php files so they don't download
   if (filePath.endsWith('.php')) {
@@ -32,7 +32,7 @@ app.get('*', (req, res) => {
   res.sendFile(filePath, (err) => {
     if (err) {
       res.setHeader('Content-Type', 'text/html');
-      res.sendFile(path.join(__dirname, '../frontend/index.php'));
+      res.sendFile(path.join(__dirname, '../frontend/index.html'));
     }
   });
 });
