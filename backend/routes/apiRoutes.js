@@ -25,6 +25,7 @@ router.post('/admin/packages', protect, apiController.adminCreatePackage);
 router.post('/admin/notifications', protect, apiController.adminPushNotification);
 
 router.delete('/admin/packages/:id', protect, apiController.adminDeletePackage);
+router.put('/admin/users/:userId/balance', protect, apiController.adminUpdateBalance);
 
 
 module.exports = router;

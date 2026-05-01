@@ -360,6 +360,9 @@ class SolarApp {
             };
             if (viewSub) viewSub.textContent = subs[target] || '';
           }
+          // On mobile, close sidebar after selecting a tab
+          const sidebar = document.querySelector('.admin-sidebar');
+          if (sidebar && window.innerWidth <= 768) sidebar.classList.remove('open');
         });
       });
     }
@@ -380,7 +383,7 @@ class SolarApp {
       e('admin-total-profit', ((metrics.deposits * 1000) || 0).toLocaleString() + ' BIF');
     }
 
-    // 4. Populate Users Table
+    // 4. Populate Users Table (with Balance + Edit)
     const userTable = document.getElementById('full-user-list');
     if (userTable && users) {
       userTable.innerHTML = users.map(u => `
@@ -391,9 +394,12 @@ class SolarApp {
           </div></td>
           <td style="color:#64748b;font-size:13px;">${u.email||'N/A'}</td>
           <td style="color:#64748b;font-size:13px;">${new Date(u.created_at).toLocaleDateString()}</td>
-          <td><strong style="color:#10b981;">Active User</strong></td>
+          <td style="color:#10b981;font-weight:700;">${u.wallet_balance||'0 BIF'}</td>
           <td><span style="background:${u.status==='active'?'#dcfce7':'#fee2e2'};color:${u.status==='active'?'#16a34a':'#dc2626'};padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;">${(u.status||'active').toUpperCase()}</span></td>
-          <td><button onclick="window.app.toggleUserStatus(${u.id}, '${u.status==='active'?'suspended':'active'}')" class="btn-admin ${u.status==='active'?'btn-admin-outline':'btn-admin-primary'}" style="padding:6px 12px;font-size:11px;">${u.status==='active'?'Suspend':'Activate'}</button></td>
+          <td style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button onclick="window.app.openBalanceModal('${u.user_id}', '${u.name}', '${u.wallet_balance||'0 BIF'}', '${u.welcome_bonus||'0 BIF'}', '${u.total_earnings||'0 BIF'}')" class="btn-admin btn-admin-primary" style="padding:6px 12px;font-size:11px;">Edit Balance</button>
+            <button onclick="window.app.toggleUserStatus(${u.id}, '${u.status==='active'?'suspended':'active'}')" class="btn-admin ${u.status==='active'?'btn-admin-outline':'btn-admin-primary'}" style="padding:6px 12px;font-size:11px;">${u.status==='active'?'Suspend':'Activate'}</button>
+          </td>
         </tr>
       `).join('');
     }
@@ -493,9 +499,42 @@ class SolarApp {
       logoutBtn.addEventListener('click', () => this.logout());
       logoutBtn.dataset.bound = 'true';
     }
+
+    // 10. Bind Balance Edit Form
+    const balanceForm = document.getElementById('balance-edit-form');
+    if (balanceForm && !balanceForm.dataset.bound) {
+      balanceForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = e.target.querySelector('.btn-save');
+        btn.disabled = true; btn.textContent = 'Saving...';
+        const userId = document.getElementById('balance-user-id').value;
+        const wallet_balance = document.getElementById('edit-wallet-balance').value;
+        const welcome_bonus = document.getElementById('edit-welcome-bonus').value;
+        const total_earnings = document.getElementById('edit-total-earnings').value;
+        const res = await this.fetchAPI(`admin/users/${userId}/balance`, {
+          method: 'PUT',
+          body: JSON.stringify({ wallet_balance, welcome_bonus, total_earnings })
+        });
+        if (res) {
+          this.showToast('User balance updated successfully!', 'success');
+          document.getElementById('balance-modal-overlay').style.display = 'none';
+          this.hydrateAdmin();
+        }
+        btn.disabled = false; btn.textContent = 'Save Changes';
+      });
+      balanceForm.dataset.bound = 'true';
+    }
   }
 
   // Admin Actions
+  openBalanceModal(userId, name, walletBalance, welcomeBonus, totalEarnings) {
+    document.getElementById('balance-user-id').value = userId;
+    document.getElementById('balance-modal-user').textContent = `Editing balances for: ${name}`;
+    document.getElementById('edit-wallet-balance').value = walletBalance;
+    document.getElementById('edit-welcome-bonus').value = welcomeBonus;
+    document.getElementById('edit-total-earnings').value = totalEarnings;
+    document.getElementById('balance-modal-overlay').style.display = 'flex';
+  }
   async updateDeposit(id, status) {
     if (!confirm(`Are you sure you want to mark deposit #${id} as ${status.toUpperCase()}?`)) return;
     const res = await this.fetchAPI(`admin/deposits/${id}`, { method: 'PUT', body: JSON.stringify({ status }) });

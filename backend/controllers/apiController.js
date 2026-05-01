@@ -99,18 +99,38 @@ exports.getProfile = async (req, res) => {
 exports.getAdminStats = async (req, res) => {
   if (isConfigured) {
     try {
-      const [stats, deposits, packages, users] = await Promise.all([
+      const [stats, deposits, packages, usersResult] = await Promise.all([
         client.from('stats').select('*').limit(1).single(),
         client.from('deposits').select('*').order('created_at', { ascending: false }).limit(20),
         client.from('packages').select('*'),
-        client.from('users').select('*').order('created_at', { ascending: false }).limit(20)
+        client.from('users').select('*').order('created_at', { ascending: false }).limit(50)
       ]);
 
+      // Join dashboard balances onto users
+      let enrichedUsers = usersResult.data || [];
+      if (enrichedUsers.length > 0) {
+        const userIds = enrichedUsers.map(u => u.user_id).filter(Boolean);
+        if (userIds.length > 0) {
+          const { data: dashboards } = await client
+            .from('dashboard')
+            .select('user_id, wallet_balance, welcome_bonus, total_earnings')
+            .in('user_id', userIds);
+          const dashMap = {};
+          (dashboards || []).forEach(d => { dashMap[d.user_id] = d; });
+          enrichedUsers = enrichedUsers.map(u => ({
+            ...u,
+            wallet_balance: dashMap[u.user_id]?.wallet_balance || '0 BIF',
+            welcome_bonus: dashMap[u.user_id]?.welcome_bonus || '0 BIF',
+            total_earnings: dashMap[u.user_id]?.total_earnings || '0 BIF'
+          }));
+        }
+      }
+
       return res.json({
-        metrics: stats.data || { users: 0, packages: 0, deposits: 0, withdrawals: 0, total_payouts: '0 BIF' },
+        metrics: stats.data || { users: enrichedUsers.length, packages: (packages.data||[]).length, deposits: 0, withdrawals: 0, total_payouts: '0 BIF' },
         deposits: deposits.data || [],
         packages: packages.data || [],
-        users: users.data || [],
+        users: enrichedUsers,
         analytics: []
       });
     } catch (err) {
@@ -252,6 +272,51 @@ exports.adminUpdateDeposit = async (req, res) => {
     }
 
     res.json({ message: 'Deposit status updated', data });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Admin: Update user balance
+exports.adminUpdateBalance = async (req, res) => {
+  if (!isConfigured) return res.status(503).json({ error: 'Supabase not configured' });
+  
+  try {
+    const { userId } = req.params;
+    const { wallet_balance, welcome_bonus, total_earnings } = req.body;
+    
+    const { data, error } = await client
+      .from('dashboard')
+      .update({
+        wallet_balance: wallet_balance || '0 BIF',
+        welcome_bonus: welcome_bonus || '0 BIF',
+        total_earnings: total_earnings || '0 BIF',
+        updated_at: new Date()
+      })
+      .eq('user_id', userId)
+      .select()
+      .single();
+    
+    if (error) {
+      // If no dashboard row exists, create one
+      if (error.code === 'PGRST116') {
+        const { data: newDash, error: insertErr } = await client
+          .from('dashboard')
+          .insert([{
+            user_id: userId,
+            wallet_balance: wallet_balance || '0 BIF',
+            welcome_bonus: welcome_bonus || '0 BIF',
+            total_earnings: total_earnings || '0 BIF'
+          }])
+          .select()
+          .single();
+        if (insertErr) throw insertErr;
+        return res.json({ message: 'Balance created and set', data: newDash });
+      }
+      throw error;
+    }
+    
+    res.json({ message: 'Balance updated successfully', data });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
