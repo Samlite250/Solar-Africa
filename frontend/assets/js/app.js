@@ -132,12 +132,12 @@ class SolarApp {
           </div>
           <div style="background: white; border: 1px solid #e2e8f0; border-radius: 20px; padding: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);">
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px;">
-              <div style="flex: 1; background: #f8fafc; border: 1px solid #f1f5f9; padding: 12px 14px; border-radius: 14px; display: flex; align-items: center; justify-content: space-between; overflow: hidden;">
-                <span style="font-size: 12px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; font-family: monospace;">...register.php?ref=${this.state.user?.name || 'user'}</span>
-                <button onclick="window.app.copyRefLink()" style="background: #0b6cff; border: none; color: white; font-weight: 800; font-size: 10px; cursor: pointer; padding: 6px 12px; border-radius: 8px; margin-left: 8px; letter-spacing: 0.5px;">COPY</button>
+              <div style="flex: 1; background: linear-gradient(135deg, #111827 0%, #374151 100%); border: 1px solid rgba(255,255,255,0.1); padding: 12px 14px; border-radius: 14px; display: flex; align-items: center; justify-content: space-between; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">
+                <span style="font-size: 12px; color: rgba(255,255,255,0.8); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; font-family: monospace;">...register.php?ref=${this.state.user?.name || 'user'}</span>
+                <button onclick="window.app.copyRefLink()" style="background: #0b6cff; border: none; color: white; font-weight: 800; font-size: 10px; cursor: pointer; padding: 6px 12px; border-radius: 8px; margin-left: 8px; letter-spacing: 0.5px; box-shadow: 0 4px 8px rgba(11, 108, 255, 0.3);">COPY</button>
               </div>
             </div>
-            <button onclick="window.location.hash = '#team'" class="btn" style="width: 100%; justify-content: center; background: linear-gradient(135deg, #111827 0%, #374151 100%); color: white; border: none; border-radius: 14px; font-weight: 800; font-size: 14px; padding: 14px; display: flex; align-items: center; gap: 10px; transition: transform 0.2s;">
+            <button onclick="window.location.hash = '#team'" class="btn" style="width: 100%; justify-content: center; background: linear-gradient(135deg, #111827 0%, #374151 100%); color: white; border: none; border-radius: 14px; font-weight: 800; font-size: 14px; padding: 14px; display: flex; align-items: center; gap: 10px; transition: transform 0.2s; box-shadow: 0 4px 12px rgba(17, 24, 39, 0.2);">
                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                View My Team
             </button>
