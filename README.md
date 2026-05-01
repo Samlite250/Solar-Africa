@@ -97,11 +97,11 @@ The `vercel.json` file routes all requests to the Express backend at `backend/se
 
 ## Pages
 
-- `/` or `/index.html` - Landing page
-- `/dashboard.html` - User dashboard
-- `/packages.html` - Package selection
-- `/team.html` - Referrals and team
-- `/profile.html` - User profile
-- `/admin.html` - Admin panel
+- `/` or `/index.php` - Landing page
+- `/dashboard.php` - User dashboard
+- `/packages.php` - Package selection
+- `/team.php` - Referrals and team
+- `/profile.php` - User profile
+- `/admin.php` - Admin panel
 
 Open `http://localhost:3000` (or your configured port) to view the platform.

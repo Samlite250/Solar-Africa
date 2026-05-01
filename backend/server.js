@@ -21,11 +21,11 @@ app.get('*', (req, res) => {
   if (req.path.startsWith('/api/')) {
     return res.status(404).json({ error: 'API endpoint not found' });
   }
-  // Try to serve the specific HTML file if it exists
-  const filePath = path.join(__dirname, '../frontend', req.path === '/' ? 'index.html' : req.path);
+  // Try to serve the specific PHP file if it exists
+  const filePath = path.join(__dirname, '../frontend', req.path === '/' ? 'index.php' : req.path);
   res.sendFile(filePath, (err) => {
     if (err) {
-      res.sendFile(path.join(__dirname, '../frontend/index.html'));
+      res.sendFile(path.join(__dirname, '../frontend/index.php'));
     }
   });
 });

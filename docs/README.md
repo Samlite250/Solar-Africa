@@ -10,12 +10,12 @@ This repository contains a lightweight MVP for the Solar Africa platform.
 
 ## Frontend pages
 
-- `index.html` - Home / landing page
-- `packages.html` - Packages page with premium plan cards
-- `team.html` - Referral and team page
-- `profile.html` - User profile page
-- `dashboard.html` - User dashboard page
-- `admin.html` - Admin panel page
+- `index.php` - Home / landing page
+- `packages.php` - Packages page with premium plan cards
+- `team.php` - Referral and team page
+- `profile.php` - User profile page
+- `dashboard.php` - User dashboard page
+- `admin.php` - Admin panel page
 
 ## Run locally
 

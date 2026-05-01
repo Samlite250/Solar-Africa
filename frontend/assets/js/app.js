@@ -238,12 +238,12 @@ class SolarApp {
     const { page, token } = this.state;
 
     if (['dashboard', 'packages', 'task', 'profile', 'admin', 'team'].includes(page) && !token) {
-      window.location.href = 'login.html';
+      window.location.href = 'login.php';
       return;
     }
 
     if (page === 'admin' && this.state.user?.role !== 'admin') {
-      window.location.href = 'dashboard.html';
+      window.location.href = 'dashboard.php';
       return;
     }
 
@@ -281,7 +281,7 @@ class SolarApp {
           if (!res.ok) throw new Error(data.message || data.error || 'Login failed');
           localStorage.setItem('solar_token', data.token || data.data?.token);
           localStorage.setItem('solar_user', JSON.stringify(data.user || data.data?.user));
-          window.location.href = 'dashboard.html';
+          window.location.href = 'dashboard.php';
         } catch (err) {
           this.showToast(err.message, 'error');
           if (btn) { btn.disabled = false; btn.textContent = 'Sign In'; }
@@ -311,7 +311,7 @@ class SolarApp {
           const data = await res.json();
           if (!res.ok) throw new Error(data.message || data.error || 'Registration failed');
           this.showToast('Account created! Please sign in.', 'success');
-          setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+          setTimeout(() => { window.location.href = 'login.php'; }, 1500);
         } catch (err) {
           this.showToast(err.message, 'error');
           if (btn) { btn.disabled = false; btn.textContent = 'Create Account'; }
@@ -636,7 +636,7 @@ class SolarApp {
 
     if (linkEl) {
       const username = this.state.user?.name || 'user';
-      const refLink = `${window.location.origin}/register.html?ref=${username}`;
+      const refLink = `${window.location.origin}/register.php?ref=${username}`;
       linkEl.textContent = refLink;
     }
 
@@ -676,7 +676,7 @@ class SolarApp {
 
   copyRefLink() {
     const username = this.state.user?.name || 'user';
-    const refLink = `${window.location.origin}/register.html?ref=${username}`;
+    const refLink = `${window.location.origin}/register.php?ref=${username}`;
     navigator.clipboard.writeText(refLink);
     this.showToast('Referral link copied!', 'success');
   }
@@ -1105,7 +1105,7 @@ class SolarApp {
 
   logout() {
     localStorage.clear();
-    window.location.href = 'login.html';
+    window.location.href = 'login.php';
   }
 
   animateLandingStats() {
@@ -1174,7 +1174,7 @@ class SolarApp {
           <div class="landing-pkg-price">${p.amount}</div>
           <span class="landing-pkg-bonus-label">Welcome Bonus</span>
           <strong class="landing-pkg-bonus">${p.bonus}</strong>
-          <a href="register.html" class="btn btn-green btn-choose" style="margin-top:auto;">Choose Package</a>
+          <a href="register.php" class="btn btn-green btn-choose" style="margin-top:auto;">Choose Package</a>
         </div>
       </div>`).join('');
   }
