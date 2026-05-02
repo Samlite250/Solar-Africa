@@ -1320,23 +1320,35 @@ class SolarApp {
 
     taskList.innerHTML = tasks.map((t, i) => {
       const isDone = this.state.completedTasks?.includes(t.id);
-      // Support both 'video_url' (from DB) and 'videoUrl' (legacy)
       const videoSrc = t.video_url || t.videoUrl || '';
+      
+      // Professional Icon mapping based on index or title
+      const icons = [
+        '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10z"/></svg>',
+        '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>',
+        '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20"/></svg>',
+        '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2.5"><rect x="2" y="7" width="16" height="10" rx="2" ry="2"/><path d="M22 11v2"/></svg>'
+      ];
+      const iconHTML = icons[i % icons.length];
+
       return `
-        <div class="task-card" style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0; opacity: ${isDone ? '0.6' : '1'};">
+        <div class="task-card" style="display: flex; align-items: center; justify-content: space-between; padding: 18px; background: white; border-radius: 20px; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); opacity: ${isDone ? '0.6' : '1'}; margin-bottom: 12px;">
           <div style="display: flex; align-items: center; gap: 16px;">
-            <div style="width: 48px; height: 48px; background: linear-gradient(135deg,#e0f2fe,#bae6fd); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size:22px;">
-              ${t.icon || '☀️'}
+            <div style="width: 52px; height: 52px; background: #f8fafc; border-radius: 14px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+              ${iconHTML}
             </div>
             <div>
-              <strong style="display: block; font-size: 14px; color: #1e293b; margin-bottom: 2px;">${t.title}</strong>
-              <span style="font-size: 12px; color: #64748b; font-weight: 600;">${t.duration}s advert • <span style='color:#16a34a;font-weight:800;'>${t.reward}</span></span>
+              <strong style="display: block; font-size: 14px; color: #1e293b; margin-bottom: 4px;">${t.title}</strong>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 11px; background: #eff6ff; color: #3b82f6; padding: 2px 8px; border-radius: 100px; font-weight: 700;">${t.duration}s</span>
+                <span style="font-size: 13px; color: #16a34a; font-weight: 800;">+${t.reward}</span>
+              </div>
             </div>
           </div>
           <button onclick="window.app.playTaskVideo('${videoSrc}', ${t.duration}, '${t.reward}', this, ${t.id})" 
                   ${isDone ? 'disabled' : ''} 
-                  style="background: ${isDone ? '#94a3b8' : 'linear-gradient(135deg,#16a34a,#22c55e)'}; color: white; border: none; padding: 9px 18px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: ${isDone ? 'default' : 'pointer'}; transition: all 0.2s; box-shadow: ${isDone ? 'none' : '0 4px 12px rgba(22,163,74,0.3)'}">
-            ${isDone ? '✓ Done' : '▶ Watch'}
+                  style="background: ${isDone ? '#e2e8f0' : 'linear-gradient(135deg,#16a34a,#22c55e)'}; color: ${isDone ? '#94a3b8' : 'white'}; border: none; width: 44px; height: 44px; border-radius: 14px; display: flex; align-items: center; justify-content: center; cursor: ${isDone ? 'default' : 'pointer'}; transition: all 0.2s;">
+            ${isDone ? '✓' : '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>'}
           </button>
         </div>`;
     }).join('');
