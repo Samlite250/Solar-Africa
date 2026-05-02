@@ -1563,13 +1563,6 @@ class SolarApp {
     this.showToast('Withdrawal system is being initialized. Please wait for the next instruction.', 'info');
   }
 
-  async showWithdrawalHistory() {
-    const res = await this.fetchAPI('withdrawals');
-
-  showChangePassword() {
-    this.showToast('Password change is temporarily disabled for security. Contact support.', 'warning');
-  }
-
   editProfile() {
     const u = this.state.user || {};
     const html = `
