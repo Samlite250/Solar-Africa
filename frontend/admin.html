@@ -378,15 +378,9 @@
             </select>
           </div>
           <div class="field">
-            <label style="display:flex; justify-content:space-between; align-items:center;">
-              Payment Instructions (HTML Supported)
-              <div style="display:flex; gap: 8px;">
-                <button type="button" onclick="document.getElementById('pm-instructions').value = '<h4 style=\'font-size:12px;font-weight:800;color:#0f172a;margin-bottom:12px;border-bottom:1px solid #e2e8f0;padding-bottom:10px;text-transform:uppercase;\'>📱 Mobile Money (MTN/Airtel)</h4>\n<ol style=\'margin:0;padding-left:16px;color:#334155;font-size:13.5px;font-weight:600;line-height:1.8;\'>\n  <li>Dial <strong>*163#</strong></li>\n  <li>Select Send Money</li>\n  <li>Enter number: <strong style=\'color:#16a34a;\'>123456789</strong></li>\n  <li>Confirm Payment</li>\n</ol>';" style="background:#e0e7ff;color:#4338ca;border:none;padding:4px 8px;font-size:11px;border-radius:4px;cursor:pointer;font-weight:bold;">+ Mobile Money Template</button>
-                <button type="button" onclick="document.getElementById('pm-instructions').value = '<h4 style=\'font-size:12px;font-weight:800;color:#0f172a;margin-bottom:12px;border-bottom:1px solid #e2e8f0;padding-bottom:10px;text-transform:uppercase;\'>🏦 Bank Transfer</h4>\n<ul style=\'margin:0;padding-left:16px;color:#334155;font-size:13.5px;font-weight:600;line-height:1.8;\'>\n  <li>Bank: <strong>Equity Bank</strong></li>\n  <li>Account Name: <strong>Solar Africa Ltd</strong></li>\n  <li>Account Number: <strong style=\'color:#16a34a;\'>012345678910</strong></li>\n</ul>';" style="background:#dcfce7;color:#15803d;border:none;padding:4px 8px;font-size:11px;border-radius:4px;cursor:pointer;font-weight:bold;">+ Bank Template</button>
-              </div>
-            </label>
-            <textarea id="pm-instructions" rows="10" placeholder="e.g. <ol><li>Dial *163#</li><li>Send to 67270398</li></ol>" required style="width:100%;padding:14px 16px;border-radius:12px;border:2px solid #f1f5f9;font-size:14px;font-family:monospace;resize:vertical; line-height: 1.5;"></textarea>
-            <p style="font-size: 12px; color: #64748b; margin-top: 8px;">Use the templates above for quick beautiful layouts, or write your own text.</p>
+            <label>Payment Instructions</label>
+            <textarea id="pm-instructions" rows="6" placeholder="e.g.&#10;1. Dial *163#&#10;2. Select Send Money&#10;3. Enter number: 67270398" required style="width:100%;padding:14px 16px;border-radius:12px;border:2px solid #f1f5f9;font-size:14px;font-family:inherit;resize:vertical;"></textarea>
+            <p style="font-size: 12px; color: #64748b; margin-top: 8px;">Just type your instructions normally. Line breaks and spacing will be saved automatically without needing any code.</p>
           </div>
           <div class="modal-btns">
             <button type="button" class="btn-cancel" onclick="document.getElementById('payment-modal-overlay').style.display='none'">Cancel</button>
