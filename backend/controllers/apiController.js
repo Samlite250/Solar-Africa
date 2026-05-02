@@ -39,7 +39,7 @@ exports.getDashboard = async (req, res) => {
       console.warn('Supabase fetch error:', err.message);
     }
   }
-  res.json({ data: { wallet_balance: '0', welcome_bonus: '0', active_package: 'None', total_earnings: '0' } });
+  res.json({ data: { wallet_balance: '0 BIF', welcome_bonus: '10,000 BIF', active_package: 'None', total_earnings: '0 BIF' } });
 };
 
 exports.getTeam = async (req, res) => {
@@ -314,7 +314,25 @@ exports.adminUpdateDeposit = async (req, res) => {
           active_package: package_name,
           updated_at: new Date()
         }).eq('user_id', user_id);
+      } else {
+        // Create dashboard if it doesn't exist
+        await client.from('dashboard').insert([{
+          user_id,
+          wallet_balance: '0 BIF',
+          welcome_bonus: cleanAmount.toLocaleString() + ' BIF',
+          active_package: package_name,
+          total_earnings: '0 BIF'
+        }]);
       }
+
+      // Log success activity
+      await client.from('activity').insert([{
+        user_id,
+        title: 'Investment Confirmed',
+        value: `+${amount}`,
+        description: `Your investment in ${package_name} was approved.`,
+        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      }]);
     }
 
     res.json({ message: 'Deposit status updated', data });
