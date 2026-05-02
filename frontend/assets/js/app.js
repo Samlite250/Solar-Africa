@@ -778,6 +778,37 @@ class SolarApp {
       });
       taskForm.dataset.bound = 'true';
     }
+
+    // 15. Fetch & Bind Global Settings
+    const settingsRes = await this.fetchAPI('settings');
+    const settings = settingsRes?.data || {};
+    if (document.getElementById('setting-whatsapp')) {
+      document.getElementById('setting-whatsapp').value = settings.whatsapp_group || '';
+      document.getElementById('setting-telegram').value = settings.telegram_channel || '';
+      document.getElementById('setting-email').value = settings.support_email || '';
+      document.getElementById('setting-name').value = settings.platform_name || 'Solar Africa';
+    }
+
+    const settingsForm = document.getElementById('global-settings-form');
+    if (settingsForm && !settingsForm.dataset.bound) {
+      settingsForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = e.target.querySelector('button');
+        btn.disabled = true; btn.textContent = 'Saving Settings...';
+        
+        const payload = {
+          whatsapp_group: document.getElementById('setting-whatsapp').value,
+          telegram_channel: document.getElementById('setting-telegram').value,
+          support_email: document.getElementById('setting-email').value,
+          platform_name: document.getElementById('setting-name').value
+        };
+
+        const res = await this.fetchAPI('admin/settings', { method: 'PUT', body: JSON.stringify(payload) });
+        if (res) this.showToast('Platform settings updated!', 'success');
+        btn.disabled = false; btn.textContent = 'Save Platform Settings';
+      });
+      settingsForm.dataset.bound = 'true';
+    }
   }
 
   // Admin Actions
@@ -1379,6 +1410,64 @@ class SolarApp {
     this.showToast('Referral link copied!', 'success');
   }
 
+  async showSupportCenter() {
+    const settingsRes = await this.fetchAPI('settings');
+    const settings = settingsRes?.data || {
+      whatsapp_group: 'https://wa.me/25760000000',
+      telegram_channel: 'https://t.me/solarafrica',
+      support_email: 'support@solarafrica.com'
+    };
+
+    const modal = document.createElement('div');
+    modal.id = 'support-modal';
+    modal.className = 'modal-overlay';
+    modal.style.display = 'flex';
+    modal.innerHTML = `
+      <div class="modal-content" style="max-width: 400px; padding: 24px; border-radius: 28px; text-align: center; background: white; border: 1px solid #f1f5f9; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
+        <div style="width: 70px; height: 70px; background: #eff6ff; border-radius: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: #0b6cff;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <h3 style="font-size: 22px; font-weight: 900; color: #1e293b; margin-bottom: 8px; font-family: 'Outfit', sans-serif;">Support Center</h3>
+        <p style="font-size: 14px; color: #64748b; line-height: 1.6; margin-bottom: 24px;">Need help? Connect with our team through any of these channels.</p>
+        
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
+          <a href="${settings.whatsapp_group}" target="_blank" style="display: flex; align-items: center; gap: 14px; background: #f0fdf4; padding: 16px; border-radius: 18px; text-decoration: none; border: 1px solid #dcfce7; transition: transform 0.2s;">
+            <div style="width: 40px; height: 40px; background: #22c55e; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.284l-.582 2.166 2.234-.58c1.012.545 1.987.848 3.104.848 3.183 0 5.771-2.588 5.771-5.766 0-3.18-2.586-5.768-5.768-5.768zm3.393 8.24c-.15.429-.86.813-1.189.865-.29.047-.665.074-1.077-.058-.253-.082-.572-.187-1.01-.377-1.864-.81-3.057-2.727-3.15-2.85-.093-.124-.757-.993-.757-1.906 0-.913.473-1.36.643-1.545.17-.185.37-.231.493-.231.124 0 .248 0 .354.004.113.004.263-.042.412.316.15.358.513 1.25.558 1.342.045.092.075.2.015.32-.06.12-.09.195-.181.301-.091.106-.188.236-.268.327-.091.106-.188.219-.083.403.105.185.474.78.917 1.173.57.507 1.05.664 1.2 1.233.15.569.24.403.39-.185.15-.588.614-.15.864.06.25.21 1.574.772 1.635.854.06.082.06.124-.045.289z"/></svg>
+            </div>
+            <div style="text-align: left;">
+              <strong style="display: block; font-size: 15px; color: #166534;">WhatsApp Group</strong>
+              <span style="font-size: 12px; color: #22c55e; font-weight: 600;">Join our community</span>
+            </div>
+          </a>
+          
+          <a href="${settings.telegram_channel}" target="_blank" style="display: flex; align-items: center; gap: 14px; background: #eff6ff; padding: 16px; border-radius: 18px; text-decoration: none; border: 1px solid #dbeafe; transition: transform 0.2s;">
+            <div style="width: 40px; height: 40px; background: #3b82f6; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.13-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
+            </div>
+            <div style="text-align: left;">
+              <strong style="display: block; font-size: 15px; color: #1e40af;">Telegram</strong>
+              <span style="font-size: 12px; color: #3b82f6; font-weight: 600;">Official Updates</span>
+            </div>
+          </a>
+
+          <a href="mailto:${settings.support_email}" style="display: flex; align-items: center; gap: 14px; background: #f8fafc; padding: 16px; border-radius: 18px; text-decoration: none; border: 1px solid #e2e8f0; transition: transform 0.2s;">
+            <div style="width: 40px; height: 40px; background: #64748b; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <div style="text-align: left;">
+              <strong style="display: block; font-size: 15px; color: #334155;">Email Support</strong>
+              <span style="font-size: 12px; color: #64748b; font-weight: 600;">Contact us via email</span>
+            </div>
+          </a>
+        </div>
+
+        <button onclick="document.getElementById('support-modal').remove()" class="btn btn-full" style="background: #f1f5f9; color: #475569; font-weight: 800; padding: 14px; border-radius: 16px; border: none; cursor: pointer; width: 100%;">Close</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+
   // --- PROFILE HYDRATION ---
 
   async hydrateProfile() {
@@ -1399,6 +1488,18 @@ class SolarApp {
       const initialsEl = document.getElementById('profile-avatar-initials');
       if (initialsEl) initialsEl.textContent = this.state.user.name.substring(0, 2).toUpperCase();
     }
+  }
+
+  showDepositHistory() {
+    this.showToast('Deposit History is coming soon in the next update!', 'info');
+  }
+
+  showWithdrawalHistory() {
+    this.showToast('Withdrawal History is coming soon!', 'info');
+  }
+
+  showChangePassword() {
+    this.showToast('Password change is temporarily disabled for security. Contact support.', 'warning');
   }
 
   editProfile() {

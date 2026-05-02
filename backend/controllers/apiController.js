@@ -1114,3 +1114,50 @@ exports.completeTask = async (req, res) => {
     res.status(500).json({ error: `System Error: ${err.message}` });
   }
 };
+// --- SETTINGS MANAGEMENT ---
+
+// GET: Public settings (Support links, etc.)
+exports.getSettings = async (req, res) => {
+  if (!isConfigured) return res.json({ data: {} });
+  try {
+    const { data, error } = await client.from('settings').select('key, value');
+    if (error) throw error;
+    
+    // Transform array of [{key, value}] into a single object {key: value}
+    const settingsObj = data.reduce((acc, item) => {
+      acc[item.key] = item.value;
+      return acc;
+    }, {});
+    
+    res.json({ data: settingsObj });
+  } catch (err) {
+    console.error('[Settings] Fetch error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// PUT: Admin update settings
+exports.updateSettings = async (req, res) => {
+  if (!isConfigured) return res.status(400).json({ error: 'Supabase not configured' });
+  try {
+    const settings = req.body; // Expecting {key: value} pairs
+    const updates = Object.entries(settings).map(([key, value]) => ({
+      key,
+      value: String(value),
+      updated_at: new Date().toISOString()
+    }));
+
+    // Upsert each setting
+    for (const update of updates) {
+      const { error } = await adminClient
+        .from('settings')
+        .upsert(update, { onConflict: 'key' });
+      if (error) throw error;
+    }
+
+    res.json({ message: 'Settings updated successfully' });
+  } catch (err) {
+    console.error('[Settings] Update error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+};

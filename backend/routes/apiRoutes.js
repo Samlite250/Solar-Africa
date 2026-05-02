@@ -44,4 +44,8 @@ router.put('/admin/tasks/:id', protect, apiController.adminUpdateTask);
 router.delete('/admin/tasks/:id', protect, apiController.adminDeleteTask);
 router.post('/admin/tasks/upload', protect, upload.single('video'), apiController.adminUploadVideo);
 
+// Global Settings
+router.get('/settings', apiController.getSettings);
+router.put('/admin/settings', protect, apiController.updateSettings);
+
 module.exports = router;
