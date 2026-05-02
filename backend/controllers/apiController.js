@@ -183,6 +183,43 @@ exports.getActivity = async (req, res) => {
   res.json({ data: [] });
 };
 
+exports.completeTask = async (req, res) => {
+  if (!isConfigured) return res.status(200).json({ message: 'Task completed (Mock)' });
+
+  try {
+    const { reward } = req.body;
+    const rewardVal = parseFloat(reward.replace(/[^0-9.]/g, ''));
+
+    const { data: dash } = await client.from('dashboard').select('*').eq('user_id', req.user.id).single();
+    
+    if (dash) {
+      const currentWallet = parseFloat(dash.wallet_balance.replace(/[^0-9.]/g, '')) || 0;
+      const newWallet = currentWallet + rewardVal;
+      const currentEarnings = parseFloat(dash.total_earnings.replace(/[^0-9.]/g, '')) || 0;
+      const newEarnings = currentEarnings + rewardVal;
+
+      await client.from('dashboard').update({
+        wallet_balance: newWallet.toLocaleString() + ' BIF',
+        total_earnings: newEarnings.toLocaleString() + ' BIF',
+        updated_at: new Date()
+      }).eq('user_id', req.user.id);
+
+      // Log activity
+      await client.from('activity').insert([{
+        user_id: req.user.id,
+        title: 'Task Earned',
+        value: `+${reward}`,
+        description: `Earned ${reward} from watching an advert.`,
+        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      }]);
+    }
+
+    res.json({ message: 'Task reward credited' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 exports.createDeposit = async (req, res) => {
   if (!isConfigured) {
     return res.status(201).json({ 
@@ -260,7 +297,7 @@ exports.adminUpdateDeposit = async (req, res) => {
 
     if (error) throw error;
 
-    // If approved, update user's dashboard balance and active package
+    // If approved, update user's dashboard welcome_bonus and active package
     if (status === 'approved') {
       const { amount, package_name, user_id } = data;
       const cleanAmount = parseFloat(amount.replace(/[^0-9.]/g, ''));
@@ -269,11 +306,11 @@ exports.adminUpdateDeposit = async (req, res) => {
       const { data: dash } = await client.from('dashboard').select('*').eq('user_id', user_id).single();
       
       if (dash) {
-        const currentBalance = parseFloat(dash.wallet_balance.replace(/[^0-9.]/g, '')) || 0;
-        const newBalance = currentBalance + cleanAmount;
+        const currentBonus = parseFloat(dash.welcome_bonus.replace(/[^0-9.]/g, '')) || 0;
+        const newBonus = currentBonus + cleanAmount;
         
         await client.from('dashboard').update({
-          wallet_balance: newBalance.toLocaleString() + ' BIF',
+          welcome_bonus: newBonus.toLocaleString() + ' BIF',
           active_package: package_name,
           updated_at: new Date()
         }).eq('user_id', user_id);

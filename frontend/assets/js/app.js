@@ -1034,6 +1034,12 @@ class SolarApp {
           btn.disabled = true;
           this.showToast(`Task completed! ${reward} credited to your wallet.`, 'success');
           
+          // Persist to backend
+          this.fetchAPI('tasks/complete', {
+            method: 'POST',
+            body: JSON.stringify({ reward })
+          });
+          
           // Increment wallet visually
           const walletEl = document.getElementById('wallet-balance');
           if (walletEl && walletEl.textContent) {
