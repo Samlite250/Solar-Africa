@@ -150,22 +150,46 @@ exports.getProfile = async (req, res) => {
 exports.getAdminStats = async (req, res) => {
   if (isConfigured) {
     try {
+      // ✅ Use adminClient (service-role key) for ALL queries — bypasses RLS entirely.
+      // The master-admin bypass token is not a real Supabase session, so the anon
+      // client's RLS would block everything. adminClient has no such restriction.
       const [stats, deposits, packages, usersResult, withdrawals] = await Promise.all([
-        client.from('stats').select('*').limit(1).single(),
-        client.from('deposits').select('*').order('created_at', { ascending: false }).limit(20),
-        client.from('packages').select('*'),
-        client.from('users').select('*').order('created_at', { ascending: false }).limit(50),
-        client.from('withdrawals').select('*').order('created_at', { ascending: false }).limit(50)
+        adminClient.from('stats').select('*').limit(1).single(),
+        adminClient.from('deposits').select('*').order('created_at', { ascending: false }).limit(100),
+        adminClient.from('packages').select('*'),
+        adminClient.from('users').select('*').order('created_at', { ascending: false }).limit(200),
+        adminClient.from('withdrawals').select('*').order('created_at', { ascending: false }).limit(100)
       ]);
 
+      // ✅ FALLBACK: If the users table is empty (e.g. users registered before
+      // the users-table insert was stable), load from profiles instead.
+      let rawUsers = usersResult.data || [];
+      if (rawUsers.length === 0) {
+        console.log('[Admin] users table empty — falling back to profiles table');
+        const { data: profilesData } = await adminClient
+          .from('profiles')
+          .select('user_id, name, email, phone, country, created_at')
+          .order('created_at', { ascending: false })
+          .limit(200);
+        rawUsers = (profilesData || []).map(p => ({
+          user_id: p.user_id,
+          name: p.name,
+          email: p.email,
+          phone: p.phone,
+          country: p.country,
+          status: 'active',
+          created_at: p.created_at
+        }));
+      }
+
       // Join dashboard balances and profile info (upline) onto users
-      let enrichedUsers = usersResult.data || [];
+      let enrichedUsers = rawUsers;
       if (enrichedUsers.length > 0) {
         const userIds = enrichedUsers.map(u => u.user_id).filter(Boolean);
         if (userIds.length > 0) {
           const [dashboardsRes, profilesRes] = await Promise.all([
-            client.from('dashboard').select('user_id, wallet_balance, welcome_bonus, total_earnings').in('user_id', userIds),
-            client.from('profiles').select('user_id, referred_by, email, phone').in('user_id', userIds)
+            adminClient.from('dashboard').select('user_id, wallet_balance, welcome_bonus, total_earnings').in('user_id', userIds),
+            adminClient.from('profiles').select('user_id, referred_by, email, phone').in('user_id', userIds)
           ]);
 
           const dashMap = {};
@@ -186,8 +210,16 @@ exports.getAdminStats = async (req, res) => {
         }
       }
 
+      const liveMetrics = {
+        users: enrichedUsers.length,
+        packages: (packages.data || []).length,
+        deposits: (deposits.data || []).length,
+        withdrawals: (withdrawals.data || []).length,
+        total_payouts: stats.data?.total_payouts || '0 BIF'
+      };
+
       return res.json({
-        metrics: stats.data || { users: enrichedUsers.length, packages: (packages.data||[]).length, deposits: (deposits.data||[]).length, withdrawals: (withdrawals.data||[]).length, total_payouts: '0 BIF' },
+        metrics: liveMetrics,
         deposits: deposits.data || [],
         packages: packages.data || [],
         users: enrichedUsers,
