@@ -529,9 +529,18 @@ class SolarApp {
     const pmRes = await this.fetchAPI('payment-methods');
     const paymentTable = document.getElementById('payment-methods-list');
     if (paymentTable && pmRes?.data) {
-      this.paymentMethodsData = pmRes.data; // Store in memory
+      let methods = pmRes.data;
+      // Inject the default Burundi payment if it doesn't exist in the database yet
+      if (!methods.find(p => p.country === 'Burundi')) {
+        methods.push({
+          id: 'new-burundi',
+          country: 'Burundi',
+          provider: '1. Pfonda *163#\\n2. Hitamo Kurungika\\n3. Inimero: 67270398\\n4. Amazina: RUKUNDO LOAUNGE\\n5. Hama Wemeze'
+        });
+      }
+      this.paymentMethodsData = methods; // Store in memory
       const flags = { Burundi:'🇧🇮', Uganda:'🇺🇬', Kenya:'🇰🇪', Rwanda:'🇷🇼', Tanzania:'🇹🇿', Congo:'🇨🇩' };
-      paymentTable.innerHTML = pmRes.data.map(p => `
+      paymentTable.innerHTML = methods.map(p => `
         <tr>
           <td><strong>${flags[p.country]||'🌍'} ${p.country}</strong></td>
           <td colspan="4"><div style="max-width:300px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-family:monospace; font-size:12px; color:#64748b; background:#f8fafc; padding:4px 8px; border-radius:6px;">${(p.provider || '').replace(/</g, '&lt;')}</div></td>
@@ -550,7 +559,7 @@ class SolarApp {
         e.preventDefault();
         const btn = e.target.querySelector('.btn-save');
         btn.disabled = true; btn.textContent = 'Saving...';
-        const id = document.getElementById('pm-id').value;
+        let id = document.getElementById('pm-id').value;
         const payload = {
           country: document.getElementById('pm-country').value,
           provider: document.getElementById('pm-instructions').value,
@@ -558,6 +567,12 @@ class SolarApp {
           phone: ' ',
           account_name: ' '
         };
+        
+        // If it's the mock entry, we need to create it instead of updating
+        if (id === 'new-burundi') {
+          id = '';
+        }
+        
         const endpoint = id ? `admin/payment-methods/${id}` : 'admin/payment-methods';
         const method = id ? 'PUT' : 'POST';
         const res = await this.fetchAPI(endpoint, { method, body: JSON.stringify(payload) });
