@@ -1483,19 +1483,9 @@ class SolarApp {
             ${data.map((m, i) => `
               <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
                 <td style="padding: 14px 12px; text-align: center; font-weight: 800; color: #94a3b8; font-size: 12px;">${i + 1}</td>
-                <td style="padding: 14px 12px;">
-                  <div style="display: flex; align-items: center; gap: 10px;">
-                    <div style="width: 34px; height: 34px; background: linear-gradient(135deg, #eff6ff, #dbeafe); color: #3b82f6; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; flex-shrink: 0;">
-                      ${m.name.substring(0, 2).toUpperCase()}
-                    </div>
-                    <strong style="color: #1e293b; font-size: 14px;">${m.name}</strong>
-                  </div>
-                </td>
-                <td style="padding: 14px 12px;">
-                  ${m.phone && m.phone !== 'N/A'
-                    ? `<a href="tel:${m.phone}" style="color: #0b6cff; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 5px;">📞 ${m.phone}</a>`
-                    : `<span style="color: #cbd5e1; font-size: 12px;">—</span>`
-                  }
+                <td style="padding: 14px 12px; font-weight: 700; color: #1e293b;">${m.name}</td>
+                <td style="padding: 14px 12px; color: #334155; font-weight: 600;">
+                  ${m.phone && m.phone !== 'N/A' ? m.phone : '<span style="color:#cbd5e1;">—</span>'}
                 </td>
                 <td style="padding: 14px 12px; color: #64748b; font-size: 12px; white-space: nowrap;">${m.joined}</td>
               </tr>
