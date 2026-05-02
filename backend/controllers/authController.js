@@ -45,6 +45,10 @@ exports.register = async (req, res) => {
         { 
           user_id: userId, 
           name,
+          email,
+          phone,
+          country,
+          referred_by: referred_by || 'Solar Africa',
           created_at: new Date().toISOString()
         }
       ]);

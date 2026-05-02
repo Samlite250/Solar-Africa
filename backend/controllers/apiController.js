@@ -96,19 +96,23 @@ exports.getDashboard = async (req, res) => {
 exports.getTeam = async (req, res) => {
   if (isConfigured) {
     try {
-      // 1. Get current user's profile to get their username (name)
-      const { data: profile } = await client
+      // 1. Get current user's profile name (use adminClient to bypass RLS)
+      const { data: profile, error: profileErr } = await adminClient
         .from('profiles')
         .select('name')
         .eq('user_id', req.user.id)
         .single();
 
+      console.log(`[Team] User ${req.user.id} → profile name: "${profile?.name}" | error: ${profileErr?.message}`);
+
       if (profile) {
-        // 2. Find everyone who was referred by this username
-        const { data: teamMembers, error } = await client
+        // 2. Find everyone who was referred by this username (case-insensitive)
+        const { data: teamMembers, error } = await adminClient
           .from('profiles')
           .select('name, country, created_at, member_since')
-          .eq('referred_by', profile.name);
+          .ilike('referred_by', profile.name);
+        
+        console.log(`[Team] Searching referred_by="${profile.name}" → found ${teamMembers?.length || 0} members | error: ${error?.message}`);
         
         if (!error && teamMembers) {
           return res.json({ 
@@ -123,7 +127,7 @@ exports.getTeam = async (req, res) => {
         }
       }
     } catch (err) {
-      console.warn('Supabase fetch error:', err.message);
+      console.warn('[Team] Error:', err.message);
     }
   }
   res.json({ data: [] });

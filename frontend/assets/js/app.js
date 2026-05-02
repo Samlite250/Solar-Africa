@@ -1383,10 +1383,10 @@ class SolarApp {
       timerEl.style.display = 'block';
       timerEl.textContent = `00:${duration < 10 ? '0'+duration : duration}`;
       
-      // Mute to ensure play() always works even with strict browser policies
-      video.muted = true;
+      // Play with sound since the user explicitly clicked the play button
+      video.muted = false;
       video.play().catch(e => {
-        console.warn('Playback blocked, retrying with user interaction...', e);
+        console.warn('Playback blocked, retrying with muted...', e);
         // Fallback for extreme cases
         video.muted = true;
         video.play();
