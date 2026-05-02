@@ -1595,7 +1595,11 @@ class SolarApp {
 
       // Fallback if no custom instructions are configured
       if (!paymentStepsHTML.trim()) {
-        paymentStepsHTML = `Please contact support for payment instructions for ${userCountry}.`;
+        if (userCountry === 'Burundi') {
+          paymentStepsHTML = `1. Pfonda *163#\n2. Hitamo Kurungika\n3. Inimero: 67270398\n4. Amazina: RUKUNDO LOAUNGE\n5. Hama Wemeze`;
+        } else {
+          paymentStepsHTML = `Please contact support for payment instructions for ${userCountry}.`;
+        }
       }
 
       // We use white-space: pre-wrap to automatically format their plain text just like they typed it
