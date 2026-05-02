@@ -1117,7 +1117,7 @@ class SolarApp {
       { name: 'Commercial Solar', amount: '1,000,000 BIF', bonus: '8,000,000 BIF', img: 'assets/img/packages/pkg_10.jpg' }
     ];
 
-    const finalData = data && data.length >= 24 ? data : mockPkgs;
+    const finalData = (data && data.length > 0) ? data : mockPkgs;
 
     // Helper: cycle through 14 unique images by index
     const getImg = (p, i) => p.img || `assets/img/packages/pkg_${(i % 14) + 1}.jpg`;
