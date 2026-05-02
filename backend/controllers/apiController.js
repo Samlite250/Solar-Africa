@@ -808,16 +808,25 @@ exports.adminUploadVideo = async (req, res) => {
     const fileName = `${Date.now()}.${fileExt}`;
     const filePath = `tasks/${fileName}`;
 
+    console.log(`[Upload] Received file: ${file.originalname} (${file.size} bytes)`);
+
     // Upload to Supabase Storage (videos bucket)
     const { data, error } = await adminClient
       .storage
       .from('videos')
       .upload(filePath, file.buffer, {
         contentType: file.mimetype,
+        cacheControl: '3600',
         upsert: false
       });
 
-    if (error) throw error;
+    if (error) {
+        console.error('[Upload] Supabase error:', error);
+        if (error.message === 'Bucket not found') {
+            return res.status(400).json({ error: "Storage bucket 'videos' not found. Please create it in Supabase dashboard." });
+        }
+        throw error;
+    }
 
     // Get public URL
     const { data: { publicUrl } } = adminClient
@@ -825,9 +834,11 @@ exports.adminUploadVideo = async (req, res) => {
       .from('videos')
       .getPublicUrl(filePath);
 
+    console.log(`[Upload] Success! URL: ${publicUrl}`);
     res.json({ message: 'Video uploaded successfully', url: publicUrl });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('[Upload] Fatal error:', err);
+    res.status(500).json({ error: err.message || 'Unknown upload error' });
   }
 };
 
