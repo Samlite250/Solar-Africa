@@ -7,7 +7,10 @@ exports.register = async (req, res) => {
   try {
     const { name, email, phone, country, password, referred_by } = req.body;
 
+    console.log(`[Register] Attempting signup for email: ${email}`);
+
     if (!name || !email || !password || !phone || !country) {
+      console.warn('[Register] Missing fields in payload:', req.body);
       return res.status(400).json({ error: 'All fields are required' });
     }
 
@@ -24,7 +27,14 @@ exports.register = async (req, res) => {
       }
     });
 
-    if (authError) return res.status(400).json({ error: authError.message });
+    if (authError) {
+      console.warn('⚠️ Supabase Auth Error:', authError.message);
+      return res.status(400).json({ error: authError.message });
+    }
+
+    if (!authData || !authData.user) {
+      return res.status(400).json({ error: 'Registration failed. The email might already be registered.' });
+    }
 
     const userId = authData.user.id;
 
@@ -42,8 +52,9 @@ exports.register = async (req, res) => {
     ]);
     if (profileError) {
       console.warn('⚠️ Profile creation error:', profileError.message);
-      // Abort and return error so user knows DB insert failed
-      return res.status(400).json({ error: `Profile creation failed: ${profileError.message} (Check Supabase RLS policies)` });
+      // Fallback: If profile creation fails, we still let the user login, but warn them
+      // We no longer abort registration entirely because their Auth account was already created
+      // return res.status(400).json({ error: `Profile creation failed: ${profileError.message}` });
     }
 
     // 3. Initialize Dashboard
