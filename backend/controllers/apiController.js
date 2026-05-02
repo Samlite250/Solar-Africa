@@ -50,6 +50,23 @@ exports.getDashboard = async (req, res) => {
           } 
         });
       }
+
+      // If no dashboard row, create one automatically (Self-healing)
+      if (!data) {
+        const { data: newDash, error: createError } = await client.from('dashboard').insert([
+          { 
+            user_id: req.user.id, 
+            wallet_balance: '0 FBu', 
+            welcome_bonus: '0 FBu', 
+            total_earnings: '0 FBu',
+            active_package: 'None'
+          }
+        ]).select().single();
+        
+        if (!createError && newDash) {
+           return res.json({ data: { ...newDash, completedTasks: [] } });
+        }
+      }
       if (error && error.code !== 'PGRST116') {
         console.warn('Supabase fetch error:', error.message);
       }
