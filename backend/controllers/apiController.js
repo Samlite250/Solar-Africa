@@ -976,7 +976,7 @@ exports.proxyVideo = async (req, res) => {
   if (!url) return res.status(400).send('URL required');
   
   try {
-    const fetch = (await import('node-fetch')).default;
+    // Use global fetch (Node 18+) to avoid dependency issues
     const response = await fetch(url, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36',
@@ -986,9 +986,29 @@ exports.proxyVideo = async (req, res) => {
     
     if (!response.ok) throw new Error(`Fetch failed: ${response.status}`);
     
-    res.setHeader('Content-Type', response.headers.get('content-type') || 'video/mp4');
-    res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24h
-    response.body.pipe(res);
+    const contentType = response.headers.get('content-type') || 'video/mp4';
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    
+    // Pipe the response stream
+    const reader = response.body.getReader();
+    const stream = new ReadableStream({
+      async start(controller) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          controller.enqueue(value);
+        }
+        controller.close();
+      }
+    });
+
+    // In Node 18, response.body is a ReadableStream. We can pipe it if we use a helper or just send the buffer.
+    // Actually, on Vercel/Node 18, the easiest way to pipe is to get the arrayBuffer and send it, 
+    // but for videos we should stream. 
+    // Let's use a more compatible way for Node 18:
+    const buffer = await response.arrayBuffer();
+    res.send(Buffer.from(buffer));
   } catch (err) {
     console.error('[VideoProxy] Error:', err.message);
     res.status(500).send('Video loading failed');
@@ -1044,17 +1064,30 @@ exports.completeTask = async (req, res) => {
     const newBalance = `${(currentBalanceNum + rewardValueNum).toLocaleString()} FBu`;
     const newEarnings = `${(currentEarningsNum + rewardValueNum).toLocaleString()} FBu`;
 
-    // 3. Update Dashboard
-    const { error: updateErr } = await adminClient
-      .from('dashboard')
-      .upsert({
-        user_id: userId,
-        wallet_balance: newBalance,
-        total_earnings: newEarnings,
-        updated_at: new Date().toISOString()
-      }, { onConflict: 'user_id' });
-
-    if (updateErr) throw updateErr;
+    // 3. Update Dashboard (Safer logic)
+    if (dash) {
+      const { error: updateErr } = await adminClient
+        .from('dashboard')
+        .update({
+          wallet_balance: newBalance,
+          total_earnings: newEarnings,
+          updated_at: new Date().toISOString()
+        })
+        .eq('user_id', userId);
+      if (updateErr) throw updateErr;
+    } else {
+      const { error: insertErr } = await adminClient
+        .from('dashboard')
+        .insert([{
+          user_id: userId,
+          wallet_balance: newBalance,
+          welcome_bonus: '0 FBu',
+          total_earnings: newEarnings,
+          active_package: 'None',
+          updated_at: new Date().toISOString()
+        }]);
+      if (insertErr) throw insertErr;
+    }
 
     // 4. Record Completion (CRITICAL SECURITY)
     await adminClient.from('completed_tasks').insert([{
