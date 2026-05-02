@@ -704,3 +704,80 @@ exports.deletePaymentMethod = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+// ─── VIDEO TASKS CRUD ───────────────────────────────────────────────────────
+
+const DEFAULT_TASKS = [
+  { id: 1, icon: '☀️', title: '☀️ Solar Farm Aerial View',    video_url: 'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-a-field-with-solar-panels-34560-large.mp4', duration: 15, reward: '3,500 FBu' },
+  { id: 2, icon: '⚡', title: '⚡ Solar Panel Installation',   video_url: 'https://assets.mixkit.co/videos/preview/mixkit-technician-installing-solar-panels-on-a-roof-34553-large.mp4', duration: 20, reward: '3,500 FBu' },
+  { id: 3, icon: '🌍', title: '🌍 Clean Energy Future',        video_url: 'https://assets.mixkit.co/videos/preview/mixkit-solar-panels-on-a-sunny-day-2394-large.mp4', duration: 15, reward: '3,500 FBu' },
+  { id: 4, icon: '🔋', title: '🔋 Solar Charging Solutions',  video_url: 'https://assets.mixkit.co/videos/preview/mixkit-residential-solar-roof-panels-in-daytime-34554-large.mp4', duration: 18, reward: '3,500 FBu' }
+];
+
+// GET: Public — list all active tasks (with default fallback)
+exports.getTasks = async (req, res) => {
+  if (!isConfigured) return res.json({ data: DEFAULT_TASKS });
+  try {
+    const { data, error } = await client
+      .from('tasks')
+      .select('*')
+      .eq('active', true)
+      .order('created_at', { ascending: true });
+
+    if (!error && data && data.length > 0) return res.json({ data });
+    // Fall back to hardcoded tasks if table empty or missing
+    res.json({ data: DEFAULT_TASKS });
+  } catch (err) {
+    res.json({ data: DEFAULT_TASKS });
+  }
+};
+
+// POST: Admin — create a new task
+exports.adminCreateTask = async (req, res) => {
+  if (!isConfigured) return res.status(503).json({ error: 'Supabase not configured' });
+  try {
+    const { icon, title, video_url, duration, reward } = req.body;
+    const { data, error } = await adminClient
+      .from('tasks')
+      .insert([{ icon, title, video_url, duration: parseInt(duration), reward, active: true }])
+      .select()
+      .single();
+    if (error) throw error;
+    res.json({ message: 'Task created', data });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// PUT: Admin — update an existing task
+exports.adminUpdateTask = async (req, res) => {
+  if (!isConfigured) return res.status(503).json({ error: 'Supabase not configured' });
+  try {
+    const { id } = req.params;
+    const { icon, title, video_url, duration, reward } = req.body;
+    const { data, error } = await adminClient
+      .from('tasks')
+      .update({ icon, title, video_url, duration: parseInt(duration), reward })
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) throw error;
+    res.json({ message: 'Task updated', data });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// DELETE: Admin — remove a task
+exports.adminDeleteTask = async (req, res) => {
+  if (!isConfigured) return res.status(503).json({ error: 'Supabase not configured' });
+  try {
+    const { id } = req.params;
+    const { error } = await adminClient.from('tasks').delete().eq('id', id);
+    if (error) throw error;
+    res.json({ message: 'Task deleted' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+

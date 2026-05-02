@@ -55,6 +55,12 @@
             Notifications
           </div>
         </a>
+        <a href="#" class="sidebar-nav-link" data-target="view-tasks">
+          <div class="link-content">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+            Video Tasks
+          </div>
+        </a>
         <a href="#" class="sidebar-nav-link" data-target="view-settings">
           <div class="link-content">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
@@ -239,6 +245,23 @@
         </div>
       </div>
 
+      <!-- Video Tasks Management -->
+      <div id="view-tasks" class="admin-view" style="display: none; padding: 40px;">
+        <div class="panel-card" style="max-width: 900px; margin: 0 auto;">
+          <div class="panel-header">
+            <h4 class="panel-title">🎬 Video Tasks Management</h4>
+            <button class="btn-admin btn-admin-primary" onclick="window.app.openAddTaskModal()">+ Add Video Task</button>
+          </div>
+          <p style="font-size:13px; color:#64748b; margin-bottom:24px;">Manage the videos users watch to earn FBu. Paste a direct MP4 URL or a YouTube link.</p>
+          <div class="table-container">
+            <table>
+              <thead><tr><th>Icon</th><th>Title</th><th>Video URL</th><th>Duration</th><th>Reward</th><th>Actions</th></tr></thead>
+              <tbody id="tasks-list"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
       <div id="view-notifications" class="admin-view" style="display: none; padding: 40px;">
         <div class="panel-card" style="max-width: 800px; margin: 0 auto;">
           <div class="panel-header"><h4 class="panel-title">Push Global Notification</h4></div>
@@ -399,6 +422,45 @@
       </div>
     </div>
 
-    <script src="assets/js/app.js?v=20260502_tasks_v5" defer></script>
+    <!-- Video Task Modal -->
+    <div id="task-modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; padding:20px;">
+      <div style="background:white; border-radius:20px; padding:32px; width:100%; max-width:520px; max-height:90vh; overflow-y:auto; box-shadow:0 25px 50px rgba(0,0,0,0.3);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+          <h3 id="task-modal-title" style="font-size:18px; font-weight:800; color:#0f172a;">Add Video Task</h3>
+          <button onclick="document.getElementById('task-modal-overlay').style.display='none'" style="background:none;border:none;font-size:22px;cursor:pointer;color:#64748b;">&times;</button>
+        </div>
+        <form id="task-form">
+          <input type="hidden" id="task-id" value="" />
+          <div class="field" style="margin-bottom:16px;">
+            <label style="display:block;font-size:13px;font-weight:700;margin-bottom:8px;color:#334155;">Icon (Emoji)</label>
+            <input type="text" id="task-icon" placeholder="e.g. ☀️ or ⚡" value="☀️" style="width:100%;padding:12px 16px;border-radius:10px;border:2px solid #f1f5f9;font-size:20px;font-family:inherit;" />
+          </div>
+          <div class="field" style="margin-bottom:16px;">
+            <label style="display:block;font-size:13px;font-weight:700;margin-bottom:8px;color:#334155;">Task Title</label>
+            <input type="text" id="task-title" placeholder="e.g. Solar Farm Aerial View" required style="width:100%;padding:12px 16px;border-radius:10px;border:2px solid #f1f5f9;font-size:14px;font-family:inherit;" />
+          </div>
+          <div class="field" style="margin-bottom:16px;">
+            <label style="display:block;font-size:13px;font-weight:700;margin-bottom:8px;color:#334155;">Video URL <span style="font-size:11px;font-weight:500;color:#94a3b8;">(YouTube link or direct .mp4 URL)</span></label>
+            <input type="url" id="task-video-url" placeholder="https://youtube.com/watch?v=... or https://cdn.../video.mp4" required style="width:100%;padding:12px 16px;border-radius:10px;border:2px solid #f1f5f9;font-size:13px;font-family:inherit;" />
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+            <div class="field">
+              <label style="display:block;font-size:13px;font-weight:700;margin-bottom:8px;color:#334155;">Duration (seconds)</label>
+              <input type="number" id="task-duration" placeholder="e.g. 15" value="15" min="5" max="60" required style="width:100%;padding:12px 16px;border-radius:10px;border:2px solid #f1f5f9;font-size:14px;font-family:inherit;" />
+            </div>
+            <div class="field">
+              <label style="display:block;font-size:13px;font-weight:700;margin-bottom:8px;color:#334155;">Reward (FBu)</label>
+              <input type="text" id="task-reward" placeholder="e.g. 3,500 FBu" value="3,500 FBu" required style="width:100%;padding:12px 16px;border-radius:10px;border:2px solid #f1f5f9;font-size:14px;font-family:inherit;" />
+            </div>
+          </div>
+          <div class="modal-btns" style="display:flex;gap:12px;margin-top:24px;">
+            <button type="button" class="btn-cancel" onclick="document.getElementById('task-modal-overlay').style.display='none'" style="flex:1;">Cancel</button>
+            <button type="submit" class="btn-save" style="flex:2;">Save Task</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="assets/js/app.js?v=20260502_tasks_v6" defer></script>
   </body>
 </html>

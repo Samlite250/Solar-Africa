@@ -115,6 +115,18 @@ CREATE TABLE completed_tasks (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Admin-managed video tasks table
+CREATE TABLE tasks (
+  id SERIAL PRIMARY KEY,
+  icon TEXT DEFAULT '☀️',
+  title TEXT NOT NULL,
+  video_url TEXT NOT NULL,
+  duration INTEGER DEFAULT 15,
+  reward TEXT DEFAULT '3,500 FBu',
+  active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Users table (for admin view)
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,

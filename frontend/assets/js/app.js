@@ -587,6 +587,57 @@ class SolarApp {
       });
       pmForm.dataset.bound = 'true';
     }
+
+    // 13. Populate Video Tasks Table
+    const tasksRes = await this.fetchAPI('tasks');
+    const tasksList = document.getElementById('tasks-list');
+    const tasksArr = Array.isArray(tasksRes) ? tasksRes : [];
+    this.tasksData = tasksArr;
+    if (tasksList) {
+      tasksList.innerHTML = tasksArr.length ? tasksArr.map(t => `
+        <tr>
+          <td style="font-size:22px; text-align:center;">${t.icon || '☀️'}</td>
+          <td><strong>${t.title}</strong></td>
+          <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:11px; color:#64748b;">
+            <a href="${t.video_url}" target="_blank" style="color:#0b6cff;">${t.video_url}</a>
+          </td>
+          <td style="text-align:center;">${t.duration}s</td>
+          <td style="color:#16a34a; font-weight:700;">${t.reward}</td>
+          <td style="display:flex; gap:6px;">
+            <button onclick="window.app.openEditTaskModal('${t.id}')" class="btn-admin btn-admin-primary" style="padding:6px 12px;font-size:11px;">Edit</button>
+            <button onclick="window.app.deleteTask('${t.id}')" class="btn-admin" style="background:#fee2e2;color:#dc2626;border:none;padding:6px 12px;font-size:11px;cursor:pointer;">Delete</button>
+          </td>
+        </tr>`).join('') : `<tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:20px;">No custom tasks yet. Click "+ Add Video Task" to create one.</td></tr>`;
+    }
+
+    // 14. Bind Task Form
+    const taskForm = document.getElementById('task-form');
+    if (taskForm && !taskForm.dataset.bound) {
+      taskForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = e.target.querySelector('.btn-save');
+        btn.disabled = true; btn.textContent = 'Saving...';
+        const id = document.getElementById('task-id').value;
+        const payload = {
+          icon: document.getElementById('task-icon').value,
+          title: document.getElementById('task-title').value,
+          video_url: document.getElementById('task-video-url').value,
+          duration: document.getElementById('task-duration').value,
+          reward: document.getElementById('task-reward').value
+        };
+        const endpoint = id ? `admin/tasks/${id}` : 'admin/tasks';
+        const method = id ? 'PUT' : 'POST';
+        const res = await this.fetchAPI(endpoint, { method, body: JSON.stringify(payload) });
+        if (res) {
+          this.showToast(id ? 'Task updated!' : 'Task created!', 'success');
+          document.getElementById('task-modal-overlay').style.display = 'none';
+          e.target.reset();
+          this.hydrateAdmin();
+        }
+        btn.disabled = false; btn.textContent = 'Save Task';
+      });
+      taskForm.dataset.bound = 'true';
+    }
   }
 
   // Admin Actions
@@ -636,6 +687,37 @@ class SolarApp {
     if (!confirm('Delete this payment method?')) return;
     const res = await this.fetchAPI(`admin/payment-methods/${id}`, { method: 'DELETE' });
     if (res) { this.showToast('Payment method deleted!', 'success'); this.hydrateAdmin(); }
+  }
+
+  // ── Admin Video Task Methods ──────────────────────────────────────────────
+
+  openAddTaskModal() {
+    document.getElementById('task-id').value = '';
+    document.getElementById('task-modal-title').textContent = 'Add Video Task';
+    document.getElementById('task-form').reset();
+    document.getElementById('task-icon').value = '☀️';
+    document.getElementById('task-reward').value = '3,500 FBu';
+    document.getElementById('task-duration').value = '15';
+    document.getElementById('task-modal-overlay').style.display = 'flex';
+  }
+
+  openEditTaskModal(id) {
+    const task = this.tasksData?.find(t => String(t.id) === String(id));
+    if (!task) return;
+    document.getElementById('task-id').value = task.id;
+    document.getElementById('task-modal-title').textContent = 'Edit Video Task';
+    document.getElementById('task-icon').value = task.icon || '☀️';
+    document.getElementById('task-title').value = task.title || '';
+    document.getElementById('task-video-url').value = task.video_url || '';
+    document.getElementById('task-duration').value = task.duration || 15;
+    document.getElementById('task-reward').value = task.reward || '3,500 FBu';
+    document.getElementById('task-modal-overlay').style.display = 'flex';
+  }
+
+  async deleteTask(id) {
+    if (!confirm('Delete this video task?')) return;
+    const res = await this.fetchAPI(`admin/tasks/${id}`, { method: 'DELETE' });
+    if (res) { this.showToast('Task deleted!', 'success'); this.hydrateAdmin(); }
   }
 
   async updateDeposit(id, status) {
@@ -971,44 +1053,19 @@ class SolarApp {
     const taskList = document.getElementById('task-list');
     if (!taskList) return;
 
-    // Solar business video tasks — real videos from Mixkit free CDN
-    const tasks = [
-      { 
-        id: 1, 
-        title: '☀️ Solar Farm Aerial View', 
-        reward: '3,500 FBu', 
-        duration: 15, 
-        icon: '🛸',
-        videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-a-field-with-solar-panels-34560-large.mp4'
-      },
-      { 
-        id: 2, 
-        title: '⚡ Solar Panel Installation', 
-        reward: '3,500 FBu', 
-        duration: 20,
-        icon: '🔧',
-        videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-technician-installing-solar-panels-on-a-roof-34553-large.mp4'
-      },
-      { 
-        id: 3, 
-        title: '🌍 Clean Energy Future', 
-        reward: '3,500 FBu', 
-        duration: 15,
-        icon: '🌱',
-        videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-solar-panels-on-a-sunny-day-2394-large.mp4'
-      },
-      { 
-        id: 4, 
-        title: '🔋 Solar Charging Solutions', 
-        reward: '3,500 FBu', 
-        duration: 18,
-        icon: '💡',
-        videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-residential-solar-roof-panels-in-daytime-34554-large.mp4'
-      }
-    ];
+    // Fetch tasks from backend (falls back to defaults server-side)
+    const res = await this.fetchAPI('tasks');
+    const tasks = (Array.isArray(res) ? res : res) || [];
+
+    if (!tasks.length) {
+      taskList.innerHTML = `<p style="text-align:center;color:#64748b;padding:40px;">No tasks available yet.</p>`;
+      return;
+    }
 
     taskList.innerHTML = tasks.map((t, i) => {
       const isDone = this.state.completedTasks?.includes(t.id);
+      // Support both 'video_url' (from DB) and 'videoUrl' (legacy)
+      const videoSrc = t.video_url || t.videoUrl || '';
       return `
         <div class="task-card" style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0; opacity: ${isDone ? '0.6' : '1'};">
           <div style="display: flex; align-items: center; gap: 16px;">
@@ -1020,7 +1077,7 @@ class SolarApp {
               <span style="font-size: 12px; color: #64748b; font-weight: 600;">${t.duration}s advert • <span style='color:#16a34a;font-weight:800;'>${t.reward}</span></span>
             </div>
           </div>
-          <button onclick="window.app.playTaskVideo('${t.videoUrl}', ${t.duration}, '${t.reward}', this, ${t.id})" 
+          <button onclick="window.app.playTaskVideo('${videoSrc}', ${t.duration}, '${t.reward}', this, ${t.id})" 
                   ${isDone ? 'disabled' : ''} 
                   style="background: ${isDone ? '#94a3b8' : 'linear-gradient(135deg,#16a34a,#22c55e)'}; color: white; border: none; padding: 9px 18px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: ${isDone ? 'default' : 'pointer'}; transition: all 0.2s; box-shadow: ${isDone ? 'none' : '0 4px 12px rgba(22,163,74,0.3)'}">
             ${isDone ? '✓ Done' : '▶ Watch'}
