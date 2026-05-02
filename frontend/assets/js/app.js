@@ -145,7 +145,7 @@ class SolarApp {
 
         <div class="section-block" style="margin-bottom: 24px;">
           <div class="section-block-header" style="margin-bottom:12px;">
-            <h3 style="font-size: 15px; font-weight: 800; color: #1e293b;">Team Management</h3>
+            <h3 style="font-size: 15px; font-weight: 800; color: #1e293b;">Team & Tasks</h3>
           </div>
           <div style="background: white; border: 1px solid #e2e8f0; border-radius: 20px; padding: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);">
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px;">
@@ -154,10 +154,17 @@ class SolarApp {
                 <button onclick="window.app.copyRefLink()" style="background: white; border: none; color: #0b6cff; font-weight: 800; font-size: 10px; cursor: pointer; padding: 6px 12px; border-radius: 8px; margin-left: 8px; letter-spacing: 0.5px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">COPY</button>
               </div>
             </div>
-            <button onclick="window.location.hash = '#task'" class="btn" style="width: 100%; justify-content: center; background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%); color: white; border: none; border-radius: 14px; font-weight: 800; font-size: 14px; padding: 14px; display: flex; align-items: center; gap: 10px; transition: transform 0.2s; box-shadow: 0 8px 16px rgba(22, 163, 74, 0.25);">
-               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
-               Watch Daily Tasks
-            </button>
+            
+            <div style="display: grid; grid-template-columns: 1fr; gap: 10px;">
+              <button onclick="window.location.hash = '#task'" class="btn" style="width: 100%; justify-content: center; background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%); color: white; border: none; border-radius: 14px; font-weight: 800; font-size: 14px; padding: 14px; display: flex; align-items: center; gap: 10px; transition: transform 0.2s; box-shadow: 0 8px 16px rgba(22, 163, 74, 0.25);">
+                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+                 Watch Daily Tasks
+              </button>
+              <button onclick="window.location.hash = '#team'" class="btn" style="width: 100%; justify-content: center; background: white; color: #0b6cff; border: 2px solid #0b6cff; border-radius: 14px; font-weight: 800; font-size: 14px; padding: 13px; display: flex; align-items: center; gap: 10px; transition: transform 0.2s;">
+                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                 View My Team
+              </button>
+            </div>
           </div>
         </div>
 
@@ -258,10 +265,11 @@ class SolarApp {
             <span>Profile Information</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
           </div>
-          <div class="profile-menu-item" onclick="window.app.showDepositHistory()">
-            <span>Deposit History</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          <div class="profile-menu-item" onclick="window.location.hash = '#team'">
+            <span>My Team</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           </div>
+          <div class="profile-menu-item" onclick="window.app.showDepositHistory()">
           <div class="profile-menu-item" onclick="window.app.showWithdrawalHistory()">
             <span>Withdrawals</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
