@@ -45,12 +45,59 @@
         <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
         <span>Tasks</span>
       </a>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Solar Africa Dashboard - Manage your solar investments and earnings." />
+    <meta name="theme-color" content="#0b6cff" />
+    <title>Dashboard | Solar Africa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/main.css" />
+  </head>
+  <body class="app-container" data-page="dashboard">
+    <!-- Header: Explicitly Cleaned of Search Icon -->
+    <header class="app-header" style="background: white; border-bottom: 1px solid #f1f5f9; padding: 12px 20px;">
+      <div class="logo-container">
+        <img src="assets/img/solarlogo.png" alt="Solar Africa Logo" style="height: 56px; width: auto;">
+        <span style="margin-left: 4px;"><span class="logo-text-blue">SOLAR</span> <span class="logo-text-green">AFRICA</span></span>
+      </div>
+
+      <div class="header-meta" style="display: flex; align-items: center; gap: 16px;">
+        <!-- Notification Center Only -->
+        <div id="notif-btn" onclick="window.app.showNotifications()" style="position: relative; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: #f8fafc;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+          <div id="notif-badge" class="notif-badge" style="display: none;"></div>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <!-- SPA Router View Injected Here -->
+    </main>
+
+    <nav class="bottom-nav">
+      <a href="#dashboard" class="nav-item active">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <span>Home</span>
+      </a>
+      <a href="#packages" class="nav-item">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>
+        <span>Packages</span>
+      </a>
+      <a href="#task" class="nav-item">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+        <span>Tasks</span>
+      </a>
       <a href="#profile" class="nav-item">
         <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
         <span>Me</span>
       </a>
     </nav>
 
-    <script src="assets/js/app.js?v=20260502_adminfix" defer></script>
+    <script src="assets/js/app.js?v=20260502_adminfix_2" defer></script>
   </body>
 </html>

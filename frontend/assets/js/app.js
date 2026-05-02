@@ -535,7 +535,7 @@ class SolarApp {
         methods.push({
           id: 'new-burundi',
           country: 'Burundi',
-          provider: '1. Pfonda *163#\\n2. Hitamo Kurungika\\n3. Inimero: 67270398\\n4. Amazina: RUKUNDO LOAUNGE\\n5. Hama Wemeze'
+          provider: '1. Pfonda *163#\n2. Hitamo Kurungika\n3. Inimero: 67270398\n4. Amazina: RUKUNDO LOAUNGE\n5. Hama Wemeze'
         });
       }
       this.paymentMethodsData = methods; // Store in memory
@@ -543,7 +543,7 @@ class SolarApp {
       paymentTable.innerHTML = methods.map(p => `
         <tr>
           <td style="white-space:nowrap;vertical-align:top;padding-top:16px;"><strong>${flags[p.country]||'🌍'} ${p.country}</strong></td>
-          <td style="width:100%;vertical-align:top;"><div style="white-space:pre-wrap; font-size:13px; color:#334155; line-height:1.6; background:#f8fafc; padding:12px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom:0;">${(p.provider || '').replace(/</g, '&lt;')}</div></td>
+          <td style="width:100%;vertical-align:top;"><div style="white-space:pre-wrap; font-size:13px; color:#334155; line-height:1.6; background:#f8fafc; padding:12px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom:0;">${(p.provider || '').replace(/\\n/g, '\n').replace(/</g, '&lt;')}</div></td>
           <td style="display:flex;gap:6px;flex-wrap:nowrap;justify-content:flex-end;vertical-align:top;padding-top:16px;">
             <button onclick="window.app.openEditPaymentModal('${p.id}')" class="btn-admin btn-admin-primary" style="padding:6px 12px;font-size:11px;white-space:nowrap;">Edit</button>
             <button onclick="window.app.deletePaymentMethod('${p.id}')" class="btn-admin" style="background:#fee2e2;color:#dc2626;border:none;padding:6px 12px;font-size:11px;cursor:pointer;white-space:nowrap;">Delete</button>
@@ -1602,7 +1602,7 @@ class SolarApp {
       try {
         const pmData = await fetch(`/api/payment-methods?country=${encodeURIComponent(userCountry)}`).then(r => r.json());
         if (pmData?.data?.length > 0) {
-          rawInstructions = pmData.data[0].provider || '';
+          rawInstructions = (pmData.data[0].provider || '').replace(/\\n/g, '\n');
         }
       } catch(e) { console.warn('Payment method fetch failed'); }
 
