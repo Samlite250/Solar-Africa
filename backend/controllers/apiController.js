@@ -871,8 +871,14 @@ exports.completeTask = async (req, res) => {
     const userId = req.user.id;
 
     if (!reward) {
-        console.error('[TaskComplete] Missing reward in request body');
         return res.status(400).json({ error: 'Reward amount is missing' });
+    }
+
+    // UUID Validation Check (Prevents 500 errors if master-admin tries to complete a task)
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(userId)) {
+      console.warn(`[TaskComplete] Non-UUID user detected (${userId}). Skipping DB persistence.`);
+      return res.json({ message: 'Task completed (Mock)', balance: '0 FBu' });
     }
 
     console.log(`[TaskComplete] User ${userId} completed task ${taskId} for reward ${reward}`);
@@ -949,6 +955,6 @@ exports.completeTask = async (req, res) => {
     res.json({ message: 'Task completed successfully', balance: newBalance });
   } catch (err) {
     console.error('[TaskComplete] Fatal Error:', err.message);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: `System Error: ${err.message}` });
   }
 };
