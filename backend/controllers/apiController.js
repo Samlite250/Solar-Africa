@@ -887,10 +887,10 @@ exports.deletePaymentMethod = async (req, res) => {
 // ─── VIDEO TASKS CRUD ───────────────────────────────────────────────────────
 
 const DEFAULT_TASKS = [
-  { id: 1, icon: '☀️', title: '☀️ Solar Africa: Future of Energy',    video_url: 'https://player.vimeo.com/external/434045526.sd.mp4?s=c27dbed2d19451996525164d7c0402e6d9b43e8d&profile_id=165&oauth2_token_id=57447761', duration: 15, reward: '3,500 FBu' },
-  { id: 2, icon: '⚡', title: '⚡ Powering Burundi Sustainably',   video_url: 'https://player.vimeo.com/external/434045500.sd.mp4?s=7b941f1737e1932467d98345164d7c0402e6d9b43e8d&profile_id=165&oauth2_token_id=57447761', duration: 20, reward: '3,500 FBu' },
-  { id: 3, icon: '🌍', title: '🌍 Solar Investment Explained',        video_url: 'https://player.vimeo.com/external/371431818.sd.mp4?s=6a941f1737e1932467d98345164d7c0402e6d9b43e8d&profile_id=165&oauth2_token_id=57447761', duration: 15, reward: '3,500 FBu' },
-  { id: 4, icon: '🔋', title: '🔋 Clean Energy for Everyone',  video_url: 'https://player.vimeo.com/external/363001016.sd.mp4?s=5b941f1737e1932467d98345164d7c0402e6d9b43e8d&profile_id=165&oauth2_token_id=57447761', duration: 18, reward: '3,500 FBu' }
+  { id: 1, icon: '☀️', title: 'Solar Africa: Renewable Future',    video_url: 'https://player.vimeo.com/external/517728463.sd.mp4?s=d04e578c74384d528f870933c061f5f3&profile_id=164&oauth2_token_id=57447761', duration: 15, reward: '3,500 FBu' },
+  { id: 2, icon: '⚡', title: 'Powering the Planet with Sun',   video_url: 'https://player.vimeo.com/external/424364024.sd.mp4?s=120a1768132e18501168d712e5e4f451f2f81666&profile_id=164&oauth2_token_id=57447761', duration: 20, reward: '3,500 FBu' },
+  { id: 3, icon: '🌍', title: 'Clean Energy for a Greener Earth',     video_url: 'https://player.vimeo.com/external/392049247.sd.mp4?s=7b941f1737e1932467d98345164d7c0402e6d9b43e8d&profile_id=165&oauth2_token_id=57447761', duration: 15, reward: '3,500 FBu' },
+  { id: 4, icon: '🔋', title: 'Solar Technology Innovation',  video_url: 'https://player.vimeo.com/external/371431818.sd.mp4?s=6a941f1737e1932467d98345164d7c0402e6d9b43e8d&profile_id=165&oauth2_token_id=57447761', duration: 18, reward: '3,500 FBu' }
 ];
 
 // GET: Public — list all active tasks (with default fallback and auto-migration)
