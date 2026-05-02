@@ -1206,21 +1206,26 @@ class SolarApp {
           btn.disabled = true;
           this.showToast(`Task completed! ${reward} credited to your wallet.`, 'success');
           
-          // Persist to backend
+          // Persist to backend and wait for confirmation
           this.fetchAPI('tasks/complete', {
             method: 'POST',
             body: JSON.stringify({ reward, taskId })
+          }).then(res => {
+            if (res) {
+                // Increment wallet visually ONLY after backend confirms
+                const walletEl = document.getElementById('wallet-balance');
+                if (walletEl && walletEl.textContent) {
+                    const currentVal = parseInt(walletEl.textContent.replace(/[^0-9]/g, ''));
+                    const rewardVal = parseInt(reward.replace(/[^0-9]/g, ''));
+                    if (!isNaN(currentVal) && !isNaN(rewardVal)) {
+                        walletEl.textContent = (currentVal + rewardVal).toLocaleString() + ' FBu';
+                    }
+                }
+                this.showToast(`Success! ${reward} accredited to your wallet.`, 'success');
+            } else {
+                this.showToast(`Error: Reward could not be accredited. Please try again.`, 'error');
+            }
           });
-          
-          // Increment wallet visually
-          const walletEl = document.getElementById('wallet-balance');
-          if (walletEl && walletEl.textContent) {
-              const currentVal = parseInt(walletEl.textContent.replace(/[^0-9]/g, ''));
-              const rewardVal = parseInt(reward.replace(/[^0-9]/g, ''));
-              if (!isNaN(currentVal) && !isNaN(rewardVal)) {
-                  walletEl.textContent = (currentVal + rewardVal).toLocaleString() + ' FBu';
-              }
-          }
           
           setTimeout(() => { container.style.display = 'none'; }, 2000);
         } else {

@@ -893,17 +893,29 @@ exports.completeTask = async (req, res) => {
     const newBalance = `${(currentBalanceNum + rewardValueNum).toLocaleString()} FBu`;
     const newEarnings = `${(currentEarningsNum + rewardValueNum).toLocaleString()} FBu`;
 
-    // 4. Update Dashboard
-    const { error: updateErr } = await adminClient
-      .from('dashboard')
-      .upsert({
-        user_id: userId,
-        wallet_balance: newBalance,
-        total_earnings: newEarnings,
-        updated_at: new Date()
-      });
-
-    if (updateErr) throw updateErr;
+    // 4. Update Dashboard (Using update/insert for better reliability without unique constraint assumptions)
+    if (dash) {
+      const { error: updateErr } = await adminClient
+        .from('dashboard')
+        .update({
+          wallet_balance: newBalance,
+          total_earnings: newEarnings,
+          updated_at: new Date()
+        })
+        .eq('user_id', userId);
+      if (updateErr) throw updateErr;
+    } else {
+      const { error: insertErr } = await adminClient
+        .from('dashboard')
+        .insert([{
+          user_id: userId,
+          wallet_balance: newBalance,
+          welcome_bonus: '0 FBu',
+          total_earnings: newEarnings,
+          active_package: 'None'
+        }]);
+      if (insertErr) throw insertErr;
+    }
 
     // 5. Log Activity
     await adminClient.from('activity').insert([{
