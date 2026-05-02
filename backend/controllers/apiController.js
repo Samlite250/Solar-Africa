@@ -870,20 +870,7 @@ exports.completeTask = async (req, res) => {
     const { taskId, reward } = req.body;
     const userId = req.user.id;
 
-    // 1. Verify user has at least one approved deposit (investment)
-    const { data: approvedDeposits, error: depErr } = await client
-      .from('deposits')
-      .select('id')
-      .eq('user_id', userId)
-      .eq('status', 'approved')
-      .limit(1);
-
-    if (depErr) throw depErr;
-    if (!approvedDeposits || approvedDeposits.length === 0) {
-      return res.status(403).json({ error: 'You must have an approved investment package to earn task rewards.' });
-    }
-
-    // 2. Fetch current dashboard stats
+    // 2. Fetch current dashboard stats (Removed investment requirement as per user request)
     const { data: dash, error: dashErr } = await adminClient
       .from('dashboard')
       .select('*')
