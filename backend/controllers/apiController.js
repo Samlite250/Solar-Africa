@@ -31,7 +31,20 @@ exports.getDashboard = async (req, res) => {
         .eq('user_id', req.user.id)
         .single();
       
-      if (!error && data) return res.json({ data });
+      if (!error && data) {
+        // Fetch completed tasks for today
+        const { data: completed } = await client
+          .from('completed_tasks')
+          .select('task_id')
+          .eq('user_id', req.user.id);
+        
+        return res.json({ 
+          data: { 
+            ...data, 
+            completedTasks: (completed || []).map(c => c.task_id) 
+          } 
+        });
+      }
       if (error && error.code !== 'PGRST116') {
         console.warn('Supabase fetch error:', error.message);
       }
@@ -187,15 +200,30 @@ exports.completeTask = async (req, res) => {
   if (!isConfigured) return res.status(200).json({ message: 'Task completed (Mock)' });
 
   try {
-    const { reward } = req.body;
-    const rewardVal = parseFloat(reward.replace(/[^0-9.]/g, ''));
+    const { reward, taskId } = req.body;
+    if (!taskId) return res.status(400).json({ error: 'Task ID required' });
+
+    // 1. Check if already completed
+    const { data: existing } = await client
+      .from('completed_tasks')
+      .select('*')
+      .eq('user_id', req.user.id)
+      .eq('task_id', taskId)
+      .single();
+
+    if (existing) {
+      return res.status(400).json({ error: 'You have already completed this task today.' });
+    }
+
+    // 2. Parse reward correctly (remove commas)
+    const rewardVal = parseFloat(reward.replace(/,/g, '').replace(/[^0-9.]/g, ''));
 
     const { data: dash } = await client.from('dashboard').select('*').eq('user_id', req.user.id).single();
     
     if (dash) {
-      const currentWallet = parseFloat(dash.wallet_balance.replace(/[^0-9.]/g, '')) || 0;
+      const currentWallet = parseFloat(dash.wallet_balance.replace(/,/g, '').replace(/[^0-9.]/g, '')) || 0;
       const newWallet = currentWallet + rewardVal;
-      const currentEarnings = parseFloat(dash.total_earnings.replace(/[^0-9.]/g, '')) || 0;
+      const currentEarnings = parseFloat(dash.total_earnings.replace(/,/g, '').replace(/[^0-9.]/g, '')) || 0;
       const newEarnings = currentEarnings + rewardVal;
 
       await client.from('dashboard').update({
@@ -204,13 +232,19 @@ exports.completeTask = async (req, res) => {
         updated_at: new Date()
       }).eq('user_id', req.user.id);
 
-      // Log activity
+      // 3. Log activity
       await client.from('activity').insert([{
         user_id: req.user.id,
         title: 'Task Earned',
         value: `+${reward}`,
         description: `Earned ${reward} from watching an advert.`,
         date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      }]);
+
+      // 4. Mark as completed
+      await client.from('completed_tasks').insert([{
+        user_id: req.user.id,
+        task_id: taskId
       }]);
     }
 

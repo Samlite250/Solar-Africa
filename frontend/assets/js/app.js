@@ -864,6 +864,9 @@ class SolarApp {
   async hydrateDashboard() {
     const data = await this.fetchAPI('dashboard');
     
+    // Store completed tasks in state
+    this.state.completedTasks = data?.completedTasks || [];
+
     // Use Mockup Data if API fails or for initial match
     this.updateElement('wallet-balance', data?.wallet_balance || '0 FBu');
     this.updateElement('welcome-bonus', data?.welcome_bonus || '0 FBu');
@@ -976,23 +979,29 @@ class SolarApp {
       { id: 4, title: 'Power Grid Expansion', reward: '3,500 FBu', duration: 18, videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' }
     ];
 
-    taskList.innerHTML = tasks.map((t, i) => `
-      <div class="task-card" style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0;">
-        <div style="display: flex; align-items: center; gap: 16px;">
-          <div style="width: 48px; height: 48px; background: #e0f2fe; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #0284c7;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+    taskList.innerHTML = tasks.map((t, i) => {
+      const isDone = this.state.completedTasks?.includes(t.id);
+      return `
+        <div class="task-card" style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0; opacity: ${isDone ? '0.6' : '1'};">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 48px; height: 48px; background: #e0f2fe; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #0284c7;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+            </div>
+            <div>
+              <strong style="display: block; font-size: 15px; color: #1e293b; margin-bottom: 2px;">${t.title}</strong>
+              <span style="font-size: 12px; color: #64748b; font-weight: 600;">${t.duration}s • ${t.reward}</span>
+            </div>
           </div>
-          <div>
-            <strong style="display: block; font-size: 15px; color: #1e293b; margin-bottom: 2px;">${t.title}</strong>
-            <span style="font-size: 12px; color: #64748b; font-weight: 600;">${t.duration}s • ${t.reward}</span>
-          </div>
-        </div>
-        <button onclick="window.app.playTaskVideo('${t.videoUrl}', ${t.duration}, '${t.reward}', this)" style="background: #16a34a; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; transition: all 0.2s;">Watch</button>
-      </div>
-    `).join('');
+          <button onclick="window.app.playTaskVideo('${t.videoUrl}', ${t.duration}, '${t.reward}', this, ${t.id})" 
+                  ${isDone ? 'disabled' : ''} 
+                  style="background: ${isDone ? '#94a3b8' : '#16a34a'}; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: ${isDone ? 'default' : 'pointer'}; transition: all 0.2s;">
+            ${isDone ? 'Done' : 'Watch'}
+          </button>
+        </div>`;
+    }).join('');
   }
 
-  playTaskVideo(url, duration, reward, btn) {
+  playTaskVideo(url, duration, reward, btn, taskId) {
     if (btn.disabled) return;
     
     const container = document.getElementById('task-video-container');
@@ -1037,7 +1046,7 @@ class SolarApp {
           // Persist to backend
           this.fetchAPI('tasks/complete', {
             method: 'POST',
-            body: JSON.stringify({ reward })
+            body: JSON.stringify({ reward, taskId })
           });
           
           // Increment wallet visually

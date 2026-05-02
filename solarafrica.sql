@@ -102,8 +102,16 @@ CREATE TABLE deposits (
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
   user_name TEXT NOT NULL,
   amount TEXT NOT NULL,
-  package_name TEXT,
+  package_name TEXT NOT NULL,
   status TEXT DEFAULT 'pending',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Completed tasks table
+CREATE TABLE completed_tasks (
+  id SERIAL PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  task_id INTEGER,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
