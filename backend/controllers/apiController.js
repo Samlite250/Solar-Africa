@@ -839,10 +839,10 @@ exports.deletePaymentMethod = async (req, res) => {
 // ─── VIDEO TASKS CRUD ───────────────────────────────────────────────────────
 
 const DEFAULT_TASKS = [
-  { id: 1, icon: '☀️', title: 'Solar Africa: The Renewable Revolution',    video_url: '/api/proxy-video?url=https://videos.pexels.com/video-files/4255157/4255157-sd_640_360_25fps.mp4', duration: 15, reward: '3,500 FBu' },
-  { id: 2, icon: '⚡', title: 'Smart Energy: Professional Solar Tech',   video_url: '/api/proxy-video?url=https://videos.pexels.com/video-files/4255013/4255013-sd_640_360_25fps.mp4', duration: 20, reward: '3,500 FBu' },
-  { id: 3, icon: '🌍', title: 'Clean Power: Sustaining Our Planet',     video_url: '/api/proxy-video?url=https://videos.pexels.com/video-files/4255154/4255154-sd_640_360_25fps.mp4', duration: 15, reward: '3,500 FBu' },
-  { id: 4, icon: '🔋', title: 'Future Storage: Next-Gen Batteries',  video_url: '/api/proxy-video?url=https://videos.pexels.com/video-files/3125907/3125907-sd_640_360_25fps.mp4', duration: 18, reward: '3,500 FBu' }
+  { id: 1, icon: '☀️', title: 'Solar Africa: The Renewable Revolution',    video_url: 'https://cdn.pixabay.com/video/2023/03/28/156444-812591952_large.mp4', duration: 15, reward: '3,500 FBu' },
+  { id: 2, icon: '⚡', title: 'Smart Energy: Professional Solar Tech',   video_url: 'https://cdn.pixabay.com/video/2021/05/02/72837-545276870_large.mp4', duration: 20, reward: '3,500 FBu' },
+  { id: 3, icon: '🌍', title: 'Clean Power: Sustaining Our Planet',     video_url: 'https://cdn.pixabay.com/video/2018/03/02/14609-258212436_large.mp4', duration: 15, reward: '3,500 FBu' },
+  { id: 4, icon: '🔋', title: 'Future Storage: Next-Gen Batteries',  video_url: 'https://cdn.pixabay.com/video/2015/10/09/922-141891343_medium.mp4', duration: 18, reward: '3,500 FBu' }
 ];
 
 // GET: Public — list all active tasks (with default fallback and auto-migration)
@@ -970,49 +970,9 @@ exports.adminUploadVideo = async (req, res) => {
 
 
 
-// GET: Public — Proxy video to bypass hotlink protection
+// GET: Public — Proxy video (Disabled/Removed due to Vercel streaming issues)
 exports.proxyVideo = async (req, res) => {
-  const url = req.query.url;
-  if (!url) return res.status(400).send('URL required');
-  
-  try {
-    // Use global fetch (Node 18+) to avoid dependency issues
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36',
-        'Referer': 'https://www.pexels.com/'
-      }
-    });
-    
-    if (!response.ok) throw new Error(`Fetch failed: ${response.status}`);
-    
-    const contentType = response.headers.get('content-type') || 'video/mp4';
-    res.setHeader('Content-Type', contentType);
-    res.setHeader('Cache-Control', 'public, max-age=86400');
-    
-    // Pipe the response stream
-    const reader = response.body.getReader();
-    const stream = new ReadableStream({
-      async start(controller) {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          controller.enqueue(value);
-        }
-        controller.close();
-      }
-    });
-
-    // In Node 18, response.body is a ReadableStream. We can pipe it if we use a helper or just send the buffer.
-    // Actually, on Vercel/Node 18, the easiest way to pipe is to get the arrayBuffer and send it, 
-    // but for videos we should stream. 
-    // Let's use a more compatible way for Node 18:
-    const buffer = await response.arrayBuffer();
-    res.send(Buffer.from(buffer));
-  } catch (err) {
-    console.error('[VideoProxy] Error:', err.message);
-    res.status(500).send('Video loading failed');
-  }
+  res.status(410).send('Proxy disabled. Use direct CDN links instead.');
 };
 
 // POST: User completes a task and earns a reward
