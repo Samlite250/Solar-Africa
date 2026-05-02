@@ -378,20 +378,9 @@
             </select>
           </div>
           <div class="field">
-            <label>Provider Name</label>
-            <input type="text" id="pm-provider" placeholder="e.g. Lumicash, MTN MoMo, M-Pesa" required>
-          </div>
-          <div class="field">
-            <label>Dial Code (USSD)</label>
-            <input type="text" id="pm-dial" placeholder="e.g. *163#" required>
-          </div>
-          <div class="field">
-            <label>Phone Number</label>
-            <input type="text" id="pm-phone" placeholder="e.g. 67270398" required>
-          </div>
-          <div class="field">
-            <label>Account Name</label>
-            <input type="text" id="pm-account" placeholder="e.g. RUKUNDO LOAUNGE" required>
+            <label>Payment Instructions (HTML Supported)</label>
+            <textarea id="pm-instructions" rows="8" placeholder="e.g. <ol><li>Dial *163#</li><li>Send to 67270398</li></ol>" required style="width:100%;padding:14px 16px;border-radius:12px;border:2px solid #f1f5f9;font-size:14px;font-family:inherit;resize:vertical;"></textarea>
+            <p style="font-size: 12px; color: #64748b; margin-top: 8px;">You can use HTML tags like &lt;strong&gt;, &lt;br&gt;, or &lt;ol&gt;&lt;li&gt; to format the instructions nicely for the users.</p>
           </div>
           <div class="modal-btns">
             <button type="button" class="btn-cancel" onclick="document.getElementById('payment-modal-overlay').style.display='none'">Cancel</button>

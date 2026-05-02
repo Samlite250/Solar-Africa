@@ -533,12 +533,9 @@ class SolarApp {
       paymentTable.innerHTML = pmRes.data.map(p => `
         <tr>
           <td><strong>${flags[p.country]||'🌍'} ${p.country}</strong></td>
-          <td style="color:#0b6cff;font-weight:700;">${p.provider}</td>
-          <td style="font-family:monospace;font-weight:700;">${p.dial_code}</td>
-          <td style="color:#16a34a;font-weight:800;font-size:15px;">${p.phone}</td>
-          <td style="font-weight:700;">${p.account_name}</td>
-          <td style="display:flex;gap:6px;flex-wrap:wrap;">
-            <button onclick="window.app.openEditPaymentModal(${p.id},'${p.country}','${p.provider}','${p.dial_code}','${p.phone}','${p.account_name}')" class="btn-admin btn-admin-primary" style="padding:6px 12px;font-size:11px;">Edit</button>
+          <td colspan="4"><div style="max-width:300px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-family:monospace; font-size:12px; color:#64748b; background:#f8fafc; padding:4px 8px; border-radius:6px;">${(p.provider || '').replace(/</g, '&lt;')}</div></td>
+          <td style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
+            <button onclick="window.app.openEditPaymentModal(${p.id},'${p.country}','${(p.provider || '').replace(/'/g, "\\'")}')" class="btn-admin btn-admin-primary" style="padding:6px 12px;font-size:11px;">Edit</button>
             <button onclick="window.app.deletePaymentMethod(${p.id})" class="btn-admin" style="background:#fee2e2;color:#dc2626;border:none;padding:6px 12px;font-size:11px;cursor:pointer;">Delete</button>
           </td>
         </tr>
@@ -555,10 +552,10 @@ class SolarApp {
         const id = document.getElementById('pm-id').value;
         const payload = {
           country: document.getElementById('pm-country').value,
-          provider: document.getElementById('pm-provider').value,
-          dial_code: document.getElementById('pm-dial').value,
-          phone: document.getElementById('pm-phone').value,
-          account_name: document.getElementById('pm-account').value
+          provider: document.getElementById('pm-instructions').value, // We store HTML instructions in provider
+          dial_code: ' ',
+          phone: ' ',
+          account_name: ' '
         };
         const endpoint = id ? `admin/payment-methods/${id}` : 'admin/payment-methods';
         const method = id ? 'PUT' : 'POST';
@@ -593,14 +590,11 @@ class SolarApp {
     document.getElementById('payment-method-form').reset();
     document.getElementById('payment-modal-overlay').style.display = 'flex';
   }
-  openEditPaymentModal(id, country, provider, dial_code, phone, account_name) {
+  openEditPaymentModal(id, country, provider) {
     document.getElementById('pm-id').value = id;
     document.getElementById('payment-modal-title').textContent = 'Edit Payment Method';
     document.getElementById('pm-country').value = country;
-    document.getElementById('pm-provider').value = provider;
-    document.getElementById('pm-dial').value = dial_code;
-    document.getElementById('pm-phone').value = phone;
-    document.getElementById('pm-account').value = account_name;
+    document.getElementById('pm-instructions').value = provider;
     document.getElementById('payment-modal-overlay').style.display = 'flex';
   }
   async deletePaymentMethod(id) {
@@ -1587,44 +1581,32 @@ class SolarApp {
       let paymentAccount = 'RUKUNDO LOAUNGE';
       let paymentDial = '*163#';
       let paymentProvider = 'Lumicash';
+      // Fetch custom HTML payment instructions for the user's country
+      const userCountry = this.state.user?.country || 'Burundi';
+      let paymentStepsHTML = '';
       try {
         const pmData = await fetch(`/api/payment-methods?country=${encodeURIComponent(userCountry)}`).then(r => r.json());
         if (pmData?.data?.length > 0) {
           const pm = pmData.data[0];
-          paymentPhone = pm.phone;
-          paymentAccount = pm.account_name;
-          paymentDial = pm.dial_code;
-          paymentProvider = pm.provider;
+          paymentStepsHTML = pm.provider || ''; // We stored the HTML instructions in the provider column
         }
-      } catch(e) { console.warn('Payment method fetch failed, using defaults'); }
+      } catch(e) { console.warn('Payment method fetch failed'); }
 
-      // Localized payment instructions per country
-      const isBurundi = userCountry === 'Burundi';
-      const amountRaw = amount.replace(/[^0-9]/g, '');
-      const paymentStepsHTML = isBurundi ? `
-        <h4 style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:12px;border-bottom:1px solid #e2e8f0;padding-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;">🇧🇮 Uko ugura muri Solar Africa</h4>
-        <ol style="margin:0;padding-left:16px;color:#334155;font-size:13.5px;font-weight:600;line-height:1.8;">
-          <li>Pfonda <strong>${paymentDial}</strong></li>
-          <li>Hitamo <strong>Kurungika</strong></li>
-          <li>Inimero: <span style="display:inline-flex;align-items:center;gap:6px;background:#f0fdf4;padding:2px 8px;border-radius:6px;"><strong style="color:#16a34a;font-size:16px;user-select:all;">${paymentPhone}</strong><button onclick="navigator.clipboard.writeText('${paymentPhone}');window.app?.showToast('Numero yakopiwe!','success');" style="background:none;border:none;color:#16a34a;cursor:pointer;padding:2px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></span></li>
-          <li>Amazina: <strong style="background:#e0f2fe;color:#0369a1;padding:2px 8px;border-radius:4px;font-size:12px;">${paymentAccount}</strong></li>
-          <li>Amahera: <strong style="color:#16a34a;">${amountRaw}</strong> BIF</li>
-          <li>Hama <strong>Wemeze</strong></li>
-        </ol>` : `
-        <h4 style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:12px;border-bottom:1px solid #e2e8f0;padding-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;">📋 How to invest via ${paymentProvider}</h4>
-        <ol style="margin:0;padding-left:16px;color:#334155;font-size:13.5px;font-weight:600;line-height:1.8;">
-          <li>Dial <strong>${paymentDial}</strong> on your phone</li>
-          <li>Select <strong>Send Money</strong></li>
-          <li>Enter number: <span style="display:inline-flex;align-items:center;gap:6px;background:#f0fdf4;padding:2px 8px;border-radius:6px;"><strong style="color:#16a34a;font-size:16px;user-select:all;">${paymentPhone}</strong><button onclick="navigator.clipboard.writeText('${paymentPhone}');window.app?.showToast('Number copied!','success');" style="background:none;border:none;color:#16a34a;cursor:pointer;padding:2px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></span></li>
-          <li>Account name: <strong style="background:#e0f2fe;color:#0369a1;padding:2px 8px;border-radius:4px;font-size:12px;">${paymentAccount}</strong></li>
-          <li>Amount: <strong style="color:#16a34a;">${amountRaw}</strong></li>
-          <li>Confirm and send</li>
-        </ol>`;
+      // Fallback if no custom instructions are configured
+      if (!paymentStepsHTML.trim()) {
+        const amountRaw = amount.replace(/[^0-9]/g, '');
+        paymentStepsHTML = `
+          <h4 style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:12px;border-bottom:1px solid #e2e8f0;padding-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;">📋 Payment Instructions</h4>
+          <p style="font-size:13px;color:#334155;line-height:1.6;margin:0;">
+            Please contact support for payment instructions for <strong>${userCountry}</strong>.<br><br>
+            Amount to pay: <strong style="color:#16a34a;">${amountRaw}</strong>
+          </p>`;
+      }
 
       card.innerHTML = `
         <div style="text-align:center;">
           <h3 style="font-size:18px;font-weight:800;color:#374151;margin-bottom:12px;">Complete Your Investment</h3>
-          <p style="font-size:13px;color:#64748b;margin-bottom:20px;padding:0 10px;">Securely fund your <strong>${name}</strong> package via <strong>${paymentProvider}</strong>.</p>
+          <p style="font-size:13px;color:#64748b;margin-bottom:20px;padding:0 10px;">Securely fund your <strong>${name}</strong> package.</p>
           <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:16px;text-align:left;margin-bottom:24px;">
             ${paymentStepsHTML}
           </div>
