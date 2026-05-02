@@ -136,7 +136,7 @@ class SolarApp {
           <div style="background: white; border: 1px solid #e2e8f0; border-radius: 20px; padding: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);">
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px;">
               <div style="flex: 1; background: linear-gradient(135deg, #0b6cff 0%, #00b0ff 100%); border: 1px solid rgba(255,255,255,0.1); padding: 12px 14px; border-radius: 14px; display: flex; align-items: center; justify-content: space-between; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">
-                <span style="font-size: 12px; color: rgba(255,255,255,0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; font-family: monospace;">...register.php?ref=${this.state.user?.name || 'user'}</span>
+                <span style="font-size: 12px; color: rgba(255,255,255,0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; font-family: monospace;">...register.html?ref=${this.state.user?.name || 'user'}</span>
                 <button onclick="window.app.copyRefLink()" style="background: white; border: none; color: #0b6cff; font-weight: 800; font-size: 10px; cursor: pointer; padding: 6px 12px; border-radius: 8px; margin-left: 8px; letter-spacing: 0.5px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">COPY</button>
               </div>
             </div>
@@ -172,7 +172,7 @@ class SolarApp {
               <div style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 6px; font-size: 10px; color: white; font-weight: 700;">ACTIVE</div>
             </div>
             <div style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); padding: 14px; border-radius: 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
-              <span id="ref-link-display" style="font-size: 13px; font-weight: 700; color: white; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: monospace;">...register.php?ref=${this.state.user?.name || 'user'}</span>
+              <span id="ref-link-display" style="font-size: 13px; font-weight: 700; color: white; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: monospace;">...register.html?ref=${this.state.user?.name || 'user'}</span>
               <button onclick="window.app.copyRefLink()" style="background: white; color: #0b6cff; border: none; padding: 8px 14px; border-radius: 10px; font-size: 12px; font-weight: 800; cursor: pointer; flex-shrink: 0; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">COPY</button>
             </div>
           </div>
@@ -267,7 +267,7 @@ class SolarApp {
     const { page, token } = this.state;
 
     if (['dashboard', 'packages', 'task', 'profile', 'admin', 'team'].includes(page) && !token) {
-      window.location.href = 'login.php';
+      window.location.href = 'login.html';
       return;
     }
 
@@ -661,7 +661,7 @@ class SolarApp {
           if (!res.ok) throw new Error(data.message || data.error || 'Login failed');
           localStorage.setItem('solar_token', data.token || data.data?.token);
           localStorage.setItem('solar_user', JSON.stringify(data.user || data.data?.user));
-          window.location.href = 'dashboard.php';
+          window.location.href = 'dashboard.html';
         } catch (err) {
           this.showToast(err.message, 'error');
           if (btn) { btn.disabled = false; btn.textContent = 'Sign In'; }
@@ -690,8 +690,33 @@ class SolarApp {
           });
           const data = await res.json();
           if (!res.ok) throw new Error(data.message || data.error || 'Registration failed');
-          this.showToast('Account created! Please sign in.', 'success');
-          setTimeout(() => { window.location.href = 'login.php'; }, 1500);
+          
+          // If email verification is required, redirect to login with a message
+          if (data.requiresEmailVerification) {
+            this.showToast('Account created! Please check your email to verify, then log in.', 'success');
+            setTimeout(() => { window.location.href = 'login.html'; }, 2500);
+            return;
+          }
+
+          this.showToast('Account created! Signing you in...', 'success');
+          // Auto-login after successful registration (no email verification needed)
+          setTimeout(async () => {
+            try {
+              const loginRes = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+              });
+              const loginData = await loginRes.json();
+              if (loginRes.ok && (loginData.token || loginData.data?.token)) {
+                localStorage.setItem('solar_token', loginData.token || loginData.data?.token);
+                localStorage.setItem('solar_user', JSON.stringify(loginData.user || loginData.data?.user));
+                window.location.href = 'dashboard.html';
+              } else {
+                window.location.href = 'login.html';
+              }
+            } catch { window.location.href = 'login.html'; }
+          }, 1500);
         } catch (err) {
           this.showToast(err.message, 'error');
           if (btn) { btn.disabled = false; btn.textContent = 'Create Account'; }
@@ -1022,7 +1047,7 @@ class SolarApp {
 
     if (linkEl) {
       const username = this.state.user?.name || 'user';
-      const shortLink = `...register.php?ref=${username}`;
+      const shortLink = `...register.html?ref=${username}`;
       linkEl.textContent = shortLink;
     }
 
@@ -1062,7 +1087,7 @@ class SolarApp {
 
   copyRefLink() {
     const username = this.state.user?.name || 'user';
-    const refLink = `${window.location.origin}/register.php?ref=${username}`;
+    const refLink = `${window.location.origin}/register.html?ref=${username}`;
     navigator.clipboard.writeText(refLink);
     this.showToast('Referral link copied!', 'success');
   }
@@ -1432,7 +1457,7 @@ class SolarApp {
 
   logout() {
     localStorage.clear();
-    window.location.href = 'login.php';
+    window.location.href = 'login.html';
   }
 
   animateLandingStats() {
@@ -1501,7 +1526,7 @@ class SolarApp {
           <div class="landing-pkg-price">${p.amount}</div>
           <span class="landing-pkg-bonus-label">Welcome Bonus</span>
           <strong class="landing-pkg-bonus">${p.bonus}</strong>
-          <a href="register.php" class="btn btn-green btn-choose" style="margin-top:auto;">Choose Package</a>
+          <a href="register.html" class="btn btn-green btn-choose" style="margin-top:auto;">Choose Package</a>
         </div>
       </div>`).join('');
   }

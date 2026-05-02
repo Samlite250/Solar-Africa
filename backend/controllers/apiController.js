@@ -193,17 +193,27 @@ exports.createDeposit = async (req, res) => {
 
   try {
     const { amount, package_name } = req.body;
+
+    // Fetch real username from profiles table
+    let userName = req.user.user_metadata?.full_name || 'User';
+    try {
+      const { data: profileData } = await client
+        .from('profiles')
+        .select('name')
+        .eq('user_id', req.user.id)
+        .single();
+      if (profileData?.name) userName = profileData.name;
+    } catch(e) { /* use fallback */ }
+
     const { data, error } = await client
       .from('deposits')
-      .insert([
-        { 
-          user_id: req.user.id, 
-          user_name: req.user.user_metadata?.full_name || 'User',
-          amount, 
-          package_name, 
-          status: 'pending' 
-        }
-      ])
+      .insert([{ 
+        user_id: req.user.id, 
+        user_name: userName,
+        amount, 
+        package_name, 
+        status: 'pending' 
+      }])
       .select()
       .single();
 
@@ -230,7 +240,6 @@ exports.createDeposit = async (req, res) => {
 
   } catch (err) {
     console.error('Server error on deposit:', err);
-    // Ultimate fallback to prevent UI crash
     res.status(201).json({ message: 'Deposit request submitted (Fallback)', data: { status: 'pending' } });
   }
 };

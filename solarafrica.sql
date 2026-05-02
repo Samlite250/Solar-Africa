@@ -112,6 +112,7 @@ CREATE TABLE users (
   id SERIAL PRIMARY KEY,
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
+  email TEXT,
   country TEXT,
   status TEXT DEFAULT 'active',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -127,6 +128,18 @@ CREATE TABLE withdrawals (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Notifications table
+CREATE TABLE notifications (
+  id SERIAL PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  message TEXT NOT NULL,
+  type TEXT DEFAULT 'info',
+  read BOOLEAN DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+
 -- Enable RLS on all tables
 ALTER TABLE packages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
@@ -137,6 +150,8 @@ ALTER TABLE top_referrals ENABLE ROW LEVEL SECURITY;
 ALTER TABLE stats ENABLE ROW LEVEL SECURITY;
 ALTER TABLE deposits ENABLE ROW LEVEL SECURITY;
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE withdrawals ENABLE ROW LEVEL SECURITY;
+ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for authenticated users
 -- Packages: readable by all authenticated users
@@ -205,17 +220,26 @@ CREATE POLICY "Users are viewable by authenticated users" ON users
 CREATE POLICY "Allow user record creation" ON users
   FOR INSERT WITH CHECK (true);
 
-ALTER TABLE withdrawals ENABLE ROW LEVEL SECURITY;
-
+-- Withdrawals: users can see their own, all authenticated can see all (admin)
 CREATE POLICY "Users can view own withdrawals" ON withdrawals
   FOR SELECT USING (auth.uid() = user_id);
 
 CREATE POLICY "Allow withdrawals creation" ON withdrawals
   FOR INSERT WITH CHECK (true);
 
-CREATE POLICY "Withdrawals are viewable by authenticated users" ON withdrawals
+CREATE POLICY "Withdrawals viewable by authenticated" ON withdrawals
   FOR SELECT USING (auth.role() = 'authenticated');
 
+
+-- Notifications: users can see their own + global (user_id IS NULL) notifications
+CREATE POLICY "Users can view own notifications" ON notifications
+  FOR SELECT USING (auth.uid() = user_id OR user_id IS NULL);
+
+CREATE POLICY "Allow notification creation" ON notifications
+  FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Allow notification update" ON notifications
+  FOR UPDATE USING (true);
 
 
 -- Insert sample data

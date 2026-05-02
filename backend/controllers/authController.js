@@ -65,20 +65,23 @@ exports.register = async (req, res) => {
       { 
         user_id: userId, 
         name, 
+        email,
         country, 
         status: 'active'
       }
     ]);
     if (userTableError) {
-      console.warn('⚠️ User table insertion skipped (likely RLS policy missing):', userTableError.message);
+      console.warn('⚠️ User table insertion skipped:', userTableError.message);
     }
 
+    const hasSession = Boolean(authData.session);
     res.status(201).json({
-      message: authData.session 
-        ? 'Registration successful!' 
-        : 'Registration successful! Please check your email to verify your account before logging in.',
-      token: authData.session ? authData.session.access_token : null,
-      user: { id: userId, name, email, country, phone }
+      message: hasSession
+        ? 'Registration successful! Welcome to Solar Africa.'
+        : 'Registration successful! Please check your email to verify your account, then log in.',
+      token: hasSession ? authData.session.access_token : null,
+      user: { id: userId, name, email, country, phone },
+      requiresEmailVerification: !hasSession
     });
 
 
