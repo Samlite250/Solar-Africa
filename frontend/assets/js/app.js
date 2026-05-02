@@ -528,8 +528,8 @@ class SolarApp {
     // 11. Populate Payment Methods Table
     const pmRes = await this.fetchAPI('payment-methods');
     const paymentTable = document.getElementById('payment-methods-list');
-    if (paymentTable && pmRes?.data) {
-      let methods = pmRes.data;
+    if (paymentTable) {
+      let methods = Array.isArray(pmRes) ? pmRes : (pmRes?.data || []);
       // Inject the default Burundi payment if it doesn't exist in the database yet
       if (!methods.find(p => p.country === 'Burundi')) {
         methods.push({
