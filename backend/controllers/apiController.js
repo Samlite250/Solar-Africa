@@ -109,7 +109,7 @@ exports.getTeam = async (req, res) => {
         // 2. Find everyone who was referred by this username (case-insensitive)
         const { data: teamMembers, error } = await adminClient
           .from('profiles')
-          .select('name, country, created_at, member_since')
+          .select('name, phone, country, created_at, member_since')
           .ilike('referred_by', profile.name);
         
         console.log(`[Team] Searching referred_by="${profile.name}" → found ${teamMembers?.length || 0} members | error: ${error?.message}`);
@@ -119,6 +119,7 @@ exports.getTeam = async (req, res) => {
             data: teamMembers.map(m => ({
               id: m.id,
               name: m.name,
+              phone: m.phone || 'N/A',
               status: 'Active',
               joined: m.member_since || new Date(m.created_at).toLocaleDateString(),
               contribution: '—'

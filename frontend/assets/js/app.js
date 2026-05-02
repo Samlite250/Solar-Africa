@@ -1477,6 +1477,7 @@ class SolarApp {
           <div>
             <strong style="display: block; font-size: 15px; color: #1e293b;">${m.name}</strong>
             <span style="font-size: 12px; color: #64748b;">Joined ${m.joined}</span>
+            ${m.phone && m.phone !== 'N/A' ? `<a href="tel:${m.phone}" style="display:block; font-size: 12px; color: #0b6cff; font-weight: 700; margin-top: 2px; text-decoration:none;">📞 ${m.phone}</a>` : `<span style="display:block; font-size: 12px; color: #94a3b8;">No phone</span>`}
           </div>
         </div>
         <div style="text-align: right;">
