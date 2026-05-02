@@ -870,14 +870,25 @@ exports.completeTask = async (req, res) => {
     const { taskId, reward } = req.body;
     const userId = req.user.id;
 
-    // 2. Fetch current dashboard stats (Removed investment requirement as per user request)
-    const { data: dash, error: dashErr } = await adminClient
+    if (!reward) {
+        console.error('[TaskComplete] Missing reward in request body');
+        return res.status(400).json({ error: 'Reward amount is missing' });
+    }
+
+    console.log(`[TaskComplete] User ${userId} completed task ${taskId} for reward ${reward}`);
+
+    // 1. Fetch current dashboard stats
+    const { data: dashboards, error: dashErr } = await adminClient
       .from('dashboard')
       .select('*')
-      .eq('user_id', userId)
-      .single();
+      .eq('user_id', userId);
 
-    if (dashErr && dashErr.code !== 'PGRST116') throw dashErr;
+    if (dashErr) {
+        console.error('[TaskComplete] Dashboard fetch error:', dashErr);
+        throw dashErr;
+    }
+
+    const dash = dashboards && dashboards.length > 0 ? dashboards[0] : null;
 
     const rewardValueNum = parseInt(reward.replace(/[^0-9]/g, '')) || 0;
     
@@ -889,21 +900,24 @@ exports.completeTask = async (req, res) => {
       currentEarningsNum = parseInt((dash.total_earnings || '0').replace(/[^0-9]/g, '')) || 0;
     }
 
-    // 3. Calculate new totals
+    // 2. Calculate new totals
     const newBalance = `${(currentBalanceNum + rewardValueNum).toLocaleString()} FBu`;
     const newEarnings = `${(currentEarningsNum + rewardValueNum).toLocaleString()} FBu`;
 
-    // 4. Update Dashboard (Using update/insert for better reliability without unique constraint assumptions)
+    // 3. Update Dashboard
     if (dash) {
       const { error: updateErr } = await adminClient
         .from('dashboard')
         .update({
           wallet_balance: newBalance,
           total_earnings: newEarnings,
-          updated_at: new Date()
+          updated_at: new Date().toISOString()
         })
         .eq('user_id', userId);
-      if (updateErr) throw updateErr;
+      if (updateErr) {
+          console.error('[TaskComplete] Dashboard update error:', updateErr);
+          throw updateErr;
+      }
     } else {
       const { error: insertErr } = await adminClient
         .from('dashboard')
@@ -912,13 +926,17 @@ exports.completeTask = async (req, res) => {
           wallet_balance: newBalance,
           welcome_bonus: '0 FBu',
           total_earnings: newEarnings,
-          active_package: 'None'
+          active_package: 'None',
+          updated_at: new Date().toISOString()
         }]);
-      if (insertErr) throw insertErr;
+      if (insertErr) {
+          console.error('[TaskComplete] Dashboard insert error:', insertErr);
+          throw insertErr;
+      }
     }
 
-    // 5. Log Activity
-    await adminClient.from('activity').insert([{
+    // 4. Log Activity
+    const { error: actErr } = await adminClient.from('activity').insert([{
       user_id: userId,
       title: 'Task Reward',
       value: `+${reward}`,
@@ -926,9 +944,11 @@ exports.completeTask = async (req, res) => {
       date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     }]);
 
+    if (actErr) console.warn('[TaskComplete] Activity log failed but reward was credited:', actErr.message);
+
     res.json({ message: 'Task completed successfully', balance: newBalance });
   } catch (err) {
-    console.error('[TaskComplete] Error:', err.message);
+    console.error('[TaskComplete] Fatal Error:', err.message);
     res.status(500).json({ error: err.message });
   }
 };
