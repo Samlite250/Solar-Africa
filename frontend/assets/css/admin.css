@@ -2,18 +2,18 @@
 
 :root {
   --admin-sidebar-width: 280px;
-  --admin-bg: #f8fafc;
+  --admin-bg: #f4f7fe;
   --admin-card-bg: #ffffff;
-  --admin-primary: #0b6cff;
+  --admin-primary: #4318FF;
   --admin-secondary: #6366f1;
-  --admin-success: #10b981;
-  --admin-danger: #f43f5e;
-  --admin-warning: #f59e0b;
-  --admin-text-main: #0f172a;
-  --admin-text-muted: #64748b;
-  --admin-border: #f1f5f9;
-  --admin-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.08);
-  --admin-shadow-lg: 0 20px 40px -10px rgba(15, 23, 42, 0.12);
+  --admin-success: #05CD99;
+  --admin-danger: #EE5D50;
+  --admin-warning: #FFB547;
+  --admin-text-main: #1B2559;
+  --admin-text-muted: #A3AED0;
+  --admin-border: #E9EDF7;
+  --admin-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.05);
+  --admin-shadow-lg: 14px 17px 40px 4px rgba(112, 144, 176, 0.08);
 }
 
 .admin-body {

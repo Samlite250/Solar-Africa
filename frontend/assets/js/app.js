@@ -809,6 +809,69 @@ class SolarApp {
       });
       settingsForm.dataset.bound = 'true';
     }
+
+    // 16. Initialize Charts
+    this.initAdminCharts();
+  }
+
+  initAdminCharts() {
+    const revenueCtx = document.getElementById('revenueChart')?.getContext('2d');
+    if (!revenueCtx) return;
+
+    // Destroy existing charts if they exist to prevent memory leaks/glitches
+    if (window.revenueChartInst) window.revenueChartInst.destroy();
+    if (window.statusChartInst) window.statusChartInst.destroy();
+
+    const gradient = revenueCtx.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, 'rgba(67, 24, 255, 0.2)');
+    gradient.addColorStop(1, 'rgba(67, 24, 255, 0)');
+
+    window.revenueChartInst = new Chart(revenueCtx, {
+      type: 'line',
+      data: {
+        labels: ['SEP', 'OCT', 'NOV', 'DEC', 'JAN', 'FEB'],
+        datasets: [{
+          label: 'Revenue',
+          data: [50, 64, 48, 66, 49, 68],
+          borderColor: '#4318FF',
+          borderWidth: 4,
+          fill: true,
+          backgroundColor: gradient,
+          tension: 0.4,
+          pointRadius: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { display: false },
+          x: { grid: { display: false }, border: { display: false } }
+        }
+      }
+    });
+
+    const statusCtx = document.getElementById('statusChart')?.getContext('2d');
+    if (statusCtx) {
+        window.statusChartInst = new Chart(statusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Approved', 'Pending', 'Rejected'],
+                datasets: [{
+                    data: [70, 20, 10],
+                    backgroundColor: ['#05CD99', '#FFB547', '#EE5D50'],
+                    borderWidth: 0,
+                    cutout: '80%'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }
+            }
+        });
+    }
   }
 
   // Admin Actions
