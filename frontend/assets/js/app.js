@@ -1370,7 +1370,15 @@ class SolarApp {
       overlay.style.display = 'none';
       timerEl.style.display = 'block';
       timerEl.textContent = `00:${duration < 10 ? '0'+duration : duration}`;
-      video.play();
+      
+      // Mute to ensure play() always works even with strict browser policies
+      video.muted = true;
+      video.play().catch(e => {
+        console.warn('Playback blocked, retrying with user interaction...', e);
+        // Fallback for extreme cases
+        video.muted = true;
+        video.play();
+      });
       
       let timeLeft = duration;
       

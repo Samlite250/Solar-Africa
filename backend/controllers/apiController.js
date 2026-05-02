@@ -887,10 +887,10 @@ exports.deletePaymentMethod = async (req, res) => {
 // ─── VIDEO TASKS CRUD ───────────────────────────────────────────────────────
 
 const DEFAULT_TASKS = [
-  { id: 1, icon: '☀️', title: 'Solar Africa: Renewable Future',    video_url: 'https://videos.pexels.com/video-files/4255157/4255157-sd_640_360_25fps.mp4', duration: 15, reward: '3,500 FBu' },
-  { id: 2, icon: '⚡', title: 'Powering the Planet with Sun',   video_url: 'https://videos.pexels.com/video-files/4255154/4255154-sd_640_360_25fps.mp4', duration: 20, reward: '3,500 FBu' },
-  { id: 3, icon: '🌍', title: 'Clean Energy for a Greener Earth',     video_url: 'https://videos.pexels.com/video-files/8284542/8284542-sd_640_360_25fps.mp4', duration: 15, reward: '3,500 FBu' },
-  { id: 4, icon: '🔋', title: 'Solar Technology Innovation',  video_url: 'https://videos.pexels.com/video-files/4255153/4255153-sd_640_360_25fps.mp4', duration: 18, reward: '3,500 FBu' }
+  { id: 1, icon: '☀️', title: 'Solar Power: Clean Energy Ad',    video_url: 'https://videos.pexels.com/video-files/4255157/4255157-sd_640_360_25fps.mp4', duration: 15, reward: '3,500 FBu' },
+  { id: 2, icon: '⚡', title: 'Solar Tech: Smart Solutions',   video_url: 'https://videos.pexels.com/video-files/4255013/4255013-sd_640_360_25fps.mp4', duration: 20, reward: '3,500 FBu' },
+  { id: 3, icon: '🌍', title: 'Green Living: Solar Panels',     video_url: 'https://videos.pexels.com/video-files/4255154/4255154-sd_640_360_25fps.mp4', duration: 15, reward: '3,500 FBu' },
+  { id: 4, icon: '🔋', title: 'Energy Storage: Future Tech',  video_url: 'https://videos.pexels.com/video-files/3125907/3125907-sd_640_360_25fps.mp4', duration: 18, reward: '3,500 FBu' }
 ];
 
 // GET: Public — list all active tasks (with default fallback and auto-migration)
