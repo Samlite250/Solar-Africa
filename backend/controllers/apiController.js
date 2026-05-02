@@ -748,7 +748,7 @@ const DEFAULT_TASKS = [
   { id: 4, icon: '🔋', title: '🔋 Clean Energy for Everyone',  video_url: 'https://player.vimeo.com/external/363001016.sd.mp4?s=5b941f1737e1932467d98345164d7c0402e6d9b43e8d&profile_id=165&oauth2_token_id=57447761', duration: 18, reward: '3,500 FBu' }
 ];
 
-// GET: Public — list all active tasks (with default fallback)
+// GET: Public — list all active tasks (with default fallback and auto-migration)
 exports.getTasks = async (req, res) => {
   if (!isConfigured) return res.json({ data: DEFAULT_TASKS });
   try {
@@ -758,7 +758,18 @@ exports.getTasks = async (req, res) => {
       .eq('active', true)
       .order('created_at', { ascending: true });
 
-    if (!error && data && data.length > 0) return res.json({ data });
+    if (!error && data && data.length > 0) {
+      // Auto-migrate old mixkit URLs to new high-quality ones if they exist in DB
+      const migratedData = data.map(task => {
+        if (task.video_url.includes('mixkit.co')) {
+          const match = DEFAULT_TASKS.find(dt => dt.id === task.id || dt.title.includes(task.title));
+          if (match) task.video_url = match.video_url;
+        }
+        return task;
+      });
+      return res.json({ data: migratedData });
+    }
+    
     // Fall back to hardcoded tasks if table empty or missing
     res.json({ data: DEFAULT_TASKS });
   } catch (err) {
