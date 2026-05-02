@@ -887,10 +887,10 @@ exports.deletePaymentMethod = async (req, res) => {
 // ─── VIDEO TASKS CRUD ───────────────────────────────────────────────────────
 
 const DEFAULT_TASKS = [
-  { id: 1, icon: '☀️', title: 'Solar Africa: Renewable Future',    video_url: 'https://cdn.pixabay.com/vimeo/517728463/solar-panel-66857.mp4?width=1280&hash=d3d9e8d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1', duration: 15, reward: '3,500 FBu' },
-  { id: 2, icon: '⚡', title: 'Powering the Planet with Sun',   video_url: 'https://cdn.pixabay.com/vimeo/424364024/solar-72212.mp4?width=1280&hash=c3c9c8c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1', duration: 20, reward: '3,500 FBu' },
-  { id: 3, icon: '🌍', title: 'Clean Energy for a Greener Earth',     video_url: 'https://cdn.pixabay.com/vimeo/392049247/sun-44123.mp4?width=1280&hash=b3b9b8b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1', duration: 15, reward: '3,500 FBu' },
-  { id: 4, icon: '🔋', title: 'Solar Technology Innovation',  video_url: 'https://cdn.pixabay.com/vimeo/371431818/energy-33123.mp4?width=1280&hash=a3a9a8a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1', duration: 18, reward: '3,500 FBu' }
+  { id: 1, icon: '☀️', title: 'Solar Africa: Renewable Future',    video_url: 'https://videos.pexels.com/video-files/4255157/4255157-sd_640_360_25fps.mp4', duration: 15, reward: '3,500 FBu' },
+  { id: 2, icon: '⚡', title: 'Powering the Planet with Sun',   video_url: 'https://videos.pexels.com/video-files/4255154/4255154-sd_640_360_25fps.mp4', duration: 20, reward: '3,500 FBu' },
+  { id: 3, icon: '🌍', title: 'Clean Energy for a Greener Earth',     video_url: 'https://videos.pexels.com/video-files/8284542/8284542-sd_640_360_25fps.mp4', duration: 15, reward: '3,500 FBu' },
+  { id: 4, icon: '🔋', title: 'Solar Technology Innovation',  video_url: 'https://videos.pexels.com/video-files/4255153/4255153-sd_640_360_25fps.mp4', duration: 18, reward: '3,500 FBu' }
 ];
 
 // GET: Public — list all active tasks (with default fallback and auto-migration)
