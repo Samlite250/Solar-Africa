@@ -691,32 +691,17 @@ class SolarApp {
           const data = await res.json();
           if (!res.ok) throw new Error(data.message || data.error || 'Registration failed');
           
-          // If email verification is required, redirect to login with a message
+          // If email verification is required, show a specific message
           if (data.requiresEmailVerification) {
-            this.showToast('Account created! Please check your email to verify, then log in.', 'success');
-            setTimeout(() => { window.location.href = 'login.html'; }, 2500);
-            return;
+            this.showToast('Account created! Please check your email to verify.', 'success');
+          } else {
+            this.showToast('Account created successfully!', 'success');
           }
 
-          this.showToast('Account created! Signing you in...', 'success');
-          // Auto-login after successful registration (no email verification needed)
-          setTimeout(async () => {
-            try {
-              const loginRes = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-              });
-              const loginData = await loginRes.json();
-              if (loginRes.ok && (loginData.token || loginData.data?.token)) {
-                localStorage.setItem('solar_token', loginData.token || loginData.data?.token);
-                localStorage.setItem('solar_user', JSON.stringify(loginData.user || loginData.data?.user));
-                window.location.href = 'dashboard.html';
-              } else {
-                window.location.href = 'login.html';
-              }
-            } catch { window.location.href = 'login.html'; }
-          }, 1500);
+          // Immediately redirect to login
+          setTimeout(() => {
+            window.location.href = 'login.html';
+          }, 1000);
         } catch (err) {
           this.showToast(err.message, 'error');
           if (btn) { btn.disabled = false; btn.textContent = 'Create Account'; }
