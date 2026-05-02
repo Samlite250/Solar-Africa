@@ -147,6 +147,17 @@ CREATE TABLE notifications (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Payment methods table
+CREATE TABLE payment_methods (
+  id SERIAL PRIMARY KEY,
+  country TEXT NOT NULL,
+  provider TEXT NOT NULL,
+  dial_code TEXT,
+  phone TEXT,
+  account_name TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 
 -- Enable RLS on all tables
 ALTER TABLE packages ENABLE ROW LEVEL SECURITY;
@@ -160,8 +171,13 @@ ALTER TABLE deposits ENABLE ROW LEVEL SECURITY;
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE withdrawals ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+ALTER TABLE payment_methods ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for authenticated users
+-- Payment methods: Publicly readable
+CREATE POLICY "Payment methods are viewable by all" ON payment_methods
+  FOR SELECT USING (true);
+
 -- Packages: readable by all authenticated users
 CREATE POLICY "Packages are viewable by authenticated users" ON packages
   FOR SELECT USING (auth.role() = 'authenticated');
@@ -248,6 +264,15 @@ CREATE POLICY "Allow notification creation" ON notifications
 
 CREATE POLICY "Allow notification update" ON notifications
   FOR UPDATE USING (true);
+
+-- Completed tasks policies
+ALTER TABLE completed_tasks ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own completed tasks" ON completed_tasks
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Allow completed tasks insertion" ON completed_tasks
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 
 -- Insert sample data
