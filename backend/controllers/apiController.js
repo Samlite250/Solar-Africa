@@ -742,10 +742,10 @@ exports.deletePaymentMethod = async (req, res) => {
 // ─── VIDEO TASKS CRUD ───────────────────────────────────────────────────────
 
 const DEFAULT_TASKS = [
-  { id: 1, icon: '☀️', title: '☀️ Solar Farm Aerial View',    video_url: 'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-a-field-with-solar-panels-34560-large.mp4', duration: 15, reward: '3,500 FBu' },
-  { id: 2, icon: '⚡', title: '⚡ Solar Panel Installation',   video_url: 'https://assets.mixkit.co/videos/preview/mixkit-technician-installing-solar-panels-on-a-roof-34553-large.mp4', duration: 20, reward: '3,500 FBu' },
-  { id: 3, icon: '🌍', title: '🌍 Clean Energy Future',        video_url: 'https://assets.mixkit.co/videos/preview/mixkit-solar-panels-on-a-sunny-day-2394-large.mp4', duration: 15, reward: '3,500 FBu' },
-  { id: 4, icon: '🔋', title: '🔋 Solar Charging Solutions',  video_url: 'https://assets.mixkit.co/videos/preview/mixkit-residential-solar-roof-panels-in-daytime-34554-large.mp4', duration: 18, reward: '3,500 FBu' }
+  { id: 1, icon: '☀️', title: '☀️ Solar Africa: Future of Energy',    video_url: 'https://player.vimeo.com/external/434045526.sd.mp4?s=c27dbed2d19451996525164d7c0402e6d9b43e8d&profile_id=165&oauth2_token_id=57447761', duration: 15, reward: '3,500 FBu' },
+  { id: 2, icon: '⚡', title: '⚡ Powering Burundi Sustainably',   video_url: 'https://player.vimeo.com/external/434045500.sd.mp4?s=7b941f1737e1932467d98345164d7c0402e6d9b43e8d&profile_id=165&oauth2_token_id=57447761', duration: 20, reward: '3,500 FBu' },
+  { id: 3, icon: '🌍', title: '🌍 Solar Investment Explained',        video_url: 'https://player.vimeo.com/external/371431818.sd.mp4?s=6a941f1737e1932467d98345164d7c0402e6d9b43e8d&profile_id=165&oauth2_token_id=57447761', duration: 15, reward: '3,500 FBu' },
+  { id: 4, icon: '🔋', title: '🔋 Clean Energy for Everyone',  video_url: 'https://player.vimeo.com/external/363001016.sd.mp4?s=5b941f1737e1932467d98345164d7c0402e6d9b43e8d&profile_id=165&oauth2_token_id=57447761', duration: 18, reward: '3,500 FBu' }
 ];
 
 // GET: Public — list all active tasks (with default fallback)
