@@ -121,7 +121,7 @@ class SolarApp {
           </div>
         </div>
 
-        <div class="dash-metrics-row">
+        <div class="dash-metrics-row" style="margin-bottom: 16px;">
           <div class="dash-metric-card blue">
             <span class="dash-metric-label">Wallet Balance</span>
             <strong class="dash-metric-value" id="wallet-balance">...</strong>
@@ -131,6 +131,12 @@ class SolarApp {
             <strong class="dash-metric-value" id="welcome-bonus">...</strong>
           </div>
         </div>
+
+        <button onclick="window.app.showWithdrawModal()" class="btn btn-full" style="background:#f1f5f9; color:#1e293b; font-weight:800; padding:16px; border-radius:18px; border:1px solid #e2e8f0; cursor:pointer; width:100%; margin-bottom: 24px; display: flex; align-items: center; justify-content: center; gap: 10px; transition: transform 0.2s;">
+          <div style="width: 32px; height: 32px; background: #fefce8; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #a16207;">💸</div>
+          <span>Withdraw Funds</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="3" style="margin-left: auto;"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
 
         <div class="dash-sub-stats" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
           <div class="dash-sub-item">
@@ -284,14 +290,6 @@ class SolarApp {
 
           <h3 class="profile-section-label">Financial & Network</h3>
           <div class="profile-menu">
-            <div class="profile-menu-item" onclick="window.app.showWithdrawModal()">
-              <div class="profile-menu-icon" style="background:#fefce8; color:#a16207;">💸</div>
-              <div class="profile-menu-text">
-                <strong>Withdraw Funds</strong>
-                <span>Transfer earnings to your account</span>
-              </div>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="3"><path d="M9 18l6-6-6-6"/></svg>
-            </div>
             <div class="profile-menu-item" onclick="window.location.hash = '#team'">
               <div class="profile-menu-icon" style="background:#f0fdf4; color:#166534;">🤝</div>
               <div class="profile-menu-text">
@@ -1560,6 +1558,11 @@ class SolarApp {
   }
 
   showWithdrawModal() {
+    const activePkg = document.getElementById('active-package')?.textContent || 'None';
+    if (activePkg === 'None' || activePkg === '...' || activePkg === 'No Active Package') {
+      this.showToast('Security Alert: You must activate an investment package before you can withdraw your earnings.', 'error');
+      return;
+    }
     this.showToast('Withdrawal system is being initialized. Please wait for the next instruction.', 'info');
   }
 
