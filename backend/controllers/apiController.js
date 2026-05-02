@@ -151,45 +151,63 @@ exports.getAdminStats = async (req, res) => {
   if (isConfigured) {
     try {
       // ✅ Use adminClient (service-role key) for ALL queries — bypasses RLS entirely.
-      // The master-admin bypass token is not a real Supabase session, so the anon
-      // client's RLS would block everything. adminClient has no such restriction.
       const [stats, deposits, packages, usersResult, withdrawals] = await Promise.all([
         adminClient.from('stats').select('*').limit(1).single(),
         adminClient.from('deposits').select('*').order('created_at', { ascending: false }).limit(100),
         adminClient.from('packages').select('*'),
-        adminClient.from('users').select('*').order('created_at', { ascending: false }).limit(200),
+        adminClient.from('users').select('*').order('created_at', { ascending: false }).limit(500),
         adminClient.from('withdrawals').select('*').order('created_at', { ascending: false }).limit(100)
       ]);
 
-      // ✅ FALLBACK: If the users table is empty (e.g. users registered before
-      // the users-table insert was stable), load from profiles instead.
+      // ✅ 3-TIER USER LOADING STRATEGY:
+      // Tier 1: users table (custom table)
+      // Tier 2: profiles table (always created at registration)
+      // Tier 3: Supabase auth.admin.listUsers() — the ground truth, always accurate
       let rawUsers = usersResult.data || [];
+      
       if (rawUsers.length === 0) {
-        console.log('[Admin] users table empty — falling back to profiles table');
+        console.log('[Admin] users table empty — trying profiles table');
+        // Only select guaranteed columns (name, user_id, created_at)
         const { data: profilesData } = await adminClient
           .from('profiles')
-          .select('user_id, name, email, phone, country, created_at')
+          .select('user_id, name, created_at')
           .order('created_at', { ascending: false })
-          .limit(200);
-        rawUsers = (profilesData || []).map(p => ({
-          user_id: p.user_id,
-          name: p.name,
-          email: p.email,
-          phone: p.phone,
-          country: p.country,
-          status: 'active',
-          created_at: p.created_at
-        }));
+          .limit(500);
+        
+        if (profilesData && profilesData.length > 0) {
+          rawUsers = profilesData.map(p => ({
+            user_id: p.user_id,
+            name: p.name,
+            status: 'active',
+            created_at: p.created_at
+          }));
+          console.log(`[Admin] Loaded ${rawUsers.length} users from profiles table`);
+        }
       }
 
-      // Join dashboard balances and profile info (upline) onto users
+      // Tier 3: If still empty, fall back to Supabase Auth users list (always accurate)
+      if (rawUsers.length === 0) {
+        console.log('[Admin] profiles empty — falling back to auth.admin.listUsers()');
+        const { data: authData } = await adminClient.auth.admin.listUsers({ perPage: 500 });
+        rawUsers = (authData?.users || []).map(u => ({
+          user_id: u.id,
+          name: u.user_metadata?.full_name || u.email?.split('@')[0] || 'Unknown',
+          email: u.email,
+          status: u.banned ? 'suspended' : 'active',
+          created_at: u.created_at
+        }));
+        console.log(`[Admin] Loaded ${rawUsers.length} users from Supabase Auth`);
+      }
+
+      // ✅ Enrich users with dashboard balances + profile info
+      // Only query what we know exists (no email/phone from profiles — may not exist)
       let enrichedUsers = rawUsers;
       if (enrichedUsers.length > 0) {
         const userIds = enrichedUsers.map(u => u.user_id).filter(Boolean);
         if (userIds.length > 0) {
           const [dashboardsRes, profilesRes] = await Promise.all([
             adminClient.from('dashboard').select('user_id, wallet_balance, welcome_bonus, total_earnings').in('user_id', userIds),
-            adminClient.from('profiles').select('user_id, referred_by, email, phone').in('user_id', userIds)
+            adminClient.from('profiles').select('user_id, name, referred_by').in('user_id', userIds)
           ]);
 
           const dashMap = {};
@@ -200,8 +218,8 @@ exports.getAdminStats = async (req, res) => {
 
           enrichedUsers = enrichedUsers.map(u => ({
             ...u,
-            email: profMap[u.user_id]?.email || u.email,
-            phone: profMap[u.user_id]?.phone || u.phone,
+            // Use profile name as priority (it's what the user registered with)
+            name: profMap[u.user_id]?.name || u.name,
             upline: profMap[u.user_id]?.referred_by || 'Solar Africa',
             wallet_balance: dashMap[u.user_id]?.wallet_balance || '0 FBu',
             welcome_bonus: dashMap[u.user_id]?.welcome_bonus || '0 FBu',
@@ -217,6 +235,8 @@ exports.getAdminStats = async (req, res) => {
         withdrawals: (withdrawals.data || []).length,
         total_payouts: stats.data?.total_payouts || '0 BIF'
       };
+
+      console.log(`[Admin] Returning ${enrichedUsers.length} users to admin panel`);
 
       return res.json({
         metrics: liveMetrics,
