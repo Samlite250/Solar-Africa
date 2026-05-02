@@ -38,23 +38,23 @@ exports.register = async (req, res) => {
 
     const userId = authData.user.id;
 
-    // 2. Initialize Profile (Now including email for username lookup and referral tracking)
-    const { error: profileError } = await adminClient.from('profiles').insert([
-      { 
-        user_id: userId, 
-        name, // This is the Username
-        email,
-        phone,
-        country,
-        referred_by: referred_by || 'Solar Africa',
-        member_since: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) 
-      }
-    ]);
+    // 2. Initialize Profile (retry once on failure)
+    let profileError = null;
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      const { error: pErr } = await adminClient.from('profiles').insert([
+        { 
+          user_id: userId, 
+          name,
+          created_at: new Date().toISOString()
+        }
+      ]);
+      if (!pErr) { profileError = null; break; }
+      profileError = pErr;
+      console.warn(`⚠️ Profile creation attempt ${attempt} failed:`, pErr.message);
+      if (attempt < 2) await new Promise(r => setTimeout(r, 500)); // wait 500ms before retry
+    }
     if (profileError) {
-      console.warn('⚠️ Profile creation error:', profileError.message);
-      // Fallback: If profile creation fails, we still let the user login, but warn them
-      // We no longer abort registration entirely because their Auth account was already created
-      // return res.status(400).json({ error: `Profile creation failed: ${profileError.message}` });
+      console.error('❌ Profile creation failed after 2 attempts:', profileError.message);
     }
 
     // 3. Initialize Dashboard
@@ -67,22 +67,17 @@ exports.register = async (req, res) => {
       }
     ]);
     if (dashError) {
-      console.warn('⚠️ Dashboard creation skipped (likely RLS policy missing):', dashError.message);
-      // We do NOT return a 400 error here. We allow registration to succeed.
+      console.warn('⚠️ Dashboard creation skipped:', dashError.message);
     }
 
-    // 4. Initialize User (for admin view)
-    const { error: userTableError } = await adminClient.from('users').insert([
-      { 
-        user_id: userId, 
-        name, 
-        email,
-        country, 
-        status: 'active'
-      }
-    ]);
-    if (userTableError) {
-      console.warn('⚠️ User table insertion skipped:', userTableError.message);
+    // 4. Initialize User (for admin view) — also retry once
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      const { error: userTableError } = await adminClient.from('users').insert([
+        { user_id: userId, name, status: 'active' }
+      ]);
+      if (!userTableError) break;
+      console.warn(`⚠️ Users table insert attempt ${attempt} failed:`, userTableError.message);
+      if (attempt < 2) await new Promise(r => setTimeout(r, 500));
     }
 
     const hasSession = Boolean(authData.session);
