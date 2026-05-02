@@ -25,56 +25,72 @@ exports.getPackages = async (req, res) => {
 exports.getDashboard = async (req, res) => {
   if (isConfigured) {
     try {
-      const { data, error } = await client
+      // 1. Get Dashboard data
+      const { data: dash, error: dashError } = await adminClient
         .from('dashboard')
         .select('*')
         .eq('user_id', req.user.id)
         .single();
       
-      if (!error && data) {
-        let completedIds = [];
-        try {
-          const { data: completed, error: compError } = await client
-            .from('completed_tasks')
-            .select('task_id')
-            .eq('user_id', req.user.id);
-          if (!compError && completed) completedIds = completed.map(c => c.task_id);
-        } catch (e) {
-          console.warn('Completed tasks table might be missing');
-        }
+      if (dash || !dashError || dashError.code === 'PGRST116') {
+        let currentDash = dash;
         
+        // Self-healing: Create dashboard if missing
+        if (!dash) {
+          const { data: newDash } = await adminClient.from('dashboard').insert([
+            { 
+              user_id: req.user.id, 
+              wallet_balance: '0 FBu', 
+              welcome_bonus: '0 FBu', 
+              total_earnings: '0 FBu',
+              active_package: 'None'
+            }
+          ]).select().single();
+          currentDash = newDash;
+        }
+
+        // 2. Fetch completed tasks
+        let completedIds = [];
+        const { data: completed } = await client
+          .from('completed_tasks')
+          .select('task_id')
+          .eq('user_id', req.user.id);
+        if (completed) completedIds = completed.map(c => c.task_id);
+
+        // 3. Fetch REAL activities
+        const { data: activities } = await client
+          .from('activity')
+          .select('*')
+          .eq('user_id', req.user.id)
+          .order('created_at', { ascending: false })
+          .limit(10);
+
+        // 4. Check for approved package purchase
+        const { data: approvedDeposit } = await adminClient
+          .from('deposits')
+          .select('id')
+          .eq('user_id', req.user.id)
+          .eq('status', 'approved')
+          .limit(1);
+
+        // Enforce 0 welcome bonus if no approved package
+        if (!approvedDeposit || approvedDeposit.length === 0) {
+          currentDash.welcome_bonus = '0 FBu';
+        }
+
         return res.json({ 
           data: { 
-            ...data, 
-            completedTasks: completedIds
+            ...currentDash, 
+            completedTasks: completedIds,
+            activities: activities || []
           } 
         });
       }
-
-      // If no dashboard row, create one automatically (Self-healing)
-      if (!data) {
-        const { data: newDash, error: createError } = await client.from('dashboard').insert([
-          { 
-            user_id: req.user.id, 
-            wallet_balance: '0 FBu', 
-            welcome_bonus: '0 FBu', 
-            total_earnings: '0 FBu',
-            active_package: 'None'
-          }
-        ]).select().single();
-        
-        if (!createError && newDash) {
-           return res.json({ data: { ...newDash, completedTasks: [] } });
-        }
-      }
-      if (error && error.code !== 'PGRST116') {
-        console.warn('Supabase fetch error:', error.message);
-      }
     } catch (err) {
-      console.warn('Supabase fetch error:', err.message);
+      console.warn('Dashboard fetch error:', err.message);
     }
   }
-  res.json({ data: { wallet_balance: '0 BIF', welcome_bonus: '0 BIF', active_package: 'None', total_earnings: '0 BIF' } });
+  res.json({ data: { wallet_balance: '0 FBu', welcome_bonus: '0 FBu', active_package: 'None', total_earnings: '0 FBu', activities: [] } });
 };
 
 exports.getTeam = async (req, res) => {

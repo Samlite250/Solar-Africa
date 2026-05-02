@@ -64,6 +64,10 @@ CREATE TABLE activity (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+ALTER TABLE activity ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view own activity" ON activity FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Allow activity insertion" ON activity FOR INSERT WITH CHECK (true);
+
 -- Referrals table
 CREATE TABLE referrals (
   id SERIAL PRIMARY KEY,

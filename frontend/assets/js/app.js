@@ -999,16 +999,24 @@ class SolarApp {
     this.updateElement('total-earnings', data?.total_earnings || '0 FBu');
     this.updateElement('active-package', data?.active_package || 'None');
 
-    this.hydrateActivity(data?.activities || [
-      { title: 'Welcome Bonus Received', type: 'bonus', date: 'Today, 10:30 AM', value: '+210,000 BIF' },
-      { title: 'Package Activated', type: 'package', date: 'Today, 10:20 AM', value: 'Mono Starter' },
-      { title: 'Deposit Submitted', type: 'deposit', date: 'Today, 10:20 AM', value: '80,000 BIF' }
-    ]);
+    const activities = data?.activities || [];
+    this.hydrateActivity(activities);
   }
 
   hydrateActivity(activities) {
     const list = document.getElementById('activity-list');
     if (!list) return;
+
+    if (!activities || activities.length === 0) {
+      list.innerHTML = `
+        <div style="padding: 32px 16px; text-align: center; color: #64748b;">
+          <div style="font-size: 32px; margin-bottom: 12px; opacity: 0.5;">📋</div>
+          <p style="font-size: 13px; font-weight: 500;">No recent activities yet.</p>
+          <p style="font-size: 11px; opacity: 0.7;">Your deposits and task rewards will appear here.</p>
+        </div>
+      `;
+      return;
+    }
 
     list.innerHTML = activities.map(act => {
       let iconClass = 'blue';
