@@ -47,7 +47,13 @@
         <a href="#" class="sidebar-nav-link" data-target="view-transactions">
           <div class="link-content">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-            Transactions
+            Deposits
+          </div>
+        </a>
+        <a href="#" class="sidebar-nav-link" data-target="view-withdrawals">
+          <div class="link-content">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            Withdrawals
           </div>
         </a>
         <a href="#" class="sidebar-nav-link" data-target="view-notifications">
@@ -241,6 +247,19 @@
             <table>
               <thead><tr><th>ID</th><th>Type</th><th>User</th><th>Amount</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
               <tbody id="full-transaction-ledger"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="view-withdrawals" class="admin-view" style="display: none; padding: 40px;">
+        <div class="panel-card">
+          <div class="panel-header"><h4 class="panel-title">🏧 Withdrawal Management</h4></div>
+          <p style="font-size:13px; color:#64748b; margin: -10px 0 20px 20px;">Review and process user payout requests.</p>
+          <div class="table-container">
+            <table>
+              <thead><tr><th>User</th><th>Amount</th><th>Type</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="admin-withdrawals-list"></tbody>
             </table>
           </div>
         </div>

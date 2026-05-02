@@ -154,9 +154,9 @@ class SolarApp {
                 <button onclick="window.app.copyRefLink()" style="background: white; border: none; color: #0b6cff; font-weight: 800; font-size: 10px; cursor: pointer; padding: 6px 12px; border-radius: 8px; margin-left: 8px; letter-spacing: 0.5px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">COPY</button>
               </div>
             </div>
-            <button onclick="window.location.hash = '#team'" class="btn" style="width: 100%; justify-content: center; background: linear-gradient(135deg, #0b6cff 0%, #00b0ff 100%); color: white; border: none; border-radius: 14px; font-weight: 800; font-size: 14px; padding: 14px; display: flex; align-items: center; gap: 10px; transition: transform 0.2s; box-shadow: 0 8px 16px rgba(11, 108, 255, 0.25);">
-               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-               View My Team
+            <button onclick="window.location.hash = '#task'" class="btn" style="width: 100%; justify-content: center; background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%); color: white; border: none; border-radius: 14px; font-weight: 800; font-size: 14px; padding: 14px; display: flex; align-items: center; gap: 10px; transition: transform 0.2s; box-shadow: 0 8px 16px rgba(22, 163, 74, 0.25);">
+               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+               Watch Daily Tasks
             </button>
           </div>
         </div>
@@ -458,6 +458,27 @@ class SolarApp {
             ${d.status === 'pending' ? `
               <button class="btn-admin btn-admin-primary" onclick="window.app.updateDeposit(${d.id}, 'approved')" style="padding:6px 12px;font-size:11px;">Approve</button>
               <button class="btn-admin btn-admin-outline" onclick="window.app.updateDeposit(${d.id}, 'rejected')" style="padding:6px 12px;font-size:11px;">Reject</button>
+            ` : `<span style="color:#94a3b8;font-size:12px;">Processed</span>`}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // 6.5 Populate Withdrawals Management
+    const withdrawTable = document.getElementById('admin-withdrawals-list');
+    const withdrawals = data.withdrawals;
+    if (withdrawTable && withdrawals) {
+      withdrawTable.innerHTML = withdrawals.map(w => `
+        <tr>
+          <td><strong>${w.user_name}</strong></td>
+          <td style="color:#dc2626;font-weight:700;">-${w.amount}</td>
+          <td><span style="background:#f4f7fe;color:#334155;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:800;text-transform:uppercase;">${w.type || 'wallet'}</span></td>
+          <td style="color:#64748b;font-size:13px;">${new Date(w.created_at).toLocaleDateString()}</td>
+          <td><span style="background:${w.status==='approved'?'#dcfce7':(w.status==='rejected'?'#fee2e2':'#fef3c7')};color:${w.status==='approved'?'#16a34a':(w.status==='rejected'?'#dc2626':'#d97706')};padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;">${w.status.toUpperCase()}</span></td>
+          <td>
+            ${w.status === 'pending' ? `
+              <button class="btn-admin btn-admin-primary" onclick="window.app.updateWithdrawal(${w.id}, 'approved')" style="padding:6px 12px;font-size:11px;">Approve</button>
+              <button class="btn-admin btn-admin-outline" onclick="window.app.updateWithdrawal(${w.id}, 'rejected')" style="padding:6px 12px;font-size:11px;">Reject</button>
             ` : `<span style="color:#94a3b8;font-size:12px;">Processed</span>`}
           </td>
         </tr>
@@ -1091,30 +1112,30 @@ class SolarApp {
     if (!list) return;
 
     const mockPkgs = [
-      { name: 'Mono Starter', amount: '80,000 BIF', bonus: '210,000 BIF', img: 'assets/img/packages/pkg_1.jpg' },
-      { name: 'Poly Basic', amount: '120,000 BIF', bonus: '320,000 BIF', img: 'assets/img/packages/pkg_2.jpg' },
-      { name: 'Thin Film', amount: '160,000 BIF', bonus: '450,000 BIF', img: 'assets/img/packages/pkg_3.jpg' },
-      { name: 'Off-Grid Lite', amount: '200,000 BIF', bonus: '600,000 BIF', img: 'assets/img/packages/pkg_4.jpg' },
-      { name: 'Hybrid Lite', amount: '240,000 BIF', bonus: '800,000 BIF', img: 'assets/img/packages/pkg_5.jpg' },
-      { name: 'Grid-Tied Lite', amount: '280,000 BIF', bonus: '1,000,000 BIF', img: 'assets/img/packages/pkg_6.jpg' },
-      { name: 'Solar Storage', amount: '320,000 BIF', bonus: '1,300,000 BIF', img: 'assets/img/packages/pkg_7.jpg' },
-      { name: 'Smart Solar', amount: '360,000 BIF', bonus: '1,700,000 BIF', img: 'assets/img/packages/pkg_8.jpg' },
-      { name: 'PV Entry', amount: '400,000 BIF', bonus: '2,100,000 BIF', img: 'assets/img/packages/pkg_9.jpg' },
-      { name: 'PV Basic', amount: '440,000 BIF', bonus: '2,500,000 BIF', img: 'assets/img/packages/pkg_10.jpg' },
-      { name: 'PV Standard', amount: '480,000 BIF', bonus: '3,000,000 BIF', img: 'assets/img/packages/pkg_11.jpg' },
-      { name: 'PV Plus', amount: '520,000 BIF', bonus: '3,600,000 BIF', img: 'assets/img/packages/pkg_12.jpg' },
-      { name: 'PV Pro', amount: '560,000 BIF', bonus: '4,200,000 BIF', img: 'assets/img/packages/pkg_13.jpg' },
-      { name: 'PV Max', amount: '600,000 BIF', bonus: '4,800,000 BIF', img: 'assets/img/packages/pkg_14.jpg' },
-      { name: 'Off-Grid Pro', amount: '640,000 BIF', bonus: '5,200,000 BIF', img: 'assets/img/packages/pkg_1.jpg' },
-      { name: 'Hybrid Pro', amount: '680,000 BIF', bonus: '5,600,000 BIF', img: 'assets/img/packages/pkg_2.jpg' },
-      { name: 'Grid-Tied Pro', amount: '720,000 BIF', bonus: '6,000,000 BIF', img: 'assets/img/packages/pkg_3.jpg' },
-      { name: 'Solar Battery', amount: '760,000 BIF', bonus: '6,400,000 BIF', img: 'assets/img/packages/pkg_4.jpg' },
-      { name: 'Storage Plus', amount: '800,000 BIF', bonus: '6,800,000 BIF', img: 'assets/img/packages/pkg_5.jpg' },
-      { name: 'Smart Hybrid', amount: '840,000 BIF', bonus: '7,100,000 BIF', img: 'assets/img/packages/pkg_6.jpg' },
-      { name: 'PV Ultra', amount: '880,000 BIF', bonus: '7,400,000 BIF', img: 'assets/img/packages/pkg_7.jpg' },
-      { name: 'Solar Array', amount: '920,000 BIF', bonus: '7,600,000 BIF', img: 'assets/img/packages/pkg_8.jpg' },
-      { name: 'Solar Plant', amount: '960,000 BIF', bonus: '7,800,000 BIF', img: 'assets/img/packages/pkg_9.jpg' },
-      { name: 'Commercial Solar', amount: '1,000,000 BIF', bonus: '8,000,000 BIF', img: 'assets/img/packages/pkg_10.jpg' }
+      { name: 'Mono Starter',    amount: '80,000 BIF',    bonus: '210,000 BIF',   img: 'https://images.pexels.com/photos/356036/pexels-photo-356036.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Poly Basic',      amount: '120,000 BIF',   bonus: '320,000 BIF',   img: 'https://images.pexels.com/photos/159397/solar-panel-array-power-sun-159397.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Thin Film',       amount: '160,000 BIF',   bonus: '450,000 BIF',   img: 'https://images.pexels.com/photos/414837/pexels-photo-414837.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Off-Grid Lite',   amount: '200,000 BIF',   bonus: '600,000 BIF',   img: 'https://images.pexels.com/photos/433308/pexels-photo-433308.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Hybrid Lite',     amount: '240,000 BIF',   bonus: '800,000 BIF',   img: 'https://images.pexels.com/photos/1036936/pexels-photo-1036936.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Grid-Tied Lite',  amount: '280,000 BIF',   bonus: '1,000,000 BIF', img: 'https://images.pexels.com/photos/9875452/pexels-photo-9875452.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Solar Storage',   amount: '320,000 BIF',   bonus: '1,300,000 BIF', img: 'https://images.pexels.com/photos/3826311/pexels-photo-3826311.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Smart Solar',     amount: '360,000 BIF',   bonus: '1,700,000 BIF', img: 'https://images.pexels.com/photos/9875394/pexels-photo-9875394.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'PV Entry',        amount: '400,000 BIF',   bonus: '2,100,000 BIF', img: 'https://images.pexels.com/photos/8853499/pexels-photo-8853499.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'PV Basic',        amount: '440,000 BIF',   bonus: '2,500,000 BIF', img: 'https://images.pexels.com/photos/9875480/pexels-photo-9875480.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'PV Standard',     amount: '480,000 BIF',   bonus: '3,000,000 BIF', img: 'https://images.pexels.com/photos/9799777/pexels-photo-9799777.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'PV Plus',         amount: '520,000 BIF',   bonus: '3,600,000 BIF', img: 'https://images.pexels.com/photos/7511753/pexels-photo-7511753.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'PV Pro',          amount: '560,000 BIF',   bonus: '4,200,000 BIF', img: 'https://images.pexels.com/photos/5965726/pexels-photo-5965726.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'PV Max',          amount: '600,000 BIF',   bonus: '4,800,000 BIF', img: 'https://images.pexels.com/photos/13591394/pexels-photo-13591394.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Off-Grid Pro',    amount: '640,000 BIF',   bonus: '5,200,000 BIF', img: 'https://images.pexels.com/photos/9875479/pexels-photo-9875479.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Hybrid Pro',      amount: '680,000 BIF',   bonus: '5,600,000 BIF', img: 'https://images.pexels.com/photos/2800832/pexels-photo-2800832.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Grid-Tied Pro',   amount: '720,000 BIF',   bonus: '6,000,000 BIF', img: 'https://images.pexels.com/photos/4218546/pexels-photo-4218546.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Solar Battery',   amount: '760,000 BIF',   bonus: '6,400,000 BIF', img: 'https://images.pexels.com/photos/2480807/pexels-photo-2480807.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Storage Plus',    amount: '800,000 BIF',   bonus: '6,800,000 BIF', img: 'https://images.pexels.com/photos/7034786/pexels-photo-7034786.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Smart Hybrid',    amount: '840,000 BIF',   bonus: '7,100,000 BIF', img: 'https://images.pexels.com/photos/6469811/pexels-photo-6469811.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'PV Ultra',        amount: '880,000 BIF',   bonus: '7,400,000 BIF', img: 'https://images.pexels.com/photos/5981838/pexels-photo-5981838.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Solar Array',     amount: '920,000 BIF',   bonus: '7,600,000 BIF', img: 'https://images.pexels.com/photos/5699665/pexels-photo-5699665.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Solar Plant',     amount: '960,000 BIF',   bonus: '7,800,000 BIF', img: 'https://images.pexels.com/photos/9875450/pexels-photo-9875450.jpeg?auto=compress&cs=tinysrgb&w=400' },
+      { name: 'Commercial Solar', amount: '1,000,000 BIF', bonus: '8,000,000 BIF', img: 'https://images.pexels.com/photos/8853527/pexels-photo-8853527.jpeg?auto=compress&cs=tinysrgb&w=400' }
     ];
 
     const finalData = (data && data.length > 0) ? data : mockPkgs;
@@ -1474,35 +1495,76 @@ class SolarApp {
   }
 
   showWithdrawModal() {
+    const dash = this.state.dashboard;
     const html = `
       <div style="padding: 20px;">
-        <div style="background:#f0fdf4; border:1px solid #dcfce7; padding:16px; border-radius:12px; margin-bottom:20px;">
-          <span style="display:block; font-size:11px; color:#16a34a; font-weight:800; text-transform:uppercase; margin-bottom:4px;">Withdrawable Balance</span>
-          <strong style="font-size:20px; color:#111827;">${this.state.dashboard?.wallet_balance || '1,250,000 BIF'}</strong>
+        <div id="withdraw-balance-card" style="background:#f0fdf4; border:1px solid #dcfce7; padding:16px; border-radius:12px; margin-bottom:20px; transition: all 0.3s ease;">
+          <span id="withdraw-balance-label" style="display:block; font-size:11px; color:#16a34a; font-weight:800; text-transform:uppercase; margin-bottom:4px;">Wallet Balance</span>
+          <strong id="withdraw-balance-value" style="font-size:20px; color:#111827;">${dash?.wallet_balance || '0 FBu'}</strong>
         </div>
+
         <div class="modern-form-group">
-          <label class="modern-form-label">Withdrawal Amount (BIF)</label>
-          <input type="number" id="withdraw-amount" class="modern-form-control" placeholder="Min. 5,000 BIF">
+          <label class="modern-form-label">Withdraw From</label>
+          <select id="withdraw-type" class="modern-form-control" style="cursor:pointer;">
+            <option value="wallet">Main Wallet Balance</option>
+            <option value="bonus">Welcome Bonus Balance</option>
+          </select>
         </div>
-        <button id="submit-withdraw-btn" class="btn btn-green btn-full" style="padding:16px;">Request Withdrawal</button>
+
+        <div class="modern-form-group">
+          <label class="modern-form-label">Withdrawal Amount (FBu)</label>
+          <input type="number" id="withdraw-amount" class="modern-form-control" placeholder="Min. 5,000 FBu">
+        </div>
+        <button id="submit-withdraw-btn" class="btn btn-green btn-full" style="padding:16px; font-weight:800; font-size:15px; margin-top:8px;">Request Withdrawal</button>
+        <p style="font-size: 11px; color: #64748b; text-align: center; margin-top: 16px;">Note: Withdrawals are processed manually by admin within 24 hours.</p>
       </div>
     `;
     this.showModal('Withdraw Funds', html);
+
+    // Dynamic Balance Update
+    const typeSelect = document.getElementById('withdraw-type');
+    typeSelect.onchange = (e) => {
+      const type = e.target.value;
+      const label = document.getElementById('withdraw-balance-label');
+      const val = document.getElementById('withdraw-balance-value');
+      const card = document.getElementById('withdraw-balance-card');
+      
+      if (type === 'bonus') {
+        label.textContent = 'Welcome Bonus Balance';
+        val.textContent = dash?.welcome_bonus || '0 FBu';
+        card.style.background = '#eff6ff';
+        card.style.borderColor = '#dbeafe';
+        label.style.color = '#0b6cff';
+      } else {
+        label.textContent = 'Wallet Balance';
+        val.textContent = dash?.wallet_balance || '0 FBu';
+        card.style.background = '#f0fdf4';
+        card.style.borderColor = '#dcfce7';
+        label.style.color = '#16a34a';
+      }
+    };
+
     document.getElementById('submit-withdraw-btn').onclick = async () => {
       const amount = document.getElementById('withdraw-amount').value;
-      if (!amount || amount < 5000) return this.showToast('Minimum withdrawal is 5,000 BIF', 'warning');
+      const type = document.getElementById('withdraw-type').value;
+
+      if (!amount || amount < 5000) return this.showToast('Minimum withdrawal is 5,000 FBu', 'warning');
       
       const btn = document.getElementById('submit-withdraw-btn');
       btn.disabled = true; btn.textContent = 'Processing...';
       
       const res = await this.fetchAPI('withdrawals', {
         method: 'POST',
-        body: JSON.stringify({ amount: amount + ' BIF' })
+        body: JSON.stringify({ 
+          amount: amount.toLocaleString() + ' FBu',
+          type: type 
+        })
       });
       
       if (res) {
         this.showToast('Withdrawal request submitted!', 'success');
         document.getElementById('app-modal').remove();
+        this.handleRoute(); // Refresh view
       } else {
         btn.disabled = false; btn.textContent = 'Request Withdrawal';
       }
@@ -1900,6 +1962,50 @@ class SolarApp {
         }
       };
     };
+  }
+
+  async approveWithdrawal(id) {
+    const res = await this.fetchAPI(`admin/withdrawals/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ status: 'approved' })
+    });
+    if (res) {
+      this.showToast('Withdrawal approved successfully', 'success');
+      this.hydrateAdmin();
+    }
+  }
+
+  async rejectWithdrawal(id) {
+    const res = await this.fetchAPI(`admin/withdrawals/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ status: 'rejected' })
+    });
+    if (res) {
+      this.showToast('Withdrawal rejected', 'warning');
+      this.hydrateAdmin();
+    }
+  }
+
+  async approveDeposit(id) {
+    const res = await this.fetchAPI(`admin/deposits/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ status: 'approved' })
+    });
+    if (res) {
+      this.showToast('Deposit approved successfully', 'success');
+      this.hydrateAdmin();
+    }
+  }
+
+  async rejectDeposit(id) {
+    const res = await this.fetchAPI(`admin/deposits/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ status: 'rejected' })
+    });
+    if (res) {
+      this.showToast('Deposit rejected', 'warning');
+      this.hydrateAdmin();
+    }
   }
 
   setupIntersections() {

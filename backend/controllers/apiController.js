@@ -150,11 +150,12 @@ exports.getProfile = async (req, res) => {
 exports.getAdminStats = async (req, res) => {
   if (isConfigured) {
     try {
-      const [stats, deposits, packages, usersResult] = await Promise.all([
+      const [stats, deposits, packages, usersResult, withdrawals] = await Promise.all([
         client.from('stats').select('*').limit(1).single(),
         client.from('deposits').select('*').order('created_at', { ascending: false }).limit(20),
         client.from('packages').select('*'),
-        client.from('users').select('*').order('created_at', { ascending: false }).limit(50)
+        client.from('users').select('*').order('created_at', { ascending: false }).limit(50),
+        client.from('withdrawals').select('*').order('created_at', { ascending: false }).limit(50)
       ]);
 
       // Join dashboard balances and profile info (upline) onto users
@@ -186,10 +187,11 @@ exports.getAdminStats = async (req, res) => {
       }
 
       return res.json({
-        metrics: stats.data || { users: enrichedUsers.length, packages: (packages.data||[]).length, deposits: 0, withdrawals: 0, total_payouts: '0 BIF' },
+        metrics: stats.data || { users: enrichedUsers.length, packages: (packages.data||[]).length, deposits: (deposits.data||[]).length, withdrawals: (withdrawals.data||[]).length, total_payouts: '0 BIF' },
         deposits: deposits.data || [],
         packages: packages.data || [],
         users: enrichedUsers,
+        withdrawals: withdrawals.data || [],
         analytics: []
       });
     } catch (err) {
@@ -531,20 +533,44 @@ exports.adminUpdateUser = async (req, res) => {
 
 exports.createWithdrawal = async (req, res) => {
   if (!isConfigured) {
-    return res.status(201).json({ message: 'Withdrawal request submitted (Mock Mode)', data: { status: 'pending', amount: req.body.amount } });
+    return res.status(201).json({ message: 'Withdrawal request submitted (Mock Mode)', data: { status: 'pending', amount: req.body.amount, type: req.body.type || 'wallet' } });
   }
 
   try {
-    const { amount } = req.body;
+    const { amount, type } = req.body; // type: 'wallet' or 'bonus'
+    const userId = req.user.id;
     
-    // 1. Create Withdrawal Record
-    const { data, error } = await client
+    if (!amount || !type) return res.status(400).json({ error: 'Amount and type are required' });
+
+    // 1. Check Balance
+    const { data: dash, error: dashErr } = await adminClient
+      .from('dashboard')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
+
+    if (dashErr) throw dashErr;
+
+    const withdrawAmountNum = parseInt(amount.replace(/[^0-9]/g, '')) || 0;
+    const currentWalletNum = parseInt((dash.wallet_balance || '0').replace(/[^0-9]/g, '')) || 0;
+    const currentBonusNum = parseInt((dash.welcome_bonus || '0').replace(/[^0-9]/g, '')) || 0;
+
+    if (type === 'wallet' && withdrawAmountNum > currentWalletNum) {
+      return res.status(400).json({ error: 'Insufficient wallet balance' });
+    }
+    if (type === 'bonus' && withdrawAmountNum > currentBonusNum) {
+      return res.status(400).json({ error: 'Insufficient welcome bonus balance' });
+    }
+
+    // 2. Create Withdrawal Record
+    const { data, error } = await adminClient
       .from('withdrawals')
       .insert([
         {
-          user_id: req.user.id,
+          user_id: userId,
           user_name: req.user.user_metadata?.full_name || 'User',
           amount,
+          type: type, // 'wallet' or 'bonus'
           status: 'pending'
         }
       ])
@@ -553,18 +579,85 @@ exports.createWithdrawal = async (req, res) => {
 
     if (error) throw error;
 
-    // 2. Also Log in Activity
-    await client.from('activity').insert([{
-      user_id: req.user.id,
-      title: 'Withdrawal Requested',
+    // 3. Log in Activity
+    await adminClient.from('activity').insert([{
+      user_id: userId,
+      title: `Withdrawal (${type})`,
       value: `-${amount}`,
-      description: `Your withdrawal of ${amount} is pending.`,
+      description: `Pending approval by admin.`,
       date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     }]);
 
-    res.status(201).json({ message: 'Withdrawal request submitted', data });
+    res.status(201).json({ message: 'Withdrawal request submitted for approval', data });
 
   } catch (err) {
+    console.error('[Withdrawal] Error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.adminUpdateWithdrawal = async (req, res) => {
+  if (!isConfigured) return res.json({ message: 'Withdrawal status updated (Mock)' });
+
+  try {
+    const { id } = req.params;
+    const { status } = req.body; // 'approved' or 'rejected'
+
+    // 1. Fetch the withdrawal details
+    const { data: withdrawal, error: fetchErr } = await adminClient
+      .from('withdrawals')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (fetchErr) throw fetchErr;
+    if (!withdrawal) return res.status(404).json({ error: 'Withdrawal not found' });
+    if (withdrawal.status !== 'pending') return res.status(400).json({ error: 'Withdrawal already processed' });
+
+    // 2. If approved, deduct from user's dashboard balance
+    if (status === 'approved') {
+      const { data: dash, error: dashErr } = await adminClient
+        .from('dashboard')
+        .select('*')
+        .eq('user_id', withdrawal.user_id)
+        .single();
+
+      if (dashErr) throw dashErr;
+
+      const withdrawAmountNum = parseInt(withdrawal.amount.replace(/[^0-9]/g, '')) || 0;
+      
+      if (withdrawal.type === 'bonus') {
+        const currentBonusNum = parseInt((dash.welcome_bonus || '0').replace(/[^0-9]/g, '')) || 0;
+        const newBonus = `${(currentBonusNum - withdrawAmountNum).toLocaleString()} FBu`;
+        await adminClient.from('dashboard').update({ welcome_bonus: newBonus }).eq('id', dash.id);
+      } else {
+        const currentWalletNum = parseInt((dash.wallet_balance || '0').replace(/[^0-9]/g, '')) || 0;
+        const newWallet = `${(currentWalletNum - withdrawAmountNum).toLocaleString()} FBu`;
+        await adminClient.from('dashboard').update({ wallet_balance: newWallet }).eq('id', dash.id);
+      }
+      
+      // Update activity to "Completed"
+      await adminClient.from('activity').insert([{
+        user_id: withdrawal.user_id,
+        title: 'Withdrawal Approved',
+        value: `-${withdrawal.amount}`,
+        description: `Your ${withdrawal.type} withdrawal was successful.`,
+        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      }]);
+    }
+
+    // 3. Update withdrawal status
+    const { error: updateErr } = await adminClient
+      .from('withdrawals')
+      .update({ status, updated_at: new Date().toISOString() })
+      .eq('id', id);
+
+    if (updateErr) throw updateErr;
+
+    res.json({ message: `Withdrawal ${status} successfully` });
+
+  } catch (err) {
+    console.error('[AdminWithdrawal] Error:', err.message);
     res.status(500).json({ error: err.message });
   }
 };
