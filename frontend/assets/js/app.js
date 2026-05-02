@@ -534,10 +534,7 @@ class SolarApp {
       paymentTable.innerHTML = pmRes.data.map(p => `
         <tr>
           <td><strong>${flags[p.country]||'🌍'} ${p.country}</strong></td>
-          <td style="color:#0b6cff;font-weight:700;">${p.provider}</td>
-          <td style="font-family:monospace;font-weight:700;">${p.dial_code}</td>
-          <td style="color:#16a34a;font-weight:800;font-size:15px;">${p.phone}</td>
-          <td style="font-weight:700;">${p.account_name}</td>
+          <td colspan="4"><div style="max-width:300px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-family:monospace; font-size:12px; color:#64748b; background:#f8fafc; padding:4px 8px; border-radius:6px;">${(p.provider || '').replace(/</g, '&lt;')}</div></td>
           <td style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
             <button onclick="window.app.openEditPaymentModal('${p.id}')" class="btn-admin btn-admin-primary" style="padding:6px 12px;font-size:11px;">Edit</button>
             <button onclick="window.app.deletePaymentMethod('${p.id}')" class="btn-admin" style="background:#fee2e2;color:#dc2626;border:none;padding:6px 12px;font-size:11px;cursor:pointer;">Delete</button>
@@ -556,10 +553,10 @@ class SolarApp {
         const id = document.getElementById('pm-id').value;
         const payload = {
           country: document.getElementById('pm-country').value,
-          provider: document.getElementById('pm-provider').value,
-          dial_code: document.getElementById('pm-dial').value,
-          phone: document.getElementById('pm-phone').value,
-          account_name: document.getElementById('pm-account').value
+          provider: document.getElementById('pm-instructions').value,
+          dial_code: ' ',
+          phone: ' ',
+          account_name: ' '
         };
         const endpoint = id ? `admin/payment-methods/${id}` : 'admin/payment-methods';
         const method = id ? 'PUT' : 'POST';
@@ -602,10 +599,7 @@ class SolarApp {
     document.getElementById('pm-id').value = pm.id;
     document.getElementById('payment-modal-title').textContent = 'Edit Payment Method';
     document.getElementById('pm-country').value = pm.country;
-    document.getElementById('pm-provider').value = pm.provider || '';
-    document.getElementById('pm-dial').value = pm.dial_code || '';
-    document.getElementById('pm-phone').value = pm.phone || '';
-    document.getElementById('pm-account').value = pm.account_name || '';
+    document.getElementById('pm-instructions').value = pm.provider || '';
     document.getElementById('payment-modal-overlay').style.display = 'flex';
   }
   async deletePaymentMethod(id) {
@@ -1589,47 +1583,53 @@ class SolarApp {
       // Fetch dynamic payment info for user's country
       const userCountry = this.state.user?.country || 'Burundi';
       
-      let paymentPhone = '67270398';
-      let paymentAccount = 'RUKUNDO LOAUNGE';
-      let paymentDial = '*163#';
-      let paymentProvider = 'Lumicash';
+      let rawInstructions = '';
       try {
         const pmData = await fetch(`/api/payment-methods?country=${encodeURIComponent(userCountry)}`).then(r => r.json());
         if (pmData?.data?.length > 0) {
-          const pm = pmData.data[0];
-          paymentPhone = pm.phone;
-          paymentAccount = pm.account_name;
-          paymentDial = pm.dial_code;
-          paymentProvider = pm.provider;
+          rawInstructions = pmData.data[0].provider || '';
         }
-      } catch(e) { console.warn('Payment method fetch failed', e); }
+      } catch(e) { console.warn('Payment method fetch failed'); }
 
       const isBurundi = userCountry === 'Burundi';
       const amountRaw = amount.replace(/[^0-9]/g, '');
+      
+      // Smart extraction of variables from the admin's plain text textarea
+      const phoneMatch = rawInstructions.match(/\\b\\d{8,12}\\b/);
+      const paymentPhone = phoneMatch ? phoneMatch[0] : '67270398';
+      
+      const dialMatch = rawInstructions.match(/\\*\\d+[\\*\\d]*#/);
+      const paymentDial = dialMatch ? dialMatch[0] : '*163#';
+      
+      const copySvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+
       const paymentStepsHTML = isBurundi ? `
         <h4 style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:12px;border-bottom:1px solid #e2e8f0;padding-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;">🇧🇮 Uko ugura muri Solar Africa</h4>
         <ol style="margin:0;padding-left:16px;color:#334155;font-size:13.5px;font-weight:600;line-height:1.8;">
           <li>Pfonda <strong>${paymentDial}</strong></li>
           <li>Hitamo <strong>Kurungika</strong></li>
-          <li>Inimero: <span style="display:inline-flex;align-items:center;gap:6px;background:#f0fdf4;padding:2px 8px;border-radius:6px;"><strong style="color:#16a34a;font-size:16px;user-select:all;">${paymentPhone}</strong><button onclick="navigator.clipboard.writeText('${paymentPhone}');window.app?.showToast('Numero yakopiwe!','success');" style="background:none;border:none;color:#16a34a;cursor:pointer;padding:2px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></span></li>
-          <li>Amazina: <strong style="background:#e0f2fe;color:#0369a1;padding:2px 8px;border-radius:4px;font-size:12px;">${paymentAccount}</strong></li>
-          <li>Amahera: <strong style="color:#16a34a;">${amountRaw}</strong> BIF</li>
+          <li>Inimero: <span style="display:inline-flex;align-items:center;gap:6px;background:#f0fdf4;padding:2px 8px;border-radius:6px;"><strong style="color:#16a34a;font-size:16px;user-select:all;">${paymentPhone}</strong><button onclick="navigator.clipboard.writeText('${paymentPhone}');window.app?.showToast('Numero yakopiwe!','success');" style="background:none;border:none;color:#16a34a;cursor:pointer;padding:2px;">${copySvg}</button></span></li>
+          <li>Amazina: <strong style="background:#e0f2fe;color:#0369a1;padding:2px 8px;border-radius:4px;font-size:12px;">RUKUNDO LOAUNGE</strong></li>
+          <li>Amahera: <strong style="color:#16a34a;">${amountRaw}</strong> BIF <button onclick="navigator.clipboard.writeText('${amountRaw}');window.app?.showToast('Amahera yakopiwe!','success');" style="background:none;border:none;color:#16a34a;cursor:pointer;padding:2px;margin-left:4px;">${copySvg}</button></li>
           <li>Hama <strong>Wemeze</strong></li>
         </ol>` : `
-        <h4 style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:12px;border-bottom:1px solid #e2e8f0;padding-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;">📋 How to invest via ${paymentProvider}</h4>
-        <ol style="margin:0;padding-left:16px;color:#334155;font-size:13.5px;font-weight:600;line-height:1.8;">
-          <li>Dial <strong>${paymentDial}</strong> on your phone</li>
-          <li>Select <strong>Send Money</strong></li>
-          <li>Enter number: <span style="display:inline-flex;align-items:center;gap:6px;background:#f0fdf4;padding:2px 8px;border-radius:6px;"><strong style="color:#16a34a;font-size:16px;user-select:all;">${paymentPhone}</strong><button onclick="navigator.clipboard.writeText('${paymentPhone}');window.app?.showToast('Number copied!','success');" style="background:none;border:none;color:#16a34a;cursor:pointer;padding:2px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></span></li>
-          <li>Account name: <strong style="background:#e0f2fe;color:#0369a1;padding:2px 8px;border-radius:4px;font-size:12px;">${paymentAccount}</strong></li>
-          <li>Amount: <strong style="color:#16a34a;">${amountRaw}</strong></li>
-          <li>Confirm and send</li>
-        </ol>`;
+        <h4 style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:12px;border-bottom:1px solid #e2e8f0;padding-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;">📋 Payment Instructions</h4>
+        <div style="white-space: pre-wrap; font-size: 14px; line-height: 1.6; color: #334155; margin-bottom: 16px;">${rawInstructions || 'Please contact support for instructions.'}</div>
+        <div style="background:#f0fdf4; padding:12px; border-radius:8px; display:flex; flex-direction:column; gap:8px; border:1px dashed #22c55e;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:13px; font-weight:600; color:#166534;">Amount to pay:</span>
+            <span style="display:inline-flex;align-items:center;gap:6px;"><strong style="color:#16a34a;font-size:16px;">${amountRaw}</strong><button onclick="navigator.clipboard.writeText('${amountRaw}');window.app?.showToast('Amount copied!','success');" style="background:none;border:none;color:#16a34a;cursor:pointer;padding:2px;">${copySvg}</button></span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:13px; font-weight:600; color:#166534;">Payment Number:</span>
+            <span style="display:inline-flex;align-items:center;gap:6px;"><strong style="color:#16a34a;font-size:16px;">${paymentPhone}</strong><button onclick="navigator.clipboard.writeText('${paymentPhone}');window.app?.showToast('Number copied!','success');" style="background:none;border:none;color:#16a34a;cursor:pointer;padding:2px;">${copySvg}</button></span>
+          </div>
+        </div>`;
 
       card.innerHTML = `
         <div style="text-align:center;">
           <h3 style="font-size:18px;font-weight:800;color:#374151;margin-bottom:12px;">Complete Your Investment</h3>
-          <p style="font-size:13px;color:#64748b;margin-bottom:20px;padding:0 10px;">Securely fund your <strong>${name}</strong> package via <strong>${paymentProvider}</strong>.</p>
+          <p style="font-size:13px;color:#64748b;margin-bottom:20px;padding:0 10px;">Securely fund your <strong>${name}</strong> package.</p>
           <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:16px;text-align:left;margin-bottom:24px;">
             ${paymentStepsHTML}
           </div>
