@@ -224,9 +224,16 @@ class SolarApp {
             ${this.state.user?.name?.substring(0, 2).toUpperCase() || 'U'}
           </div>
           <h2 id="profile-name" class="profile-name">${this.state.user?.name || 'Member User'}</h2>
-          <p id="profile-phone" class="profile-phone">${this.state.user?.phone || '+257 000 000 00'}</p>
+          <p id="profile-phone" class="profile-phone">${this.state.user?.phone || 'No phone number'}</p>
           <div class="profile-country">
-            <img id="profile-flag" src="https://flagcdn.com/w20/${(this.state.user?.country || 'Burundi').toLowerCase().substring(0,2) === 'bu' ? 'bi' : 'rw'}.png" alt="Country" style="width:20px;height:14px;border-radius:2px;">
+            <img id="profile-flag" src="https://flagcdn.com/w40/${(() => {
+              const c = (this.state.user?.country || 'Burundi').toLowerCase();
+              if (c.includes('kenya')) return 'ke';
+              if (c.includes('uganda')) return 'ug';
+              if (c.includes('rwanda')) return 'rw';
+              if (c.includes('tanzania')) return 'tz';
+              return 'bi';
+            })()}.png" alt="Country" style="width:24px;height:16px;border-radius:2px;object-fit:cover;">
             <span id="profile-country-name">${this.state.user?.country || 'Burundi'}</span>
           </div>
         </div>
