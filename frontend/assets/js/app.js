@@ -565,7 +565,7 @@ class SolarApp {
           provider: document.getElementById('pm-instructions').value,
           dial_code: ' ',
           phone: ' ',
-          account_name: ' '
+          account_name: document.getElementById('pm-header').value
         };
         
         // If it's the mock entry, we need to create it instead of updating
@@ -614,6 +614,7 @@ class SolarApp {
     document.getElementById('pm-id').value = pm.id;
     document.getElementById('payment-modal-title').textContent = 'Edit Payment Method';
     document.getElementById('pm-country').value = pm.country;
+    document.getElementById('pm-header').value = pm.account_name || '';
     document.getElementById('pm-instructions').value = pm.provider || '';
     document.getElementById('payment-modal-overlay').style.display = 'flex';
   }
@@ -1613,10 +1614,14 @@ class SolarApp {
       const userCountry = this.state.user?.country || 'Burundi';
       
       let rawInstructions = '';
+      let customHeader = '📋 Payment Instructions';
       try {
         const pmData = await fetch(`/api/payment-methods?country=${encodeURIComponent(userCountry)}`).then(r => r.json());
         if (pmData?.data?.length > 0) {
           rawInstructions = (pmData.data[0].provider || '').replace(/\\n/g, '\n');
+          customHeader = pmData.data[0].account_name || (isBurundi ? '🇧🇮 Uko ugura muri Solar Africa' : '📋 Payment Instructions');
+        } else if (isBurundi) {
+          customHeader = '🇧🇮 Uko ugura muri Solar Africa';
         }
       } catch(e) { console.warn('Payment method fetch failed'); }
 
@@ -1633,7 +1638,7 @@ class SolarApp {
       const copySvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
 
       const paymentStepsHTML = `
-        <h4 style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:12px;border-bottom:1px solid #e2e8f0;padding-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;">📋 Payment Instructions</h4>
+        <h4 style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:12px;border-bottom:1px solid #e2e8f0;padding-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;">${customHeader.replace(/</g, '&lt;')}</h4>
         <div style="white-space: pre-wrap; font-size: 14px; line-height: 1.6; color: #334155; margin-bottom: 16px;">${rawInstructions || 'Please contact support for instructions.'}</div>
         <div style="background:#f0fdf4; padding:12px; border-radius:8px; display:flex; flex-direction:column; gap:8px; border:1px dashed #22c55e;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
