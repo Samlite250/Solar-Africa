@@ -1596,21 +1596,15 @@ class SolarApp {
       // Fallback if no custom instructions are configured
       if (!paymentStepsHTML.trim()) {
         const amountRaw = amount.replace(/[^0-9]/g, '');
-        paymentStepsHTML = `
-          <h4 style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:12px;border-bottom:1px solid #e2e8f0;padding-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;">📋 Payment Instructions</h4>
-          <p style="font-size:13px;color:#334155;line-height:1.6;margin:0;">
-            Please contact support for payment instructions for <strong>${userCountry}</strong>.<br><br>
-            Amount to pay: <strong style="color:#16a34a;">${amountRaw}</strong>
-          </p>`;
+        paymentStepsHTML = `Please contact support for payment instructions for ${userCountry}.\n\nAmount to pay: ${amountRaw}`;
       }
 
+      // We use white-space: pre-wrap to automatically format their plain text just like they typed it
       card.innerHTML = `
         <div style="text-align:center;">
           <h3 style="font-size:18px;font-weight:800;color:#374151;margin-bottom:12px;">Complete Your Investment</h3>
           <p style="font-size:13px;color:#64748b;margin-bottom:20px;padding:0 10px;">Securely fund your <strong>${name}</strong> package.</p>
-          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:16px;text-align:left;margin-bottom:24px;">
-            ${paymentStepsHTML}
-          </div>
+          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:16px;text-align:left;margin-bottom:24px; white-space: pre-wrap; font-size: 14px; line-height: 1.7; color: #334155; font-weight: 500;">${paymentStepsHTML}</div>
           <button id="confirm-payment-btn" class="btn btn-green btn-full" style="padding:16px;font-size:15px;font-weight:800;border-radius:14px;width:100%;border:none;cursor:pointer;margin-bottom:12px;">I Have Paid</button>
           <button id="cancel-payment-btn" style="background:none;border:none;color:#64748b;font-size:13px;font-weight:700;cursor:pointer;padding:8px;">Cancel &amp; Go Back</button>
         </div>
