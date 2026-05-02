@@ -37,6 +37,20 @@ class SolarApp {
     // 2. Route Protection & Hydration
     await this.hydrate();
 
+    // 2.5 Fresh Profile Fetch (Ensures latest country/phone even if localStorage is stale)
+    if (this.state.token) {
+      try {
+        const profile = await this.fetchAPI('profile');
+        if (profile?.data) {
+          this.state.user = { ...this.state.user, ...profile.data };
+          localStorage.setItem('solar_user', JSON.stringify(this.state.user));
+          console.log('[Engine] Profile synchronized with server');
+        }
+      } catch (e) {
+        console.warn('[Engine] Failed to sync profile:', e.message);
+      }
+    }
+
     // 3. Start Notification Polling
     this.startNotificationPolling();
 
@@ -226,14 +240,16 @@ class SolarApp {
           <h2 id="profile-name" class="profile-name">${this.state.user?.name || 'Member User'}</h2>
           <p id="profile-phone" class="profile-phone">${this.state.user?.phone || 'No phone number'}</p>
           <div class="profile-country">
-            <img id="profile-flag" src="https://flagcdn.com/w40/${(() => {
+            ${(() => {
               const c = (this.state.user?.country || 'Burundi').toLowerCase();
-              if (c.includes('kenya')) return 'ke';
-              if (c.includes('uganda')) return 'ug';
-              if (c.includes('rwanda')) return 'rw';
-              if (c.includes('tanzania')) return 'tz';
-              return 'bi';
-            })()}.png" alt="Country" style="width:24px;height:16px;border-radius:2px;object-fit:cover;">
+              if (c.includes('global')) return '<span style="font-size:18px; margin-right:6px;">🌍</span>';
+              let code = 'bi';
+              if (c.includes('kenya')) code = 'ke';
+              else if (c.includes('uganda')) code = 'ug';
+              else if (c.includes('rwanda')) code = 'rw';
+              else if (c.includes('tanzania')) code = 'tz';
+              return `<img id="profile-flag" src="https://flagcdn.com/w40/${code}.png" alt="Country" style="width:24px;height:16px;border-radius:2px;object-fit:cover;">`;
+            })()}
             <span id="profile-country-name">${this.state.user?.country || 'Burundi'}</span>
           </div>
         </div>
