@@ -529,13 +529,14 @@ class SolarApp {
     const pmRes = await this.fetchAPI('payment-methods');
     const paymentTable = document.getElementById('payment-methods-list');
     if (paymentTable && pmRes?.data) {
+      this.paymentMethodsData = pmRes.data; // Store in memory
       const flags = { Burundi:'🇧🇮', Uganda:'🇺🇬', Kenya:'🇰🇪', Rwanda:'🇷🇼', Tanzania:'🇹🇿', Congo:'🇨🇩' };
       paymentTable.innerHTML = pmRes.data.map(p => `
         <tr>
           <td><strong>${flags[p.country]||'🌍'} ${p.country}</strong></td>
           <td colspan="4"><div style="max-width:300px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-family:monospace; font-size:12px; color:#64748b; background:#f8fafc; padding:4px 8px; border-radius:6px;">${(p.provider || '').replace(/</g, '&lt;')}</div></td>
           <td style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
-            <button onclick="window.app.openEditPaymentModal(${p.id},'${p.country}','${(p.provider || '').replace(/'/g, "\\'")}')" class="btn-admin btn-admin-primary" style="padding:6px 12px;font-size:11px;">Edit</button>
+            <button onclick="window.app.openEditPaymentModal(${p.id})" class="btn-admin btn-admin-primary" style="padding:6px 12px;font-size:11px;">Edit</button>
             <button onclick="window.app.deletePaymentMethod(${p.id})" class="btn-admin" style="background:#fee2e2;color:#dc2626;border:none;padding:6px 12px;font-size:11px;cursor:pointer;">Delete</button>
           </td>
         </tr>
@@ -590,11 +591,15 @@ class SolarApp {
     document.getElementById('payment-method-form').reset();
     document.getElementById('payment-modal-overlay').style.display = 'flex';
   }
-  openEditPaymentModal(id, country, provider) {
-    document.getElementById('pm-id').value = id;
+  
+  openEditPaymentModal(id) {
+    const pm = this.paymentMethodsData?.find(p => p.id === id);
+    if (!pm) return;
+    
+    document.getElementById('pm-id').value = pm.id;
     document.getElementById('payment-modal-title').textContent = 'Edit Payment Method';
-    document.getElementById('pm-country').value = country;
-    document.getElementById('pm-instructions').value = provider;
+    document.getElementById('pm-country').value = pm.country;
+    document.getElementById('pm-instructions').value = pm.provider || '';
     document.getElementById('payment-modal-overlay').style.display = 'flex';
   }
   async deletePaymentMethod(id) {
