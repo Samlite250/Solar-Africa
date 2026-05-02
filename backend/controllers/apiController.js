@@ -39,7 +39,7 @@ exports.getDashboard = async (req, res) => {
       console.warn('Supabase fetch error:', err.message);
     }
   }
-  res.json({ data: { wallet_balance: '0 BIF', welcome_bonus: '10,000 BIF', active_package: 'None', total_earnings: '0 BIF' } });
+  res.json({ data: { wallet_balance: '0 BIF', welcome_bonus: '0 BIF', active_package: 'None', total_earnings: '0 BIF' } });
 };
 
 exports.getTeam = async (req, res) => {
@@ -199,8 +199,8 @@ exports.completeTask = async (req, res) => {
       const newEarnings = currentEarnings + rewardVal;
 
       await client.from('dashboard').update({
-        wallet_balance: newWallet.toLocaleString() + ' BIF',
-        total_earnings: newEarnings.toLocaleString() + ' BIF',
+        wallet_balance: newWallet.toLocaleString() + ' FBu',
+        total_earnings: newEarnings.toLocaleString() + ' FBu',
         updated_at: new Date()
       }).eq('user_id', req.user.id);
 
@@ -310,7 +310,7 @@ exports.adminUpdateDeposit = async (req, res) => {
         const newBonus = currentBonus + cleanAmount;
         
         await client.from('dashboard').update({
-          welcome_bonus: newBonus.toLocaleString() + ' BIF',
+          welcome_bonus: newBonus.toLocaleString() + ' FBu',
           active_package: package_name,
           updated_at: new Date()
         }).eq('user_id', user_id);
@@ -318,10 +318,10 @@ exports.adminUpdateDeposit = async (req, res) => {
         // Create dashboard if it doesn't exist
         await client.from('dashboard').insert([{
           user_id,
-          wallet_balance: '0 BIF',
-          welcome_bonus: cleanAmount.toLocaleString() + ' BIF',
+          wallet_balance: '0 FBu',
+          welcome_bonus: cleanAmount.toLocaleString() + ' FBu',
           active_package: package_name,
-          total_earnings: '0 BIF'
+          total_earnings: '0 FBu'
         }]);
       }
 
@@ -352,9 +352,9 @@ exports.adminUpdateBalance = async (req, res) => {
     const { data, error } = await client
       .from('dashboard')
       .update({
-        wallet_balance: wallet_balance || '0 BIF',
-        welcome_bonus: welcome_bonus || '0 BIF',
-        total_earnings: total_earnings || '0 BIF',
+        wallet_balance: wallet_balance || '0 FBu',
+        welcome_bonus: welcome_bonus || '0 FBu',
+        total_earnings: total_earnings || '0 FBu',
         updated_at: new Date()
       })
       .eq('user_id', userId)

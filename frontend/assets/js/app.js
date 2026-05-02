@@ -865,10 +865,10 @@ class SolarApp {
     const data = await this.fetchAPI('dashboard');
     
     // Use Mockup Data if API fails or for initial match
-    this.updateElement('wallet-balance', data?.wallet_balance || '1,250,000 BIF');
-    this.updateElement('welcome-bonus', data?.welcome_bonus || '2,350,000 BIF');
-    this.updateElement('total-earnings', data?.total_earnings || '3,600,000 BIF');
-    this.updateElement('active-package', data?.active_package || 'Mono Starter');
+    this.updateElement('wallet-balance', data?.wallet_balance || '0 FBu');
+    this.updateElement('welcome-bonus', data?.welcome_bonus || '0 FBu');
+    this.updateElement('total-earnings', data?.total_earnings || '0 FBu');
+    this.updateElement('active-package', data?.active_package || 'None');
 
     this.hydrateActivity(data?.activities || [
       { title: 'Welcome Bonus Received', type: 'bonus', date: 'Today, 10:30 AM', value: '+210,000 BIF' },
@@ -970,10 +970,10 @@ class SolarApp {
 
     // Mock video tasks
     const tasks = [
-      { id: 1, title: 'Solar Africa Intro', reward: '500 BIF', duration: 15, videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' },
-      { id: 2, title: 'Clean Energy Ads', reward: '800 BIF', duration: 20, videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' },
-      { id: 3, title: 'Partner Spotlight', reward: '400 BIF', duration: 10, videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' },
-      { id: 4, title: 'Power Grid Expansion', reward: '600 BIF', duration: 18, videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' }
+      { id: 1, title: 'Solar Africa Intro', reward: '3,500 FBu', duration: 15, videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' },
+      { id: 2, title: 'Clean Energy Ads', reward: '3,500 FBu', duration: 20, videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' },
+      { id: 3, title: 'Partner Spotlight', reward: '3,500 FBu', duration: 10, videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' },
+      { id: 4, title: 'Power Grid Expansion', reward: '3,500 FBu', duration: 18, videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' }
     ];
 
     taskList.innerHTML = tasks.map((t, i) => `
@@ -1046,7 +1046,7 @@ class SolarApp {
               const currentVal = parseInt(walletEl.textContent.replace(/[^0-9]/g, ''));
               const rewardVal = parseInt(reward.replace(/[^0-9]/g, ''));
               if (!isNaN(currentVal) && !isNaN(rewardVal)) {
-                  walletEl.textContent = (currentVal + rewardVal).toLocaleString() + ' BIF';
+                  walletEl.textContent = (currentVal + rewardVal).toLocaleString() + ' FBu';
               }
           }
           

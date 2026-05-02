@@ -62,7 +62,7 @@ exports.register = async (req, res) => {
       { 
         user_id: userId, 
         wallet_balance: '0 BIF', 
-        welcome_bonus: '10,000 BIF', 
+        welcome_bonus: '0 BIF', 
         total_earnings: '0 BIF' 
       }
     ]);
