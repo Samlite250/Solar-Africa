@@ -28,7 +28,7 @@ router.post('/admin/packages', protect, apiController.adminCreatePackage);
 router.post('/admin/notifications', protect, apiController.adminPushNotification);
 
 router.delete('/admin/packages/:id', protect, apiController.adminDeletePackage);
-router.put('/admin/users/:userId/balance', protect, apiController.adminUpdateBalance);
+// Admin: Users management is handled by the route on line 26
 
 // Payment Methods
 router.get('/payment-methods', apiController.getPaymentMethods); // Public (users need this)
