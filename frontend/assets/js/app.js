@@ -770,26 +770,19 @@ class SolarApp {
   }
 
   showNotifications() {
-    const list = document.getElementById('notif-list');
-    if (!list) return;
-
-    if (this.state.notifications.length === 0) {
-      list.innerHTML = '<div style="padding:40px;text-align:center;color:#64748b;">No new notifications</div>';
-      return;
-    }
-
-    list.innerHTML = this.state.notifications.map(n => `
-      <div class="notif-item ${n.read ? '' : 'unread'}" onclick="window.app.markAsRead('${n.id}', this)" style="padding: 16px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.2s; ${n.read ? '' : 'background: #f0f7ff;'}">
-        <div style="display: flex; gap: 12px;">
-          <div style="width: 10px; height: 10px; border-radius: 50%; background: ${n.read ? 'transparent' : '#0b6cff'}; margin-top: 4px; flex-shrink: 0;"></div>
-          <div>
-            <strong style="display: block; font-size: 14px; margin-bottom: 2px;">${n.title}</strong>
-            <p style="font-size: 13px; color: #4b5563; line-height: 1.4; margin-bottom: 4px;">${n.message}</p>
-            <span style="font-size: 11px; color: #94a3b8;">${new Date(n.created_at).toLocaleDateString()}</span>
-          </div>
-        </div>
-      </div>
-    `).join('');
+    const notifs = this.state.notifications || [];
+    const notifHTML = notifs.length === 0
+      ? '<div style="padding:40px;text-align:center;color:#64748b;">🔔<br><br>No new notifications</div>'
+      : notifs.map(n => `
+          <div onclick="window.app.markAsRead('${n.id}', this)" style="padding: 16px; border-bottom: 1px solid #f1f5f9; cursor: pointer; background: ${n.read ? 'white' : '#f0f7ff'}; display:flex; gap:12px;">
+            <div style="width:10px;height:10px;border-radius:50%;background:${n.read ? '#e2e8f0' : '#0b6cff'};margin-top:5px;flex-shrink:0;"></div>
+            <div>
+              <strong style="display:block;font-size:14px;margin-bottom:2px;">${n.title}</strong>
+              <p style="font-size:13px;color:#4b5563;line-height:1.4;margin-bottom:4px;">${n.message}</p>
+              <span style="font-size:11px;color:#94a3b8;">${new Date(n.created_at).toLocaleDateString()}</span>
+            </div>
+          </div>`).join('');
+    this.showModal('Notifications', notifHTML);
   }
 
   showModal(title, html) {
@@ -1271,23 +1264,7 @@ class SolarApp {
     };
   }
 
-  showNotifications() {
-    const list = document.getElementById('notif-list');
-    if (!list) return;
-
-    list.innerHTML = this.state.notifications.map(n => `
-      <div class="notif-item ${n.read ? '' : 'unread'}" onclick="window.app.markAsRead('${n.id}', this)" style="padding: 16px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.2s; ${n.read ? '' : 'background: #f0f7ff;'}">
-        <div style="display: flex; gap: 12px;">
-          <div style="width: 10px; height: 10px; border-radius: 50%; background: ${n.read ? 'transparent' : '#0b6cff'}; margin-top: 4px; flex-shrink: 0;"></div>
-          <div>
-            <strong style="display: block; font-size: 14px; margin-bottom: 2px;">${n.title}</strong>
-            <p style="font-size: 13px; color: #4b5563; line-height: 1.4; margin-bottom: 4px;">${n.message}</p>
-            <span style="font-size: 11px; color: #94a3b8;">${new Date(n.created_at).toLocaleDateString()}</span>
-          </div>
-        </div>
-      </div>
-    `).join('');
-  }
+  // showNotifications is defined above (line ~772) — no duplicate needed
 
   async markAsRead(id, el) {
     const notif = this.state.notifications.find(n => n.id == id);
@@ -1306,50 +1283,7 @@ class SolarApp {
     await this.fetchAPI(`notifications/${id}/read`, { method: 'PUT' });
   }
 
-  async hydrateAdmin() {
-    const data = await this.fetchAPI('admin/stats');
-    if (!data) return;
-
-    this.adminData = data;
-    this.hydrateAdminMetrics(data.metrics);
-    this.setupAdminNavigation();
-    this.initTransactionLedger(); // Default tab
-  }
-
-  hydrateAdminMetrics(m) {
-    const map = {
-      'admin-total-users': m.total_users,
-      'admin-total-deposits': (m.total_deposits / 1000).toFixed(1) + 'k',
-      'admin-total-withdrawals': (m.total_withdrawals / 1000).toFixed(1) + 'k'
-    };
-    Object.entries(map).forEach(([id, val]) => {
-      const el = document.getElementById(id);
-      if (el) el.textContent = val;
-    });
-  }
-
-  setupAdminNavigation() {
-    const links = document.querySelectorAll('.sidebar-nav-link[data-target]');
-    const views = document.querySelectorAll('.admin-view');
-
-    links.forEach(link => {
-      link.onclick = (e) => {
-        e.preventDefault();
-        const target = link.dataset.target;
-        
-        links.forEach(l => l.classList.remove('active'));
-        link.classList.add('active');
-        
-        views.forEach(v => v.style.display = 'none');
-        document.getElementById(target).style.display = 'block';
-
-        if (target === 'view-transactions') this.initTransactionLedger();
-        if (target === 'view-users') this.initUserManagement();
-        if (target === 'view-packages') this.initPackageManagement();
-        if (target === 'view-notifications') this.initNotificationAdmin();
-      };
-    });
-  }
+  // hydrateAdmin is defined above (line ~331) — duplicate stubs removed
 
   initNotificationAdmin() {
     const form = document.getElementById('push-notif-form');
@@ -1635,7 +1569,7 @@ class SolarApp {
 
     modal.querySelector('#activate-now-btn').onclick = async () => {
       const card = modal.querySelector('.pkg-detail-card');
-      card.innerHTML = `<div style="text-align:center;padding:20px;"><p style="color:#64748b;">Loading payment info...</p></div>`;
+      card.innerHTML = `<div style="text-align:center;padding:40px;"><div class="spinner" style="margin:0 auto 12px;"></div><p style="color:#64748b;">Loading payment info...</p></div>`;
 
       // Fetch dynamic payment info for user's country
       const userCountry = this.state.user?.country || 'Burundi';
@@ -1654,36 +1588,38 @@ class SolarApp {
         }
       } catch(e) { console.warn('Payment method fetch failed, using defaults'); }
 
+      // Localized payment instructions per country
+      const isBurundi = userCountry === 'Burundi';
+      const amountRaw = amount.replace(/[^0-9]/g, '');
+      const paymentStepsHTML = isBurundi ? `
+        <h4 style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:12px;border-bottom:1px solid #e2e8f0;padding-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;">🇧🇮 Uko ugura muri Solar Africa</h4>
+        <ol style="margin:0;padding-left:16px;color:#334155;font-size:13.5px;font-weight:600;line-height:1.8;">
+          <li>Pfonda <strong>${paymentDial}</strong></li>
+          <li>Hitamo <strong>Kurungika</strong></li>
+          <li>Inimero: <span style="display:inline-flex;align-items:center;gap:6px;background:#f0fdf4;padding:2px 8px;border-radius:6px;"><strong style="color:#16a34a;font-size:16px;user-select:all;">${paymentPhone}</strong><button onclick="navigator.clipboard.writeText('${paymentPhone}');window.app?.showToast('Numero yakopiwe!','success');" style="background:none;border:none;color:#16a34a;cursor:pointer;padding:2px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></span></li>
+          <li>Amazina: <strong style="background:#e0f2fe;color:#0369a1;padding:2px 8px;border-radius:4px;font-size:12px;">${paymentAccount}</strong></li>
+          <li>Amahera: <strong style="color:#16a34a;">${amountRaw}</strong> BIF</li>
+          <li>Hama <strong>Wemeze</strong></li>
+        </ol>` : `
+        <h4 style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:12px;border-bottom:1px solid #e2e8f0;padding-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;">📋 How to invest via ${paymentProvider}</h4>
+        <ol style="margin:0;padding-left:16px;color:#334155;font-size:13.5px;font-weight:600;line-height:1.8;">
+          <li>Dial <strong>${paymentDial}</strong> on your phone</li>
+          <li>Select <strong>Send Money</strong></li>
+          <li>Enter number: <span style="display:inline-flex;align-items:center;gap:6px;background:#f0fdf4;padding:2px 8px;border-radius:6px;"><strong style="color:#16a34a;font-size:16px;user-select:all;">${paymentPhone}</strong><button onclick="navigator.clipboard.writeText('${paymentPhone}');window.app?.showToast('Number copied!','success');" style="background:none;border:none;color:#16a34a;cursor:pointer;padding:2px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></span></li>
+          <li>Account name: <strong style="background:#e0f2fe;color:#0369a1;padding:2px 8px;border-radius:4px;font-size:12px;">${paymentAccount}</strong></li>
+          <li>Amount: <strong style="color:#16a34a;">${amountRaw}</strong></li>
+          <li>Confirm and send</li>
+        </ol>`;
+
       card.innerHTML = `
         <div style="text-align:center;">
-          <h3 style="font-size:18px; font-weight:800; color:#374151; margin-bottom:12px;">Complete Your Investment</h3>
-          <p style="font-size:13px; color:#64748b; margin-bottom:20px; padding:0 10px;">Please follow these steps to securely fund your <strong>${name}</strong> package via <strong>${paymentProvider}</strong>.</p>
-          
-          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:16px; padding:16px; text-align:left; margin-bottom:24px; box-shadow:inset 0 2px 4px rgba(0,0,0,0.02);">
-            <h4 style="font-size:12px; font-weight:800; color:#0f172a; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:10px; text-transform:uppercase; letter-spacing:0.5px;">UKO UGURA MURI SOLAR AFRICA</h4>
-            <ol style="margin:0; padding-left:16px; color:#334155; font-size:13.5px; font-weight:600; line-height:1.7;">
-              <li>Pfonda <strong>${paymentDial}</strong></li>
-              <li>Hitamo <strong>Kurungika</strong></li>
-              <li>Inimero: 
-                <div style="display:inline-flex; align-items:center; gap:6px; background:#f0fdf4; padding:2px 6px; border-radius:6px; margin-top:2px;">
-                  <strong style="color:#16a34a; font-size:16px; user-select:all;" id="payment-number">${paymentPhone}</strong>
-                  <button onclick="navigator.clipboard.writeText('${paymentPhone}'); window.app?.showToast('Number Copied!','success');" style="background:none; border:none; color:#16a34a; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:2px;" title="Copy Number">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                  </button>
-                </div>
-              </li>
-              <li>Amazina: <strong style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-size:12px;">${paymentAccount}</strong></li>
-              <li>Amahera: <strong style="color:#16a34a;">${amount.replace(/[^0-9]/g, '')}</strong> BIF</li>
-              <li>Hama <strong>Wemeze</strong></li>
-            </ol>
+          <h3 style="font-size:18px;font-weight:800;color:#374151;margin-bottom:12px;">Complete Your Investment</h3>
+          <p style="font-size:13px;color:#64748b;margin-bottom:20px;padding:0 10px;">Securely fund your <strong>${name}</strong> package via <strong>${paymentProvider}</strong>.</p>
+          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:16px;text-align:left;margin-bottom:24px;">
+            ${paymentStepsHTML}
           </div>
-
-          <button id="confirm-payment-btn" class="btn btn-green btn-full" style="padding:16px; font-size:15px; font-weight:800; border-radius:14px; width:100%; border:none; cursor:pointer; margin-bottom:12px;">
-            I Have Paid
-          </button>
-          <button id="cancel-payment-btn" style="background:none; border:none; color:#64748b; font-size:13px; font-weight:700; cursor:pointer; padding:8px;">
-            Cancel & Go Back
-          </button>
+          <button id="confirm-payment-btn" class="btn btn-green btn-full" style="padding:16px;font-size:15px;font-weight:800;border-radius:14px;width:100%;border:none;cursor:pointer;margin-bottom:12px;">I Have Paid</button>
+          <button id="cancel-payment-btn" style="background:none;border:none;color:#64748b;font-size:13px;font-weight:700;cursor:pointer;padding:8px;">Cancel &amp; Go Back</button>
         </div>
       `;
 
