@@ -1468,24 +1468,45 @@ class SolarApp {
       return;
     }
 
-    list.innerHTML = data.map(m => `
-      <div class="team-item" style="background: white; border: 1px solid #f1f5f9; padding: 16px; border-radius: 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <div style="width: 40px; height: 40px; background: #eff6ff; color: #3b82f6; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px;">
-            ${m.name.substring(0, 2).toUpperCase()}
-          </div>
-          <div>
-            <strong style="display: block; font-size: 15px; color: #1e293b;">${m.name}</strong>
-            <span style="font-size: 12px; color: #64748b;">Joined ${m.joined}</span>
-            ${m.phone && m.phone !== 'N/A' ? `<a href="tel:${m.phone}" style="display:block; font-size: 12px; color: #0b6cff; font-weight: 700; margin-top: 2px; text-decoration:none;">📞 ${m.phone}</a>` : `<span style="display:block; font-size: 12px; color: #94a3b8;">No phone</span>`}
-          </div>
-        </div>
-        <div style="text-align: right;">
-          <span style="display: block; font-size: 11px; font-weight: 800; color: #16a34a; text-transform: uppercase;">${m.status}</span>
-          <span style="font-size: 13px; font-weight: 700; color: #1e293b;">${m.contribution}</span>
+    list.innerHTML = `
+      <div style="overflow-x: auto; border-radius: 16px; border: 1px solid #e2e8f0; background: white; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.04);">
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+          <thead>
+            <tr style="background: linear-gradient(135deg, #0b6cff 0%, #00b0ff 100%);">
+              <th style="padding: 14px 12px; text-align: center; color: white; font-weight: 800; font-size: 12px; letter-spacing: 0.5px; width: 40px;">#</th>
+              <th style="padding: 14px 12px; text-align: left; color: white; font-weight: 800; font-size: 12px; letter-spacing: 0.5px;">USERNAME</th>
+              <th style="padding: 14px 12px; text-align: left; color: white; font-weight: 800; font-size: 12px; letter-spacing: 0.5px;">PHONE</th>
+              <th style="padding: 14px 12px; text-align: left; color: white; font-weight: 800; font-size: 12px; letter-spacing: 0.5px;">REG DATE</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${data.map((m, i) => `
+              <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
+                <td style="padding: 14px 12px; text-align: center; font-weight: 800; color: #94a3b8; font-size: 12px;">${i + 1}</td>
+                <td style="padding: 14px 12px;">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 34px; height: 34px; background: linear-gradient(135deg, #eff6ff, #dbeafe); color: #3b82f6; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; flex-shrink: 0;">
+                      ${m.name.substring(0, 2).toUpperCase()}
+                    </div>
+                    <strong style="color: #1e293b; font-size: 14px;">${m.name}</strong>
+                  </div>
+                </td>
+                <td style="padding: 14px 12px;">
+                  ${m.phone && m.phone !== 'N/A'
+                    ? `<a href="tel:${m.phone}" style="color: #0b6cff; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 5px;">📞 ${m.phone}</a>`
+                    : `<span style="color: #cbd5e1; font-size: 12px;">—</span>`
+                  }
+                </td>
+                <td style="padding: 14px 12px; color: #64748b; font-size: 12px; white-space: nowrap;">${m.joined}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        <div style="padding: 12px 16px; background: #f8fafc; border-top: 1px solid #f1f5f9; text-align: right; font-size: 12px; color: #94a3b8; font-weight: 600; border-radius: 0 0 16px 16px;">
+          Total: <strong style="color: #1e293b;">${data.length}</strong> member${data.length !== 1 ? 's' : ''}
         </div>
       </div>
-    `).join('');
+    `;
   }
 
   copyRefLink() {
