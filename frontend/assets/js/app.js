@@ -971,12 +971,40 @@ class SolarApp {
     const taskList = document.getElementById('task-list');
     if (!taskList) return;
 
-    // Mock video tasks
+    // Solar business video tasks — real videos from Mixkit free CDN
     const tasks = [
-      { id: 1, title: 'Solar Africa Intro', reward: '3,500 FBu', duration: 15, videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' },
-      { id: 2, title: 'Clean Energy Ads', reward: '3,500 FBu', duration: 20, videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' },
-      { id: 3, title: 'Partner Spotlight', reward: '3,500 FBu', duration: 10, videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' },
-      { id: 4, title: 'Power Grid Expansion', reward: '3,500 FBu', duration: 18, videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' }
+      { 
+        id: 1, 
+        title: '☀️ Solar Farm Aerial View', 
+        reward: '3,500 FBu', 
+        duration: 15, 
+        icon: '🛸',
+        videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-a-field-with-solar-panels-34560-large.mp4'
+      },
+      { 
+        id: 2, 
+        title: '⚡ Solar Panel Installation', 
+        reward: '3,500 FBu', 
+        duration: 20,
+        icon: '🔧',
+        videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-technician-installing-solar-panels-on-a-roof-34553-large.mp4'
+      },
+      { 
+        id: 3, 
+        title: '🌍 Clean Energy Future', 
+        reward: '3,500 FBu', 
+        duration: 15,
+        icon: '🌱',
+        videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-solar-panels-on-a-sunny-day-2394-large.mp4'
+      },
+      { 
+        id: 4, 
+        title: '🔋 Solar Charging Solutions', 
+        reward: '3,500 FBu', 
+        duration: 18,
+        icon: '💡',
+        videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-residential-solar-roof-panels-in-daytime-34554-large.mp4'
+      }
     ];
 
     taskList.innerHTML = tasks.map((t, i) => {
@@ -984,18 +1012,18 @@ class SolarApp {
       return `
         <div class="task-card" style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0; opacity: ${isDone ? '0.6' : '1'};">
           <div style="display: flex; align-items: center; gap: 16px;">
-            <div style="width: 48px; height: 48px; background: #e0f2fe; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #0284c7;">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+            <div style="width: 48px; height: 48px; background: linear-gradient(135deg,#e0f2fe,#bae6fd); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size:22px;">
+              ${t.icon || '☀️'}
             </div>
             <div>
-              <strong style="display: block; font-size: 15px; color: #1e293b; margin-bottom: 2px;">${t.title}</strong>
-              <span style="font-size: 12px; color: #64748b; font-weight: 600;">${t.duration}s • ${t.reward}</span>
+              <strong style="display: block; font-size: 14px; color: #1e293b; margin-bottom: 2px;">${t.title}</strong>
+              <span style="font-size: 12px; color: #64748b; font-weight: 600;">${t.duration}s advert • <span style='color:#16a34a;font-weight:800;'>${t.reward}</span></span>
             </div>
           </div>
           <button onclick="window.app.playTaskVideo('${t.videoUrl}', ${t.duration}, '${t.reward}', this, ${t.id})" 
                   ${isDone ? 'disabled' : ''} 
-                  style="background: ${isDone ? '#94a3b8' : '#16a34a'}; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: ${isDone ? 'default' : 'pointer'}; transition: all 0.2s;">
-            ${isDone ? 'Done' : 'Watch'}
+                  style="background: ${isDone ? '#94a3b8' : 'linear-gradient(135deg,#16a34a,#22c55e)'}; color: white; border: none; padding: 9px 18px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: ${isDone ? 'default' : 'pointer'}; transition: all 0.2s; box-shadow: ${isDone ? 'none' : '0 4px 12px rgba(22,163,74,0.3)'}">
+            ${isDone ? '✓ Done' : '▶ Watch'}
           </button>
         </div>`;
     }).join('');
@@ -1013,6 +1041,12 @@ class SolarApp {
     container.style.display = 'block';
     video.src = url;
     video.load();
+    
+    // Fallback if video fails to load from CDN
+    video.onerror = () => {
+      video.src = 'https://www.w3schools.com/html/mov_bbb.mp4';
+      video.load();
+    };
     
     overlay.style.display = 'flex';
     timerEl.style.display = 'none';
