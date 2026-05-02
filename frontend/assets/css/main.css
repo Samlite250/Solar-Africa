@@ -1042,86 +1042,172 @@ svg[style*="cursor:pointer"] {
 .invite-btn.telegram { background: #0088cc; }
 .invite-btn.more { background: #f1f5f9; color: #333; }
 
-/* Profile Hero */
+/* Profile Hero Premium */
 .profile-hero {
-  background: white;
-  padding: 40px 16px 24px;
+  background: linear-gradient(135deg, #0b6cff 0%, #00d2ff 100%);
+  padding: 48px 20px 32px;
   text-align: center;
-  border-bottom: 1px solid #f1f5f9;
-  margin-bottom: 20px;
+  border-bottom: none;
+  margin-bottom: 0;
+  position: relative;
+  overflow: hidden;
 }
 
-.profile-avatar-img {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  margin-bottom: 12px;
-  border: 3px solid #E3F2FD;
+.profile-hero::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.profile-avatar-initials {
+  width: 90px;
+  height: 90px;
+  background: white;
+  border-radius: 28px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 900;
+  color: #0b6cff;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+  position: relative;
+  z-index: 2;
 }
 
 .profile-name {
-  font-size: 18px;
-  font-weight: 800;
-  margin-bottom: 2px;
+  font-size: 24px;
+  font-weight: 900;
+  color: white;
+  margin-bottom: 4px;
+  position: relative;
+  z-index: 2;
+  font-family: 'Outfit', sans-serif;
 }
 
 .profile-phone {
-  font-size: 13px;
-  color: var(--text-muted);
-  margin-bottom: 8px;
+  font-size: 14px;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 12px;
+  position: relative;
+  z-index: 2;
+  font-weight: 500;
 }
 
-.profile-country {
+.profile-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(8px);
+  padding: 6px 14px;
+  border-radius: 100px;
+  color: white;
   font-size: 12px;
-  font-weight: 600;
-  color: #333;
+  font-weight: 800;
+  border: 1px solid rgba(255,255,255,0.1);
+  margin-top: 8px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Profile Menu Premium */
+.profile-content {
+  background: #f8fafc;
+  margin-top: -24px;
+  border-radius: 32px 32px 0 0;
+  position: relative;
+  z-index: 5;
+  padding: 24px 16px;
+  min-height: 500px;
+}
+
+.profile-section-label {
+  font-size: 11px;
+  font-weight: 900;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin: 24px 0 12px 12px;
 }
 
 .profile-menu {
   background: white;
-  margin: 0 16px;
-  border-radius: 16px;
-  overflow: hidden;
+  border-radius: 20px;
+  margin: 0;
   border: 1px solid #f1f5f9;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
 }
 
 .profile-menu-item {
+  padding: 18px 20px;
+  border-bottom: 1px solid #f8fafc;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 16px 20px;
-  border-bottom: 1px solid #f1f5f9;
-  cursor: pointer;
+  gap: 16px;
+  transition: all 0.2s;
 }
 
-.profile-menu-item:last-child { border-bottom: none; }
-
-.profile-menu-item span {
-  font-size: 14px;
-  font-weight: 600;
-  color: #333;
+.profile-menu-item:active {
+  background: #f8fafc;
 }
 
-.profile-menu-item svg { color: #ccc; }
-
-.logout-btn-red {
+.profile-menu-icon {
+  width: 40px;
+  height: 40px;
+  background: #f0f7ff;
+  color: #0b6cff;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 16px;
-  background: #fef2f2;
-  color: #dc2626;
-  border: 1px solid #fee2e2;
-  border-radius: 16px;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.profile-menu-text {
+  flex: 1;
+}
+
+.profile-menu-text strong {
+  display: block;
   font-size: 15px;
   font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 2px;
+}
+
+.profile-menu-text span {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.logout-btn-premium {
+  background: #fef2f2;
+  color: #ef4444;
+  padding: 18px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 15px;
+  border: 1px solid #fee2e2;
   cursor: pointer;
+  margin-top: 32px;
+  transition: all 0.2s;
+}
+
+.logout-btn-premium:active {
+  background: #fee2e2;
 }
 
 /* =========================================

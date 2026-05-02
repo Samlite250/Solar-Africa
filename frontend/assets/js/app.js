@@ -236,57 +236,95 @@ class SolarApp {
         </div>
       `,
       profile: `
-        <div class="page-header-plain" style="padding: 20px 16px; display: flex; align-items: center; gap: 12px;">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="window.location.hash='#dashboard'"><path d="M15 18l-6-6 6-6"/></svg>
-          <h2 style="font-size: 20px; font-weight: 800;">My Profile</h2>
-        </div>
         <div class="profile-hero">
-          <div id="profile-avatar-initials" style="width: 80px; height: 80px; background: #0b6cff; border-radius: 50%; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 800; color: white; box-shadow: 0 10px 20px rgba(11, 108, 255, 0.2);">
+          <div style="position: absolute; top: 16px; left: 16px; z-index: 10;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" onclick="window.location.hash='#dashboard'" style="cursor:pointer; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));"><path d="M15 18l-6-6 6-6"/></svg>
+          </div>
+          <div class="profile-avatar-initials">
             ${this.state.user?.name?.substring(0, 2).toUpperCase() || 'U'}
           </div>
-          <h2 id="profile-name" class="profile-name">${this.state.user?.name || 'Member User'}</h2>
-          <p id="profile-phone" class="profile-phone">${this.state.user?.phone || 'No phone number'}</p>
-          <div class="profile-country">
+          <h2 class="profile-name">${this.state.user?.name || 'Investor'}</h2>
+          <p class="profile-phone">${this.state.user?.phone || 'No phone number'}</p>
+          
+          <div class="profile-badge">
             ${(() => {
               const c = (this.state.user?.country || 'Burundi').toLowerCase();
-              if (c.includes('global')) return '<span style="font-size:18px; margin-right:6px;">🌍</span>';
+              if (c.includes('global')) return '🌍';
               let code = 'bi';
               if (c.includes('kenya')) code = 'ke';
               else if (c.includes('uganda')) code = 'ug';
               else if (c.includes('rwanda')) code = 'rw';
               else if (c.includes('tanzania')) code = 'tz';
-              return `<img id="profile-flag" src="https://flagcdn.com/w40/${code}.png" alt="Country" style="width:24px;height:16px;border-radius:2px;object-fit:cover;">`;
+              return `<img src="https://flagcdn.com/w40/${code}.png" style="width:18px;height:12px;border-radius:2px;">`;
             })()}
-            <span id="profile-country-name">${this.state.user?.country || 'Burundi'}</span>
+            <span>${this.state.user?.country || 'Burundi'} • VIP Member</span>
           </div>
         </div>
-        <div class="profile-menu">
-          <div class="profile-menu-item" onclick="window.app.editProfile()">
-            <span>Profile Information</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+
+        <div class="profile-content">
+          <h3 class="profile-section-label">Account Settings</h3>
+          <div class="profile-menu">
+            <div class="profile-menu-item" onclick="window.app.editProfile()">
+              <div class="profile-menu-icon" style="background:#e0f2fe; color:#0369a1;">👤</div>
+              <div class="profile-menu-text">
+                <strong>Personal Information</strong>
+                <span>Name, Phone, and Country</span>
+              </div>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="3"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
+            <div class="profile-menu-item" onclick="window.app.showChangePassword()">
+              <div class="profile-menu-icon" style="background:#f1f5f9; color:#475569;">🔒</div>
+              <div class="profile-menu-text">
+                <strong>Security</strong>
+                <span>Update your password</span>
+              </div>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="3"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
           </div>
-          <div class="profile-menu-item" onclick="window.location.hash = '#team'">
-            <span>My Team</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+
+          <h3 class="profile-section-label">Financial & Network</h3>
+          <div class="profile-menu">
+            <div class="profile-menu-item" onclick="window.location.hash = '#team'">
+              <div class="profile-menu-icon" style="background:#f0fdf4; color:#166534;">🤝</div>
+              <div class="profile-menu-text">
+                <strong>My Network</strong>
+                <span>View your downlines & earnings</span>
+              </div>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="3"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
+            <div class="profile-menu-item" onclick="window.app.showDepositHistory()">
+              <div class="profile-menu-icon" style="background:#fff7ed; color:#9a3412;">💰</div>
+              <div class="profile-menu-text">
+                <strong>Deposit History</strong>
+                <span>All your investment records</span>
+              </div>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="3"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
+            <div class="profile-menu-item" onclick="window.app.showWithdrawalHistory()">
+              <div class="profile-menu-icon" style="background:#fef2f2; color:#991b1b;">📤</div>
+              <div class="profile-menu-text">
+                <strong>Withdrawal History</strong>
+                <span>Check your payout status</span>
+              </div>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="3"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
           </div>
-          <div class="profile-menu-item" onclick="window.app.showDepositHistory()">
-          <div class="profile-menu-item" onclick="window.app.showWithdrawalHistory()">
-            <span>Withdrawals</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+
+          <h3 class="profile-section-label">Support & Help</h3>
+          <div class="profile-menu">
+            <div class="profile-menu-item" onclick="window.app.showSupportCenter()">
+              <div class="profile-menu-icon" style="background:#f5f3ff; color:#5b21b6;">🎧</div>
+              <div class="profile-menu-text">
+                <strong>Customer Support</strong>
+                <span>24/7 Assistance via WhatsApp</span>
+              </div>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="3"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
           </div>
-          <div class="profile-menu-item" onclick="window.app.showChangePassword()">
-            <span>Change Password</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-          </div>
-          <div class="profile-menu-item" onclick="window.app.showSupportCenter()">
-            <span>Support Center</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-          </div>
-        </div>
-        <div style="padding: 20px 16px;">
-          <button class="logout-btn-red" id="logout-btn" onclick="window.app.logout()">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transform: rotate(180deg);"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-            Logout
+
+          <button class="logout-btn-premium" onclick="window.app.logout()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transform: rotate(180deg);"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Sign Out
           </button>
         </div>
       `
