@@ -539,8 +539,8 @@ class SolarApp {
           <td style="color:#16a34a;font-weight:800;font-size:15px;">${p.phone}</td>
           <td style="font-weight:700;">${p.account_name}</td>
           <td style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
-            <button onclick="window.app.openEditPaymentModal(${p.id})" class="btn-admin btn-admin-primary" style="padding:6px 12px;font-size:11px;">Edit</button>
-            <button onclick="window.app.deletePaymentMethod(${p.id})" class="btn-admin" style="background:#fee2e2;color:#dc2626;border:none;padding:6px 12px;font-size:11px;cursor:pointer;">Delete</button>
+            <button onclick="window.app.openEditPaymentModal('${p.id}')" class="btn-admin btn-admin-primary" style="padding:6px 12px;font-size:11px;">Edit</button>
+            <button onclick="window.app.deletePaymentMethod('${p.id}')" class="btn-admin" style="background:#fee2e2;color:#dc2626;border:none;padding:6px 12px;font-size:11px;cursor:pointer;">Delete</button>
           </td>
         </tr>
       `).join('');
@@ -596,7 +596,7 @@ class SolarApp {
   }
   
   openEditPaymentModal(id) {
-    const pm = this.paymentMethodsData?.find(p => p.id === id);
+    const pm = this.paymentMethodsData?.find(p => String(p.id) === String(id));
     if (!pm) return;
     
     document.getElementById('pm-id').value = pm.id;
