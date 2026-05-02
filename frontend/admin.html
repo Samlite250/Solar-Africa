@@ -211,7 +211,7 @@
           </div>
           <div class="table-container">
             <table>
-              <thead><tr><th>User</th><th>Email</th><th>Joined</th><th>Balance</th><th>Status</th><th>Actions</th></tr></thead>
+              <thead><tr><th>User</th><th>Email</th><th>Upline</th><th>Joined</th><th>Balance</th><th>Status</th><th>Actions</th></tr></thead>
               <tbody id="full-user-list"></tbody>
             </table>
           </div>
@@ -362,13 +362,40 @@
         <p class="modal-sub" id="balance-modal-user">Loading user...</p>
         <form id="balance-edit-form">
           <input type="hidden" id="balance-user-id">
-          <div class="field">
-            <label>Wallet Balance</label>
-            <input type="text" id="edit-wallet-balance" placeholder="e.g. 500,000 BIF" required>
+          <div class="field-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="field">
+              <label>Full Name</label>
+              <input type="text" id="edit-user-name" required>
+            </div>
+            <div class="field">
+              <label>Email Address</label>
+              <input type="email" id="edit-user-email" required>
+            </div>
+          </div>
+          <div class="field-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="field">
+              <label>Phone Number</label>
+              <input type="text" id="edit-user-phone">
+            </div>
+            <div class="field">
+              <label>Country</label>
+              <input type="text" id="edit-user-country">
+            </div>
           </div>
           <div class="field">
-            <label>Welcome Bonus</label>
-            <input type="text" id="edit-welcome-bonus" placeholder="e.g. 10,000 BIF" required>
+            <label>Upline (Referred By)</label>
+            <input type="text" id="edit-user-upline" placeholder="Username of referrer">
+          </div>
+          <div style="margin:20px 0 10px;padding-top:15px;border-top:1px solid #f1f5f9;font-weight:700;color:#0b6cff;font-size:12px;letter-spacing:1px;text-transform:uppercase;">Financial Balances</div>
+          <div class="field-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="field">
+              <label>Wallet Balance</label>
+              <input type="text" id="edit-wallet-balance" placeholder="e.g. 500,000 BIF" required>
+            </div>
+            <div class="field">
+              <label>Welcome Bonus</label>
+              <input type="text" id="edit-welcome-bonus" placeholder="e.g. 10,000 BIF" required>
+            </div>
           </div>
           <div class="field">
             <label>Total Earnings</label>

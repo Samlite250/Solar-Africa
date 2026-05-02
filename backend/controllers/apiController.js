@@ -157,22 +157,30 @@ exports.getAdminStats = async (req, res) => {
         client.from('users').select('*').order('created_at', { ascending: false }).limit(50)
       ]);
 
-      // Join dashboard balances onto users
+      // Join dashboard balances and profile info (upline) onto users
       let enrichedUsers = usersResult.data || [];
       if (enrichedUsers.length > 0) {
         const userIds = enrichedUsers.map(u => u.user_id).filter(Boolean);
         if (userIds.length > 0) {
-          const { data: dashboards } = await client
-            .from('dashboard')
-            .select('user_id, wallet_balance, welcome_bonus, total_earnings')
-            .in('user_id', userIds);
+          const [dashboardsRes, profilesRes] = await Promise.all([
+            client.from('dashboard').select('user_id, wallet_balance, welcome_bonus, total_earnings').in('user_id', userIds),
+            client.from('profiles').select('user_id, referred_by, email, phone').in('user_id', userIds)
+          ]);
+
           const dashMap = {};
-          (dashboards || []).forEach(d => { dashMap[d.user_id] = d; });
+          (dashboardsRes.data || []).forEach(d => { dashMap[d.user_id] = d; });
+          
+          const profMap = {};
+          (profilesRes.data || []).forEach(p => { profMap[p.user_id] = p; });
+
           enrichedUsers = enrichedUsers.map(u => ({
             ...u,
-            wallet_balance: dashMap[u.user_id]?.wallet_balance || '0 BIF',
-            welcome_bonus: dashMap[u.user_id]?.welcome_bonus || '0 BIF',
-            total_earnings: dashMap[u.user_id]?.total_earnings || '0 BIF'
+            email: profMap[u.user_id]?.email || u.email,
+            phone: profMap[u.user_id]?.phone || u.phone,
+            upline: profMap[u.user_id]?.referred_by || 'Solar Africa',
+            wallet_balance: dashMap[u.user_id]?.wallet_balance || '0 FBu',
+            welcome_bonus: dashMap[u.user_id]?.welcome_bonus || '0 FBu',
+            total_earnings: dashMap[u.user_id]?.total_earnings || '0 FBu'
           }));
         }
       }
@@ -424,46 +432,46 @@ exports.adminUpdateDeposit = async (req, res) => {
   }
 };
 
-// Admin: Update user balance
-exports.adminUpdateBalance = async (req, res) => {
+// Admin: Update user details (Balance, Email, Upline, etc)
+exports.adminUpdateUser = async (req, res) => {
   if (!isConfigured) return res.status(503).json({ error: 'Supabase not configured' });
   
   try {
-    const { userId } = req.params;
-    const { wallet_balance, welcome_bonus, total_earnings } = req.body;
+    const { id } = req.params; // This is the user_id
+    const { 
+      name, email, phone, country, referred_by, 
+      wallet_balance, welcome_bonus, total_earnings, status 
+    } = req.body;
     
-    const { data, error } = await adminClient
-      .from('dashboard')
-      .update({
+    // 1. Update Profiles table
+    await adminClient.from('profiles').update({
+      name, email, phone, country, referred_by, updated_at: new Date()
+    }).eq('user_id', id);
+
+    // 2. Update Dashboard table
+    const { error: dashErr } = await adminClient.from('dashboard').update({
+      wallet_balance: wallet_balance || '0 FBu',
+      welcome_bonus: welcome_bonus || '0 FBu',
+      total_earnings: total_earnings || '0 FBu',
+      updated_at: new Date()
+    }).eq('user_id', id);
+
+    if (dashErr && dashErr.code === 'PGRST116') {
+      // Create if missing
+      await adminClient.from('dashboard').insert([{
+        user_id: id,
         wallet_balance: wallet_balance || '0 FBu',
         welcome_bonus: welcome_bonus || '0 FBu',
-        total_earnings: total_earnings || '0 FBu',
-        updated_at: new Date()
-      })
-      .eq('user_id', userId)
-      .select()
-      .single();
-    
-    if (error) {
-      // If no dashboard row exists, create one
-      if (error.code === 'PGRST116') {
-        const { data: newDash, error: insertErr } = await client
-          .from('dashboard')
-          .insert([{
-            user_id: userId,
-            wallet_balance: wallet_balance || '0 BIF',
-            welcome_bonus: welcome_bonus || '0 BIF',
-            total_earnings: total_earnings || '0 BIF'
-          }])
-          .select()
-          .single();
-        if (insertErr) throw insertErr;
-        return res.json({ message: 'Balance created and set', data: newDash });
-      }
-      throw error;
+        total_earnings: total_earnings || '0 FBu'
+      }]);
     }
+
+    // 3. Update Users table (admin metadata)
+    await adminClient.from('users').update({
+      name, email, country, status, updated_at: new Date()
+    }).eq('user_id', id);
     
-    res.json({ message: 'Balance updated successfully', data });
+    res.json({ message: 'User updated successfully' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

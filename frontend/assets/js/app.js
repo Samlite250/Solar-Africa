@@ -393,11 +393,12 @@ class SolarApp {
             <strong style="color:#0f172a;">${u.name}</strong>
           </div></td>
           <td style="color:#64748b;font-size:13px;">${u.email||'N/A'}</td>
+          <td style="color:#0b6cff;font-size:12px;font-weight:700;">${u.upline||'Solar Africa'}</td>
           <td style="color:#64748b;font-size:13px;">${new Date(u.created_at).toLocaleDateString()}</td>
-          <td style="color:#10b981;font-weight:700;">${u.wallet_balance||'0 BIF'}</td>
+          <td style="color:#10b981;font-weight:700;">${u.wallet_balance||'0 FBu'}</td>
           <td><span style="background:${u.status==='active'?'#dcfce7':'#fee2e2'};color:${u.status==='active'?'#16a34a':'#dc2626'};padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;">${(u.status||'active').toUpperCase()}</span></td>
           <td style="display:flex;gap:6px;flex-wrap:wrap;">
-            <button onclick="window.app.openBalanceModal('${u.user_id}', '${u.name}', '${u.wallet_balance||'0 BIF'}', '${u.welcome_bonus||'0 BIF'}', '${u.total_earnings||'0 BIF'}')" class="btn-admin btn-admin-primary" style="padding:6px 12px;font-size:11px;">Edit Balance</button>
+            <button onclick="window.app.openBalanceModal('${u.user_id}', '${u.name}', '${u.wallet_balance||'0 FBu'}', '${u.welcome_bonus||'0 FBu'}', '${u.total_earnings||'0 FBu'}', '${u.email||''}', '${u.phone||''}', '${u.country||''}', '${u.upline||''}')" class="btn-admin btn-admin-primary" style="padding:6px 12px;font-size:11px;">Edit User</button>
             <button onclick="window.app.toggleUserStatus(${u.id}, '${u.status==='active'?'suspended':'active'}')" class="btn-admin ${u.status==='active'?'btn-admin-outline':'btn-admin-primary'}" style="padding:6px 12px;font-size:11px;">${u.status==='active'?'Suspend':'Activate'}</button>
           </td>
         </tr>
@@ -500,7 +501,7 @@ class SolarApp {
       logoutBtn.dataset.bound = 'true';
     }
 
-    // 10. Bind Balance Edit Form
+    // 10. Bind User Edit Form (Profile + Balance)
     const balanceForm = document.getElementById('balance-edit-form');
     if (balanceForm && !balanceForm.dataset.bound) {
       balanceForm.addEventListener('submit', async (e) => {
@@ -508,15 +509,24 @@ class SolarApp {
         const btn = e.target.querySelector('.btn-save');
         btn.disabled = true; btn.textContent = 'Saving...';
         const userId = document.getElementById('balance-user-id').value;
-        const wallet_balance = document.getElementById('edit-wallet-balance').value;
-        const welcome_bonus = document.getElementById('edit-welcome-bonus').value;
-        const total_earnings = document.getElementById('edit-total-earnings').value;
-        const res = await this.fetchAPI(`admin/users/${userId}/balance`, {
+        
+        const payload = {
+          name: document.getElementById('edit-user-name').value,
+          email: document.getElementById('edit-user-email').value,
+          phone: document.getElementById('edit-user-phone').value,
+          country: document.getElementById('edit-user-country').value,
+          referred_by: document.getElementById('edit-user-upline').value,
+          wallet_balance: document.getElementById('edit-wallet-balance').value,
+          welcome_bonus: document.getElementById('edit-welcome-bonus').value,
+          total_earnings: document.getElementById('edit-total-earnings').value
+        };
+
+        const res = await this.fetchAPI(`admin/users/${userId}`, {
           method: 'PUT',
-          body: JSON.stringify({ wallet_balance, welcome_bonus, total_earnings })
+          body: JSON.stringify(payload)
         });
         if (res) {
-          this.showToast('User balance updated successfully!', 'success');
+          this.showToast('User profile updated successfully!', 'success');
           document.getElementById('balance-modal-overlay').style.display = 'none';
           this.hydrateAdmin();
         }
@@ -681,12 +691,22 @@ class SolarApp {
   }
 
   // Admin Actions
-  openBalanceModal(userId, name, walletBalance, welcomeBonus, totalEarnings) {
+  openBalanceModal(userId, name, walletBalance, welcomeBonus, totalEarnings, email, phone, country, upline) {
     document.getElementById('balance-user-id').value = userId;
-    document.getElementById('balance-modal-user').textContent = `Editing balances for: ${name}`;
+    document.getElementById('balance-modal-user').textContent = `Editing profile: ${name}`;
+    
+    // Profile Fields
+    document.getElementById('edit-user-name').value = name || '';
+    document.getElementById('edit-user-email').value = email || '';
+    document.getElementById('edit-user-phone').value = phone || '';
+    document.getElementById('edit-user-country').value = country || '';
+    document.getElementById('edit-user-upline').value = upline || '';
+    
+    // Balance Fields
     document.getElementById('edit-wallet-balance').value = walletBalance;
     document.getElementById('edit-welcome-bonus').value = welcomeBonus;
     document.getElementById('edit-total-earnings').value = totalEarnings;
+    
     document.getElementById('balance-modal-overlay').style.display = 'flex';
   }
 
