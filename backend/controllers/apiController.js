@@ -301,64 +301,6 @@ exports.getActivity = async (req, res) => {
   res.json({ data: [] });
 };
 
-exports.completeTask = async (req, res) => {
-  if (!isConfigured) return res.status(200).json({ message: 'Task completed (Mock)' });
-
-  try {
-    const { reward, taskId } = req.body;
-    if (!taskId) return res.status(400).json({ error: 'Task ID required' });
-
-    // 1. Check if already completed (use adminClient to bypass RLS)
-    const { data: existing } = await adminClient
-      .from('completed_tasks')
-      .select('*')
-      .eq('user_id', req.user.id)
-      .eq('task_id', taskId)
-      .single();
-
-    if (existing) {
-      return res.status(400).json({ error: 'You have already completed this task today.' });
-    }
-
-    // 2. Parse reward correctly (remove commas)
-    const rewardVal = parseFloat(reward.replace(/,/g, '').replace(/[^0-9.]/g, ''));
-
-    // 3. Fetch current dashboard
-    const { data: dash } = await adminClient.from('dashboard').select('*').eq('user_id', req.user.id).single();
-    
-    if (dash) {
-      const currentWallet = parseFloat(dash.wallet_balance.replace(/,/g, '').replace(/[^0-9.]/g, '')) || 0;
-      const newWallet = currentWallet + rewardVal;
-      const currentEarnings = parseFloat(dash.total_earnings.replace(/,/g, '').replace(/[^0-9.]/g, '')) || 0;
-      const newEarnings = currentEarnings + rewardVal;
-
-      await adminClient.from('dashboard').update({
-        wallet_balance: newWallet.toLocaleString() + ' FBu',
-        total_earnings: newEarnings.toLocaleString() + ' FBu',
-        updated_at: new Date()
-      }).eq('user_id', req.user.id);
-
-      // 4. Log activity
-      await adminClient.from('activity').insert([{
-        user_id: req.user.id,
-        title: 'Task Earned',
-        value: `+${reward}`,
-        description: `Earned ${reward} from watching an advert.`,
-        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-      }]);
-
-      // 5. Mark as completed
-      await adminClient.from('completed_tasks').insert([{
-        user_id: req.user.id,
-        task_id: taskId
-      }]);
-    }
-
-    res.json({ message: 'Task reward credited' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
 
 exports.createDeposit = async (req, res) => {
   if (!isConfigured) {
@@ -892,10 +834,10 @@ exports.deletePaymentMethod = async (req, res) => {
 // ─── VIDEO TASKS CRUD ───────────────────────────────────────────────────────
 
 const DEFAULT_TASKS = [
-  { id: 1, icon: '☀️', title: 'Solar Africa: The Renewable Revolution',    video_url: 'https://res.cloudinary.com/demo/video/fetch/https://videos.pexels.com/video-files/4255157/4255157-sd_640_360_25fps.mp4', duration: 15, reward: '3,500 FBu' },
-  { id: 2, icon: '⚡', title: 'Smart Energy: Professional Solar Tech',   video_url: 'https://res.cloudinary.com/demo/video/fetch/https://videos.pexels.com/video-files/4255013/4255013-sd_640_360_25fps.mp4', duration: 20, reward: '3,500 FBu' },
-  { id: 3, icon: '🌍', title: 'Clean Power: Sustaining Our Planet',     video_url: 'https://res.cloudinary.com/demo/video/fetch/https://videos.pexels.com/video-files/4255154/4255154-sd_640_360_25fps.mp4', duration: 15, reward: '3,500 FBu' },
-  { id: 4, icon: '🔋', title: 'Future Storage: Next-Gen Batteries',  video_url: 'https://res.cloudinary.com/demo/video/fetch/https://videos.pexels.com/video-files/3125907/3125907-sd_640_360_25fps.mp4', duration: 18, reward: '3,500 FBu' }
+  { id: 1, icon: '☀️', title: 'Solar Africa: The Renewable Revolution',    video_url: 'https://www.w3schools.com/html/mov_bbb.mp4', duration: 15, reward: '3,500 FBu' },
+  { id: 2, icon: '⚡', title: 'Smart Energy: Professional Solar Tech',   video_url: 'https://www.w3schools.com/html/horse.mp4', duration: 20, reward: '3,500 FBu' },
+  { id: 3, icon: '🌍', title: 'Clean Power: Sustaining Our Planet',     video_url: 'https://www.w3schools.com/tags/movie.mp4', duration: 15, reward: '3,500 FBu' },
+  { id: 4, icon: '🔋', title: 'Future Storage: Next-Gen Batteries',  video_url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4', duration: 18, reward: '3,500 FBu' }
 ];
 
 // GET: Public — list all active tasks (with default fallback and auto-migration)
@@ -1044,7 +986,20 @@ exports.completeTask = async (req, res) => {
 
     console.log(`[TaskComplete] User ${userId} completed task ${taskId} for reward ${reward}`);
 
-    // 1. Fetch current dashboard stats
+    // 1. Check if already completed (Critical Security Fix)
+    const { data: existing } = await adminClient
+      .from('completed_tasks')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('task_id', taskId)
+      .single();
+
+    if (existing) {
+      console.warn(`[TaskComplete] User ${userId} tried to double-claim task ${taskId}`);
+      return res.status(400).json({ error: 'You have already completed this task today.' });
+    }
+
+    // 2. Fetch current dashboard stats
     const { data: dashboards, error: dashErr } = await adminClient
       .from('dashboard')
       .select('*')
@@ -1102,16 +1057,13 @@ exports.completeTask = async (req, res) => {
       }
     }
 
-    // 4. Log Activity
-    const { error: actErr } = await adminClient.from('activity').insert([{
+    // 5. Mark as Completed (Critical Security Fix)
+    const { error: completeErr } = await adminClient.from('completed_tasks').insert([{
       user_id: userId,
-      title: 'Task Reward',
-      value: `+${reward}`,
-      description: `Completed video task #${taskId}`,
-      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      task_id: taskId
     }]);
 
-    if (actErr) console.warn('[TaskComplete] Activity log failed but reward was credited:', actErr.message);
+    if (completeErr) console.error('[TaskComplete] Failed to record completion:', completeErr);
 
     res.json({ message: 'Task completed successfully', balance: newBalance });
   } catch (err) {
