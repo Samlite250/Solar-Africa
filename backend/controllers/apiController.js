@@ -49,12 +49,17 @@ exports.getDashboard = async (req, res) => {
           currentDash = newDash;
         }
 
-        // 2. Fetch completed tasks
+        // 2. Fetch completed tasks (TODAY ONLY)
         let completedIds = [];
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
         const { data: completed } = await client
           .from('completed_tasks')
           .select('task_id')
-          .eq('user_id', req.user.id);
+          .eq('user_id', req.user.id)
+          .gte('created_at', today.toISOString());
+          
         if (completed) completedIds = completed.map(c => c.task_id);
 
         // 3. Fetch REAL activities
@@ -1008,15 +1013,19 @@ exports.completeTask = async (req, res) => {
       return res.json({ message: 'Task completed (Mock)', balance: '0 FBu' });
     }
 
-    // 1. Check if already completed (CRITICAL SECURITY)
+    // 1. Check if already completed TODAY (CRITICAL SECURITY)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     const { data: existing, error: checkErr } = await adminClient
       .from('completed_tasks')
       .select('*')
       .eq('user_id', userId)
-      .eq('task_id', taskId);
+      .eq('task_id', taskId)
+      .gte('created_at', today.toISOString());
 
     if (existing && existing.length > 0) {
-      return res.status(400).json({ error: 'You have already completed this task.' });
+      return res.status(400).json({ error: 'You have already completed this task today.' });
     }
 
     // 2. Fetch Dashboard
