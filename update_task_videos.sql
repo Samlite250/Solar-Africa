@@ -1,19 +1,24 @@
--- 1st Video
-UPDATE tasks 
-SET video_url = 'https://videos.pexels.com/video-files/4255157/4255157-sd_640_360_25fps.mp4'
-WHERE id = (SELECT id FROM tasks ORDER BY id ASC LIMIT 1 OFFSET 0);
+-- UPDATE ACTIVE TASKS TO GOOGLE CLOUD SAMPLE MEDIA
 
--- 2nd Video
+-- 1st Active Video
 UPDATE tasks 
-SET video_url = 'https://videos.pexels.com/video-files/4255013/4255013-sd_640_360_25fps.mp4'
-WHERE id = (SELECT id FROM tasks ORDER BY id ASC LIMIT 1 OFFSET 1);
+SET video_url = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
+WHERE id = (SELECT id FROM tasks WHERE active = true ORDER BY id ASC LIMIT 1 OFFSET 0);
 
--- 3rd Video
+-- 2nd Active Video
 UPDATE tasks 
-SET video_url = 'https://videos.pexels.com/video-files/4255154/4255154-sd_640_360_25fps.mp4'
-WHERE id = (SELECT id FROM tasks ORDER BY id ASC LIMIT 1 OFFSET 2);
+SET video_url = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4'
+WHERE id = (SELECT id FROM tasks WHERE active = true ORDER BY id ASC LIMIT 1 OFFSET 1);
 
--- 4th Video
+-- 3rd Active Video
 UPDATE tasks 
-SET video_url = 'https://videos.pexels.com/video-files/3125907/3125907-sd_640_360_25fps.mp4'
-WHERE id = (SELECT id FROM tasks ORDER BY id ASC LIMIT 1 OFFSET 3);
+SET video_url = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4'
+WHERE id = (SELECT id FROM tasks WHERE active = true ORDER BY id ASC LIMIT 1 OFFSET 2);
+
+-- 4th Active Video
+UPDATE tasks 
+SET video_url = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4'
+WHERE id = (SELECT id FROM tasks WHERE active = true ORDER BY id ASC LIMIT 1 OFFSET 3);
+
+-- Verify the update
+SELECT id, title, video_url, active FROM tasks WHERE active = true;
