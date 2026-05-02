@@ -781,3 +781,38 @@ exports.adminDeleteTask = async (req, res) => {
   }
 };
 
+// POST: Admin — upload a video file to Supabase Storage
+exports.adminUploadVideo = async (req, res) => {
+  if (!isConfigured) return res.status(503).json({ error: 'Supabase not configured' });
+  if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+
+  try {
+    const file = req.file;
+    const fileExt = file.originalname.split('.').pop();
+    const fileName = `${Date.now()}.${fileExt}`;
+    const filePath = `tasks/${fileName}`;
+
+    // Upload to Supabase Storage (videos bucket)
+    const { data, error } = await adminClient
+      .storage
+      .from('videos')
+      .upload(filePath, file.buffer, {
+        contentType: file.mimetype,
+        upsert: false
+      });
+
+    if (error) throw error;
+
+    // Get public URL
+    const { data: { publicUrl } } = adminClient
+      .storage
+      .from('videos')
+      .getPublicUrl(filePath);
+
+    res.json({ message: 'Video uploaded successfully', url: publicUrl });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+

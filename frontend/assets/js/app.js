@@ -616,12 +616,50 @@ class SolarApp {
       taskForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const btn = e.target.querySelector('.btn-save');
+        const uploadStatus = document.getElementById('upload-status');
+        const videoFileInput = document.getElementById('task-video-file');
+        
         btn.disabled = true; btn.textContent = 'Saving...';
+        
+        let videoUrl = document.getElementById('task-video-url').value;
+        
+        // 1. Handle file upload if present
+        if (videoFileInput.files && videoFileInput.files[0]) {
+            uploadStatus.style.display = 'block';
+            uploadStatus.textContent = '⏳ Uploading video file...';
+            
+            const formData = new FormData();
+            formData.append('video', videoFileInput.files[0]);
+            
+            try {
+                const uploadRes = await fetch(`${this.apiBase}/admin/tasks/upload`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${this.state.token}` },
+                    body: formData
+                });
+                const uploadData = await uploadRes.json();
+                if (!uploadRes.ok) throw new Error(uploadData.error || 'Upload failed');
+                videoUrl = uploadData.url;
+                uploadStatus.textContent = '✅ Upload complete!';
+            } catch (err) {
+                this.showToast(err.message, 'error');
+                btn.disabled = false; btn.textContent = 'Save Task';
+                uploadStatus.style.display = 'none';
+                return;
+            }
+        }
+
+        if (!videoUrl || videoUrl.startsWith('File selected:')) {
+            this.showToast('Please provide a video URL or upload a file.', 'error');
+            btn.disabled = false; btn.textContent = 'Save Task';
+            return;
+        }
+
         const id = document.getElementById('task-id').value;
         const payload = {
           icon: document.getElementById('task-icon').value,
           title: document.getElementById('task-title').value,
-          video_url: document.getElementById('task-video-url').value,
+          video_url: videoUrl,
           duration: document.getElementById('task-duration').value,
           reward: document.getElementById('task-reward').value
         };
@@ -632,6 +670,8 @@ class SolarApp {
           this.showToast(id ? 'Task updated!' : 'Task created!', 'success');
           document.getElementById('task-modal-overlay').style.display = 'none';
           e.target.reset();
+          document.getElementById('task-video-url').readOnly = false;
+          uploadStatus.style.display = 'none';
           this.hydrateAdmin();
         }
         btn.disabled = false; btn.textContent = 'Save Task';
@@ -698,6 +738,8 @@ class SolarApp {
     document.getElementById('task-icon').value = '☀️';
     document.getElementById('task-reward').value = '3,500 FBu';
     document.getElementById('task-duration').value = '15';
+    document.getElementById('task-video-url').readOnly = false;
+    document.getElementById('upload-status').style.display = 'none';
     document.getElementById('task-modal-overlay').style.display = 'flex';
   }
 
@@ -711,6 +753,8 @@ class SolarApp {
     document.getElementById('task-video-url').value = task.video_url || '';
     document.getElementById('task-duration').value = task.duration || 15;
     document.getElementById('task-reward').value = task.reward || '3,500 FBu';
+    document.getElementById('task-video-url').readOnly = false;
+    document.getElementById('upload-status').style.display = 'none';
     document.getElementById('task-modal-overlay').style.display = 'flex';
   }
 

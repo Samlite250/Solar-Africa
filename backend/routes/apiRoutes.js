@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const apiController = require('../controllers/apiController');
 const { protect } = require('../controllers/authController');
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage() });
 
 router.get('/status', apiController.getStatus);
 router.get('/packages', apiController.getPackages);
@@ -39,5 +41,6 @@ router.get('/tasks', apiController.getTasks);                           // Publi
 router.post('/admin/tasks', protect, apiController.adminCreateTask);
 router.put('/admin/tasks/:id', protect, apiController.adminUpdateTask);
 router.delete('/admin/tasks/:id', protect, apiController.adminDeleteTask);
+router.post('/admin/tasks/upload', protect, upload.single('video'), apiController.adminUploadVideo);
 
 module.exports = router;
