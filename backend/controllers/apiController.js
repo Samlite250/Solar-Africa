@@ -861,3 +861,75 @@ exports.adminUploadVideo = async (req, res) => {
 };
 
 
+
+// POST: User completes a task and earns a reward
+exports.completeTask = async (req, res) => {
+  if (!isConfigured) return res.json({ message: 'Mock Reward credited' });
+  
+  try {
+    const { taskId, reward } = req.body;
+    const userId = req.user.id;
+
+    // 1. Verify user has at least one approved deposit (investment)
+    const { data: approvedDeposits, error: depErr } = await client
+      .from('deposits')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('status', 'approved')
+      .limit(1);
+
+    if (depErr) throw depErr;
+    if (!approvedDeposits || approvedDeposits.length === 0) {
+      return res.status(403).json({ error: 'You must have an approved investment package to earn task rewards.' });
+    }
+
+    // 2. Fetch current dashboard stats
+    const { data: dash, error: dashErr } = await adminClient
+      .from('dashboard')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
+
+    if (dashErr && dashErr.code !== 'PGRST116') throw dashErr;
+
+    const rewardValueNum = parseInt(reward.replace(/[^0-9]/g, '')) || 0;
+    
+    let currentBalanceNum = 0;
+    let currentEarningsNum = 0;
+    
+    if (dash) {
+      currentBalanceNum = parseInt((dash.wallet_balance || '0').replace(/[^0-9]/g, '')) || 0;
+      currentEarningsNum = parseInt((dash.total_earnings || '0').replace(/[^0-9]/g, '')) || 0;
+    }
+
+    // 3. Calculate new totals
+    const newBalance = `${(currentBalanceNum + rewardValueNum).toLocaleString()} FBu`;
+    const newEarnings = `${(currentEarningsNum + rewardValueNum).toLocaleString()} FBu`;
+
+    // 4. Update Dashboard
+    const { error: updateErr } = await adminClient
+      .from('dashboard')
+      .upsert({
+        user_id: userId,
+        wallet_balance: newBalance,
+        total_earnings: newEarnings,
+        updated_at: new Date()
+      });
+
+    if (updateErr) throw updateErr;
+
+    // 5. Log Activity
+    await adminClient.from('activity').insert([{
+      user_id: userId,
+      title: 'Task Reward',
+      value: `+${reward}`,
+      description: `Completed video task #${taskId}`,
+      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    }]);
+
+    res.json({ message: 'Task completed successfully', balance: newBalance });
+  } catch (err) {
+    console.error('[TaskComplete] Error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+};
