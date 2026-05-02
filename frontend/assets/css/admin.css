@@ -1059,20 +1059,28 @@ tr:hover td {
   justify-content: center;
 }
 
-/* ========== RESPONSIVE: TABLETS (≤1024px) ========== */
-@media (max-width: 1024px) {
-  .metric-cards-row {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-  .stats-grid, .quick-actions-grid, .mini-bi-row {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .bi-grid {
-    grid-template-columns: 1fr;
-  }
+/* ========== RESPONSIVE: LARGE DESKTOPS (>1600px) ========== */
+@media (min-width: 1601px) {
+  .metric-cards-row { grid-template-columns: repeat(5, 1fr); }
+}
+
+/* ========== RESPONSIVE: STANDARD DESKTOPS (1200px - 1600px) ========== */
+@media (max-width: 1600px) {
+  .metric-cards-row { grid-template-columns: repeat(4, 1fr); }
+  .dashboard-grid { grid-template-columns: 2fr 1fr; }
+}
+
+/* ========== RESPONSIVE: LAPTOPS & TABLETS (992px - 1200px) ========== */
+@media (max-width: 1200px) {
+  .metric-cards-row { grid-template-columns: repeat(3, 1fr); }
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .stats-grid, .quick-actions-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ========== RESPONSIVE: TABLETS (768px - 992px) ========== */
+@media (max-width: 992px) {
+  .metric-cards-row { grid-template-columns: repeat(2, 1fr); }
+  .bi-grid { grid-template-columns: 1fr; }
   .dashboard-content { padding: 24px; }
   .top-bar { padding: 16px 24px; }
 }
