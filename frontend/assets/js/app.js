@@ -786,7 +786,6 @@ class SolarApp {
       document.getElementById('setting-whatsapp').value = settings.whatsapp_group || '';
       document.getElementById('setting-telegram').value = settings.telegram_channel || '';
       document.getElementById('setting-email').value = settings.support_email || '';
-      document.getElementById('setting-name').value = settings.platform_name || 'Solar Africa';
     }
 
     const settingsForm = document.getElementById('global-settings-form');
@@ -799,8 +798,7 @@ class SolarApp {
         const payload = {
           whatsapp_group: document.getElementById('setting-whatsapp').value,
           telegram_channel: document.getElementById('setting-telegram').value,
-          support_email: document.getElementById('setting-email').value,
-          platform_name: document.getElementById('setting-name').value
+          support_email: document.getElementById('setting-email').value
         };
 
         const res = await this.fetchAPI('admin/settings', { method: 'PUT', body: JSON.stringify(payload) });
