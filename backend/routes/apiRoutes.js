@@ -38,6 +38,7 @@ router.put('/admin/payment-methods/:id', protect, apiController.updatePaymentMet
 router.delete('/admin/payment-methods/:id', protect, apiController.deletePaymentMethod);
 
 // Video Tasks
+router.get('/proxy-video', apiController.proxyVideo);
 router.get('/tasks', apiController.getTasks);                           // Public — users load tasks
 router.post('/admin/tasks', protect, apiController.adminCreateTask);
 router.put('/admin/tasks/:id', protect, apiController.adminUpdateTask);

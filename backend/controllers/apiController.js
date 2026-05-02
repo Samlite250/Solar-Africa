@@ -834,10 +834,10 @@ exports.deletePaymentMethod = async (req, res) => {
 // ─── VIDEO TASKS CRUD ───────────────────────────────────────────────────────
 
 const DEFAULT_TASKS = [
-  { id: 1, icon: '☀️', title: 'Solar Africa: The Renewable Revolution',    video_url: 'https://www.w3schools.com/html/mov_bbb.mp4', duration: 15, reward: '3,500 FBu' },
-  { id: 2, icon: '⚡', title: 'Smart Energy: Professional Solar Tech',   video_url: 'https://www.w3schools.com/html/horse.mp4', duration: 20, reward: '3,500 FBu' },
-  { id: 3, icon: '🌍', title: 'Clean Power: Sustaining Our Planet',     video_url: 'https://www.w3schools.com/tags/movie.mp4', duration: 15, reward: '3,500 FBu' },
-  { id: 4, icon: '🔋', title: 'Future Storage: Next-Gen Batteries',  video_url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4', duration: 18, reward: '3,500 FBu' }
+  { id: 1, icon: '☀️', title: 'Solar Africa: The Renewable Revolution',    video_url: '/api/proxy-video?url=https://videos.pexels.com/video-files/4255157/4255157-sd_640_360_25fps.mp4', duration: 15, reward: '3,500 FBu' },
+  { id: 2, icon: '⚡', title: 'Smart Energy: Professional Solar Tech',   video_url: '/api/proxy-video?url=https://videos.pexels.com/video-files/4255013/4255013-sd_640_360_25fps.mp4', duration: 20, reward: '3,500 FBu' },
+  { id: 3, icon: '🌍', title: 'Clean Power: Sustaining Our Planet',     video_url: '/api/proxy-video?url=https://videos.pexels.com/video-files/4255154/4255154-sd_640_360_25fps.mp4', duration: 15, reward: '3,500 FBu' },
+  { id: 4, icon: '🔋', title: 'Future Storage: Next-Gen Batteries',  video_url: '/api/proxy-video?url=https://videos.pexels.com/video-files/3125907/3125907-sd_640_360_25fps.mp4', duration: 18, reward: '3,500 FBu' }
 ];
 
 // GET: Public — list all active tasks (with default fallback and auto-migration)
@@ -965,6 +965,31 @@ exports.adminUploadVideo = async (req, res) => {
 
 
 
+// GET: Public — Proxy video to bypass hotlink protection
+exports.proxyVideo = async (req, res) => {
+  const url = req.query.url;
+  if (!url) return res.status(400).send('URL required');
+  
+  try {
+    const fetch = (await import('node-fetch')).default;
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36',
+        'Referer': 'https://www.pexels.com/'
+      }
+    });
+    
+    if (!response.ok) throw new Error(`Fetch failed: ${response.status}`);
+    
+    res.setHeader('Content-Type', response.headers.get('content-type') || 'video/mp4');
+    res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24h
+    response.body.pipe(res);
+  } catch (err) {
+    console.error('[VideoProxy] Error:', err.message);
+    res.status(500).send('Video loading failed');
+  }
+};
+
 // POST: User completes a task and earns a reward
 exports.completeTask = async (req, res) => {
   if (!isConfigured) return res.json({ message: 'Mock Reward credited' });
@@ -973,97 +998,69 @@ exports.completeTask = async (req, res) => {
     const { taskId, reward } = req.body;
     const userId = req.user.id;
 
-    if (!reward) {
-        return res.status(400).json({ error: 'Reward amount is missing' });
+    if (!reward || !taskId) {
+        return res.status(400).json({ error: 'Task ID and reward amount are required' });
     }
 
-    // UUID Validation Check (Prevents 500 errors if master-admin tries to complete a task)
+    // UUID Validation Check
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(userId)) {
-      console.warn(`[TaskComplete] Non-UUID user detected (${userId}). Skipping DB persistence.`);
       return res.json({ message: 'Task completed (Mock)', balance: '0 FBu' });
     }
 
-    console.log(`[TaskComplete] User ${userId} completed task ${taskId} for reward ${reward}`);
-
-    // 1. Check if already completed (Critical Security Fix)
-    const { data: existing } = await adminClient
+    // 1. Check if already completed (CRITICAL SECURITY)
+    const { data: existing, error: checkErr } = await adminClient
       .from('completed_tasks')
       .select('*')
       .eq('user_id', userId)
-      .eq('task_id', taskId)
-      .single();
+      .eq('task_id', taskId);
 
-    if (existing) {
-      console.warn(`[TaskComplete] User ${userId} tried to double-claim task ${taskId}`);
-      return res.status(400).json({ error: 'You have already completed this task today.' });
+    if (existing && existing.length > 0) {
+      return res.status(400).json({ error: 'You have already completed this task.' });
     }
 
-    // 2. Fetch current dashboard stats
-    const { data: dashboards, error: dashErr } = await adminClient
+    // 2. Fetch Dashboard
+    const { data: dash, error: dashErr } = await adminClient
       .from('dashboard')
       .select('*')
-      .eq('user_id', userId);
+      .eq('user_id', userId)
+      .single();
 
-    if (dashErr) {
-        console.error('[TaskComplete] Dashboard fetch error:', dashErr);
-        throw dashErr;
-    }
-
-    const dash = dashboards && dashboards.length > 0 ? dashboards[0] : null;
+    if (dashErr && dashErr.code !== 'PGRST116') throw dashErr;
 
     const rewardValueNum = parseInt(reward.replace(/[^0-9]/g, '')) || 0;
-    
-    let currentBalanceNum = 0;
-    let currentEarningsNum = 0;
-    
-    if (dash) {
-      currentBalanceNum = parseInt((dash.wallet_balance || '0').replace(/[^0-9]/g, '')) || 0;
-      currentEarningsNum = parseInt((dash.total_earnings || '0').replace(/[^0-9]/g, '')) || 0;
-    }
+    const currentBalanceNum = parseInt((dash?.wallet_balance || '0').replace(/[^0-9]/g, '')) || 0;
+    const currentEarningsNum = parseInt((dash?.total_earnings || '0').replace(/[^0-9]/g, '')) || 0;
 
-    // 2. Calculate new totals
     const newBalance = `${(currentBalanceNum + rewardValueNum).toLocaleString()} FBu`;
     const newEarnings = `${(currentEarningsNum + rewardValueNum).toLocaleString()} FBu`;
 
     // 3. Update Dashboard
-    if (dash) {
-      const { error: updateErr } = await adminClient
-        .from('dashboard')
-        .update({
-          wallet_balance: newBalance,
-          total_earnings: newEarnings,
-          updated_at: new Date().toISOString()
-        })
-        .eq('user_id', userId);
-      if (updateErr) {
-          console.error('[TaskComplete] Dashboard update error:', updateErr);
-          throw updateErr;
-      }
-    } else {
-      const { error: insertErr } = await adminClient
-        .from('dashboard')
-        .insert([{
-          user_id: userId,
-          wallet_balance: newBalance,
-          welcome_bonus: '0 FBu',
-          total_earnings: newEarnings,
-          active_package: 'None',
-          updated_at: new Date().toISOString()
-        }]);
-      if (insertErr) {
-          console.error('[TaskComplete] Dashboard insert error:', insertErr);
-          throw insertErr;
-      }
-    }
+    const { error: updateErr } = await adminClient
+      .from('dashboard')
+      .upsert({
+        user_id: userId,
+        wallet_balance: newBalance,
+        total_earnings: newEarnings,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id' });
 
-    // 5. Mark as Completed (Critical Security Fix)
-    const { error: completeErr } = await adminClient.from('completed_tasks').insert([{
+    if (updateErr) throw updateErr;
+
+    // 4. Record Completion (CRITICAL SECURITY)
+    await adminClient.from('completed_tasks').insert([{
       user_id: userId,
       task_id: taskId
     }]);
 
-    if (completeErr) console.error('[TaskComplete] Failed to record completion:', completeErr);
+    // 5. Log Activity
+    await adminClient.from('activity').insert([{
+      user_id: userId,
+      title: 'Task Reward',
+      value: `+${reward}`,
+      description: `Completed video task #${taskId}`,
+      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    }]);
 
     res.json({ message: 'Task completed successfully', balance: newBalance });
   } catch (err) {
