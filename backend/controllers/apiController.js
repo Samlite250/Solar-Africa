@@ -32,16 +32,21 @@ exports.getDashboard = async (req, res) => {
         .single();
       
       if (!error && data) {
-        // Fetch completed tasks for today
-        const { data: completed } = await client
-          .from('completed_tasks')
-          .select('task_id')
-          .eq('user_id', req.user.id);
+        let completedIds = [];
+        try {
+          const { data: completed, error: compError } = await client
+            .from('completed_tasks')
+            .select('task_id')
+            .eq('user_id', req.user.id);
+          if (!compError && completed) completedIds = completed.map(c => c.task_id);
+        } catch (e) {
+          console.warn('Completed tasks table might be missing');
+        }
         
         return res.json({ 
           data: { 
             ...data, 
-            completedTasks: (completed || []).map(c => c.task_id) 
+            completedTasks: completedIds
           } 
         });
       }
