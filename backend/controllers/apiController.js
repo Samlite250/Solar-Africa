@@ -1,4 +1,4 @@
-const { client, isConfigured } = require('../config/supabase');
+const { client, adminClient, isConfigured } = require('../config/supabase');
 const mockData = require('../mockData');
 
 exports.getStatus = (req, res) => {
@@ -225,8 +225,8 @@ exports.completeTask = async (req, res) => {
     const { reward, taskId } = req.body;
     if (!taskId) return res.status(400).json({ error: 'Task ID required' });
 
-    // 1. Check if already completed
-    const { data: existing } = await client
+    // 1. Check if already completed (use adminClient to bypass RLS)
+    const { data: existing } = await adminClient
       .from('completed_tasks')
       .select('*')
       .eq('user_id', req.user.id)
@@ -240,7 +240,8 @@ exports.completeTask = async (req, res) => {
     // 2. Parse reward correctly (remove commas)
     const rewardVal = parseFloat(reward.replace(/,/g, '').replace(/[^0-9.]/g, ''));
 
-    const { data: dash } = await client.from('dashboard').select('*').eq('user_id', req.user.id).single();
+    // 3. Fetch current dashboard
+    const { data: dash } = await adminClient.from('dashboard').select('*').eq('user_id', req.user.id).single();
     
     if (dash) {
       const currentWallet = parseFloat(dash.wallet_balance.replace(/,/g, '').replace(/[^0-9.]/g, '')) || 0;
@@ -248,14 +249,14 @@ exports.completeTask = async (req, res) => {
       const currentEarnings = parseFloat(dash.total_earnings.replace(/,/g, '').replace(/[^0-9.]/g, '')) || 0;
       const newEarnings = currentEarnings + rewardVal;
 
-      await client.from('dashboard').update({
+      await adminClient.from('dashboard').update({
         wallet_balance: newWallet.toLocaleString() + ' FBu',
         total_earnings: newEarnings.toLocaleString() + ' FBu',
         updated_at: new Date()
       }).eq('user_id', req.user.id);
 
-      // 3. Log activity
-      await client.from('activity').insert([{
+      // 4. Log activity
+      await adminClient.from('activity').insert([{
         user_id: req.user.id,
         title: 'Task Earned',
         value: `+${reward}`,
@@ -263,8 +264,8 @@ exports.completeTask = async (req, res) => {
         date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
       }]);
 
-      // 4. Mark as completed
-      await client.from('completed_tasks').insert([{
+      // 5. Mark as completed
+      await adminClient.from('completed_tasks').insert([{
         user_id: req.user.id,
         task_id: taskId
       }]);
@@ -298,7 +299,7 @@ exports.createDeposit = async (req, res) => {
       if (profileData?.name) userName = profileData.name;
     } catch(e) { /* use fallback */ }
 
-    const { data, error } = await client
+    const { data, error } = await adminClient
       .from('deposits')
       .insert([{ 
         user_id: req.user.id, 
@@ -319,7 +320,7 @@ exports.createDeposit = async (req, res) => {
     }
 
     // 2. Log Activity
-    await client.from('activity').insert([
+    await adminClient.from('activity').insert([
       {
         user_id: req.user.id,
         title: 'New Investment',
@@ -344,7 +345,7 @@ exports.adminUpdateDeposit = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
-    const { data, error } = await client
+    const { data, error } = await adminClient
       .from('deposits')
       .update({ status })
       .eq('id', id)
@@ -356,23 +357,23 @@ exports.adminUpdateDeposit = async (req, res) => {
     // If approved, update user's dashboard welcome_bonus and active package
     if (status === 'approved') {
       const { amount, package_name, user_id } = data;
-      const cleanAmount = parseFloat(amount.replace(/[^0-9.]/g, ''));
+      const cleanAmount = parseFloat(amount.replace(/,/g, '').replace(/[^0-9.]/g, ''));
       
       // Get current dashboard
-      const { data: dash } = await client.from('dashboard').select('*').eq('user_id', user_id).single();
+      const { data: dash } = await adminClient.from('dashboard').select('*').eq('user_id', user_id).single();
       
       if (dash) {
-        const currentBonus = parseFloat(dash.welcome_bonus.replace(/[^0-9.]/g, '')) || 0;
+        const currentBonus = parseFloat(dash.welcome_bonus.replace(/,/g, '').replace(/[^0-9.]/g, '')) || 0;
         const newBonus = currentBonus + cleanAmount;
         
-        await client.from('dashboard').update({
+        await adminClient.from('dashboard').update({
           welcome_bonus: newBonus.toLocaleString() + ' FBu',
           active_package: package_name,
           updated_at: new Date()
         }).eq('user_id', user_id);
       } else {
         // Create dashboard if it doesn't exist
-        await client.from('dashboard').insert([{
+        await adminClient.from('dashboard').insert([{
           user_id,
           wallet_balance: '0 FBu',
           welcome_bonus: cleanAmount.toLocaleString() + ' FBu',
@@ -382,7 +383,7 @@ exports.adminUpdateDeposit = async (req, res) => {
       }
 
       // Log success activity
-      await client.from('activity').insert([{
+      await adminClient.from('activity').insert([{
         user_id,
         title: 'Investment Confirmed',
         value: `+${amount}`,
@@ -405,7 +406,7 @@ exports.adminUpdateBalance = async (req, res) => {
     const { userId } = req.params;
     const { wallet_balance, welcome_bonus, total_earnings } = req.body;
     
-    const { data, error } = await client
+    const { data, error } = await adminClient
       .from('dashboard')
       .update({
         wallet_balance: wallet_balance || '0 FBu',

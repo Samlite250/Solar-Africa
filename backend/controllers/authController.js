@@ -1,4 +1,4 @@
-const { client, isConfigured } = require('../config/supabase');
+const { client, adminClient, isConfigured } = require('../config/supabase');
 const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'solar-africa-super-secret-key-2026';
@@ -39,7 +39,7 @@ exports.register = async (req, res) => {
     const userId = authData.user.id;
 
     // 2. Initialize Profile (Now including email for username lookup and referral tracking)
-    const { error: profileError } = await client.from('profiles').insert([
+    const { error: profileError } = await adminClient.from('profiles').insert([
       { 
         user_id: userId, 
         name, // This is the Username
@@ -58,7 +58,7 @@ exports.register = async (req, res) => {
     }
 
     // 3. Initialize Dashboard
-    const { error: dashError } = await client.from('dashboard').insert([
+    const { error: dashError } = await adminClient.from('dashboard').insert([
       { 
         user_id: userId, 
         wallet_balance: '0 BIF', 
@@ -72,7 +72,7 @@ exports.register = async (req, res) => {
     }
 
     // 4. Initialize User (for admin view)
-    const { error: userTableError } = await client.from('users').insert([
+    const { error: userTableError } = await adminClient.from('users').insert([
       { 
         user_id: userId, 
         name, 
