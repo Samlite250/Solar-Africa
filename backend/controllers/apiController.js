@@ -892,10 +892,10 @@ exports.deletePaymentMethod = async (req, res) => {
 // ─── VIDEO TASKS CRUD ───────────────────────────────────────────────────────
 
 const DEFAULT_TASKS = [
-  { id: 1, icon: '☀️', title: 'Solar Power: Clean Energy Ad',    video_url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4', duration: 15, reward: '3,500 FBu' },
-  { id: 2, icon: '⚡', title: 'Solar Tech: Smart Solutions',   video_url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4', duration: 20, reward: '3,500 FBu' },
-  { id: 3, icon: '🌍', title: 'Green Living: Solar Panels',     video_url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4', duration: 15, reward: '3,500 FBu' },
-  { id: 4, icon: '🔋', title: 'Energy Storage: Future Tech',  video_url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4', duration: 18, reward: '3,500 FBu' }
+  { id: 1, icon: '☀️', title: 'Solar Power: Clean Energy Ad',    video_url: 'https://res.cloudinary.com/demo/video/upload/v1648028211/waterfall.mp4', duration: 15, reward: '3,500 FBu' },
+  { id: 2, icon: '⚡', title: 'Solar Tech: Smart Solutions',   video_url: 'https://res.cloudinary.com/demo/video/upload/elephants.mp4', duration: 20, reward: '3,500 FBu' },
+  { id: 3, icon: '🌍', title: 'Green Living: Solar Panels',     video_url: 'https://res.cloudinary.com/demo/video/upload/dog.mp4', duration: 15, reward: '3,500 FBu' },
+  { id: 4, icon: '🔋', title: 'Energy Storage: Future Tech',  video_url: 'https://res.cloudinary.com/demo/video/upload/ski_jump.mp4', duration: 18, reward: '3,500 FBu' }
 ];
 
 // GET: Public — list all active tasks (with default fallback and auto-migration)
