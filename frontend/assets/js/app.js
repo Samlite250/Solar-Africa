@@ -1547,8 +1547,8 @@ class SolarApp {
     list.innerHTML = finalData.map((p, i) => `
       <div class="landing-pkg-card">
         ${p.name.includes('Pro') || p.name.includes('Commercial') ? '<div class="popular-ribbon">POPULAR</div>' : ''}
-        <img src="${p.img || 'assets/img/packages/pkg-1.jpg'}" 
-             onerror="this.src='assets/img/packages/pkg-1.jpg'; this.onerror=null;" 
+        <img src="${p.img || 'assets/img/packages/pkg_1.jpg'}" 
+             onerror="this.src='assets/img/packages/pkg_1.jpg'; this.onerror=null;" 
              class="landing-pkg-img" alt="${p.name}">
         <div class="landing-pkg-content">
           <h3>${p.name}</h3>
