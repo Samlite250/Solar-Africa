@@ -1366,14 +1366,8 @@ class SolarApp {
     container.style.display = 'block';
     video.src = url;
     video.load();
-    
-    // Fallback if video fails to load from CDN
-    video.onerror = () => {
-      // Better fallback: direct Pexels MP4
-      video.src = 'https://videos.pexels.com/video-files/3125907/3125907-sd_640_360_25fps.mp4';
-      video.load();
-    };
-    
+    // No fallback, let the real URL play
+
     overlay.style.display = 'flex';
     timerEl.style.display = 'none';
     timerEl.style.background = 'rgba(0,0,0,0.7)';
@@ -1383,13 +1377,12 @@ class SolarApp {
       timerEl.style.display = 'block';
       timerEl.textContent = `00:${duration < 10 ? '0'+duration : duration}`;
       
-      // Play with sound since the user explicitly clicked the play button
+      // Play with sound
       video.muted = false;
       video.play().catch(e => {
-        console.warn('Playback blocked, retrying with muted...', e);
-        // Fallback for extreme cases
-        video.muted = true;
-        video.play();
+        console.warn('Playback error:', e);
+        // Do not force mute, allow user to click play again or notify them
+        this.showToast('Please interact with the page to allow sound.', 'info');
       });
       
       let timeLeft = duration;
