@@ -827,18 +827,14 @@ class SolarApp {
     gradient.addColorStop(1, 'rgba(67, 24, 255, 0)');
 
     window.revenueChartInst = new Chart(revenueCtx, {
-      type: 'line',
+      type: 'bar',
       data: {
         labels: ['SEP', 'OCT', 'NOV', 'DEC', 'JAN', 'FEB'],
         datasets: [{
           label: 'Revenue',
           data: [50, 64, 48, 66, 49, 68],
-          borderColor: '#4318FF',
-          borderWidth: 4,
-          fill: true,
-          backgroundColor: gradient,
-          tension: 0.4,
-          pointRadius: 0
+          backgroundColor: '#0b6cff',
+          borderRadius: 6
         }]
       },
       options: {
@@ -846,8 +842,8 @@ class SolarApp {
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
-          y: { display: false },
-          x: { grid: { display: false }, border: { display: false } }
+          y: { grid: { color: '#f1f5f9' }, ticks: { font: { size: 10 } } },
+          x: { grid: { display: false } }
         }
       }
     });

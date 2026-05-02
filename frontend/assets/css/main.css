@@ -2,30 +2,30 @@
 @import url('./landing.css');
 
 :root {
-  /* Smart & Modern Premium Palette */
-  --primary-blue: #4318FF;
-  --primary-blue-dark: #3311CC;
-  --primary-green: #05CD99;
-  --primary-green-dark: #04B184;
-  --accent-gold: #FFB547;
+  /* Vibrant Premium Palette */
+  --primary-blue: #0b6cff;
+  --primary-blue-dark: #0052cc;
+  --primary-green: #11a646;
+  --primary-green-dark: #0b8033;
+  --accent-gold: #f59e0b;
   
-  --bg-main: #F4F7FE;
+  --bg-main: #f8fafc;
   --bg-card: #ffffff;
-  --glass-bg: rgba(255, 255, 255, 0.9);
-  --glass-border: rgba(255, 255, 255, 0.7);
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.6);
   
-  --text-main: #1B2559;
-  --text-muted: #A3AED0;
-  --border-subtle: #E9EDF7;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border-subtle: #e2e8f0;
   
   /* Premium Shadows */
-  --shadow-premium: 14px 17px 40px 4px rgba(112, 144, 176, 0.08);
+  --shadow-premium: 0 20px 40px -10px rgba(0, 0, 0, 0.08);
   --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.04);
-  --shadow-hover: 14px 17px 40px 4px rgba(67, 24, 255, 0.12);
+  --shadow-hover: 0 24px 48px -12px rgba(11, 108, 255, 0.15);
   
-  --radius-sm: 14px;
-  --radius-md: 24px;
-  --radius-lg: 36px;
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 32px;
   
   --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   --transition-bounce: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
