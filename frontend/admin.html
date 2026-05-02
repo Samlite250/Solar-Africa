@@ -378,8 +378,14 @@
             </select>
           </div>
           <div class="field">
-            <label>Payment Instructions</label>
-            <textarea id="pm-instructions" rows="6" placeholder="Type instructions here..." required style="width:100%;padding:14px 16px;border-radius:12px;border:2px solid #f1f5f9;font-size:14px;font-family:inherit;resize:vertical;"></textarea>
+            <label style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:8px;">
+              <span>Payment Instructions</span>
+              <div style="display:flex; gap:6px;">
+                <button type="button" onclick="window.app.insertFormat('pm-instructions', '<b>', '</b>')" title="Bold" style="padding:4px 10px; font-weight:800; cursor:pointer; border:1px solid #cbd5e1; border-radius:6px; background:#f8fafc; color:#334155; font-size:12px;">B</button>
+                <button type="button" onclick="window.app.insertFormat('pm-instructions', '<u>', '</u>')" title="Underline" style="padding:4px 10px; text-decoration:underline; cursor:pointer; border:1px solid #cbd5e1; border-radius:6px; background:#f8fafc; color:#334155; font-size:12px;">U</button>
+              </div>
+            </label>
+            <textarea id="pm-instructions" rows="6" placeholder="Type instructions here. Use the buttons above to format." required style="width:100%;padding:14px 16px;border-radius:12px;border:2px solid #f1f5f9;font-size:14px;font-family:inherit;resize:vertical;"></textarea>
           </div>
           <div class="modal-btns">
             <button type="button" class="btn-cancel" onclick="document.getElementById('payment-modal-overlay').style.display='none'">Cancel</button>
@@ -389,6 +395,6 @@
       </div>
     </div>
 
-    <script src="assets/js/app.js?v=20260502_adminfix_2" defer></script>
+    <script src="assets/js/app.js?v=20260502_formatting" defer></script>
   </body>
 </html>

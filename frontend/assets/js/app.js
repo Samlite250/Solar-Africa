@@ -617,6 +617,20 @@ class SolarApp {
     document.getElementById('pm-instructions').value = pm.provider || '';
     document.getElementById('payment-modal-overlay').style.display = 'flex';
   }
+
+  insertFormat(elementId, openTag, closeTag) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    const text = el.value;
+    const selectedText = text.substring(start, end);
+    el.value = text.substring(0, start) + openTag + selectedText + closeTag + text.substring(end);
+    el.focus();
+    el.selectionStart = start + openTag.length;
+    el.selectionEnd = end + openTag.length;
+  }
+
   async deletePaymentMethod(id) {
     if (!confirm('Delete this payment method?')) return;
     const res = await this.fetchAPI(`admin/payment-methods/${id}`, { method: 'DELETE' });
