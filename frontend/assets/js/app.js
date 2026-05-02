@@ -284,6 +284,14 @@ class SolarApp {
 
           <h3 class="profile-section-label">Financial & Network</h3>
           <div class="profile-menu">
+            <div class="profile-menu-item" onclick="window.app.showWithdrawModal()">
+              <div class="profile-menu-icon" style="background:#fefce8; color:#a16207;">💸</div>
+              <div class="profile-menu-text">
+                <strong>Withdraw Funds</strong>
+                <span>Transfer earnings to your account</span>
+              </div>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="3"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
             <div class="profile-menu-item" onclick="window.location.hash = '#team'">
               <div class="profile-menu-icon" style="background:#f0fdf4; color:#166534;">🤝</div>
               <div class="profile-menu-text">
@@ -1551,9 +1559,12 @@ class SolarApp {
     this.showToast('Deposit History is coming soon in the next update!', 'info');
   }
 
-  showWithdrawalHistory() {
-    this.showToast('Withdrawal History is coming soon!', 'info');
+  showWithdrawModal() {
+    this.showToast('Withdrawal system is being initialized. Please wait for the next instruction.', 'info');
   }
+
+  async showWithdrawalHistory() {
+    const res = await this.fetchAPI('withdrawals');
 
   showChangePassword() {
     this.showToast('Password change is temporarily disabled for security. Contact support.', 'warning');
