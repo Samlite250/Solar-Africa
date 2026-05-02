@@ -1595,18 +1595,40 @@ class SolarApp {
 
       // Fallback if no custom instructions are configured
       if (!paymentStepsHTML.trim()) {
-        const amountRaw = amount.replace(/[^0-9]/g, '');
-        paymentStepsHTML = `Please contact support for payment instructions for ${userCountry}.\n\nAmount to pay: ${amountRaw}`;
+        paymentStepsHTML = `Please contact support for payment instructions for ${userCountry}.`;
       }
 
       // We use white-space: pre-wrap to automatically format their plain text just like they typed it
+      const amountRaw = amount.replace(/[^0-9]/g, '');
+      const formattedAmount = parseInt(amountRaw).toLocaleString() + (amount.includes('BIF') ? ' BIF' : '');
+
       card.innerHTML = `
         <div style="text-align:center;">
-          <h3 style="font-size:18px;font-weight:800;color:#374151;margin-bottom:12px;">Complete Your Investment</h3>
-          <p style="font-size:13px;color:#64748b;margin-bottom:20px;padding:0 10px;">Securely fund your <strong>${name}</strong> package.</p>
-          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:16px;text-align:left;margin-bottom:24px; white-space: pre-wrap; font-size: 14px; line-height: 1.7; color: #334155; font-weight: 500;">${paymentStepsHTML}</div>
-          <button id="confirm-payment-btn" class="btn btn-green btn-full" style="padding:16px;font-size:15px;font-weight:800;border-radius:14px;width:100%;border:none;cursor:pointer;margin-bottom:12px;">I Have Paid</button>
-          <button id="cancel-payment-btn" style="background:none;border:none;color:#64748b;font-size:13px;font-weight:700;cursor:pointer;padding:8px;">Cancel &amp; Go Back</button>
+          <div style="width: 56px; height: 56px; background: #e0f2fe; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          </div>
+          <h3 style="font-size:20px;font-weight:800;color:#0f172a;margin-bottom:8px;">Complete Payment</h3>
+          <p style="font-size:13.5px;color:#64748b;margin-bottom:24px;">To activate your <strong>${name}</strong> plan</p>
+
+          <div style="background: #f0fdf4; border: 2px dashed #4ade80; border-radius: 16px; padding: 18px; margin-bottom: 24px; position: relative;">
+            <p style="font-size: 11px; color: #16a34a; font-weight: 800; margin: 0 0 4px 0; text-transform: uppercase; letter-spacing: 1px;">Amount Due</p>
+            <p style="font-size: 32px; font-weight: 900; color: #15803d; margin: 0; letter-spacing: -0.5px;">${formattedAmount}</p>
+          </div>
+
+          <div style="text-align: left; margin-bottom: 24px;">
+            <h4 style="font-size: 14px; font-weight: 800; color: #1e293b; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+              Transfer Instructions
+            </h4>
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:18px; white-space:pre-wrap; font-size:14.5px; line-height:1.7; color:#334155; font-weight:500;">${paymentStepsHTML}</div>
+          </div>
+
+          <div style="background: #fffbeb; border-left: 4px solid #f59e0b; padding: 14px 16px; text-align: left; border-radius: 6px; margin-bottom: 24px;">
+            <p style="font-size: 12.5px; color: #92400e; margin: 0; line-height: 1.5;"><strong>Note:</strong> After completing the transfer via the instructions above, click the button below so our team can verify your payment.</p>
+          </div>
+
+          <button id="confirm-payment-btn" class="btn btn-green btn-full" style="padding:16px;font-size:16px;font-weight:800;border-radius:14px;width:100%;border:none;cursor:pointer;margin-bottom:12px; box-shadow: 0 6px 16px rgba(34, 197, 94, 0.25); transition: transform 0.2s;">I Have Sent the Money</button>
+          <button id="cancel-payment-btn" style="background:none;border:none;color:#64748b;font-size:14px;font-weight:700;cursor:pointer;padding:12px; width: 100%;">Cancel & Go Back</button>
         </div>
       `;
 
