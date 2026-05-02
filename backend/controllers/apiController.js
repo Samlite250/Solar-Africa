@@ -373,17 +373,27 @@ exports.adminUpdateDeposit = async (req, res) => {
     // If approved, update user's dashboard welcome_bonus and active package
     if (status === 'approved') {
       const { amount, package_name, user_id } = data;
-      const cleanAmount = parseFloat(amount.replace(/,/g, '').replace(/[^0-9.]/g, ''));
       
-      // Get current dashboard
+      // 1. Fetch package details to get the correct bonus amount
+      const { data: pkg } = await adminClient
+        .from('packages')
+        .select('bonus')
+        .eq('name', package_name)
+        .single();
+
+      const bonusStr = pkg ? pkg.bonus : amount; // Fallback to investment amount if package lookup fails
+      const cleanBonusToAdd = parseFloat(bonusStr.replace(/,/g, '').replace(/[^0-9.]/g, '')) || 0;
+      
+      // 2. Get current dashboard
       const { data: dash } = await adminClient.from('dashboard').select('*').eq('user_id', user_id).single();
       
       if (dash) {
-        const currentBonus = parseFloat(dash.welcome_bonus.replace(/,/g, '').replace(/[^0-9.]/g, '')) || 0;
-        const newBonus = currentBonus + cleanAmount;
+        const currentBonusStr = dash.welcome_bonus || '0';
+        const currentBonusVal = parseFloat(currentBonusStr.replace(/,/g, '').replace(/[^0-9.]/g, '')) || 0;
+        const newBonusTotal = currentBonusVal + cleanBonusToAdd;
         
         await adminClient.from('dashboard').update({
-          welcome_bonus: newBonus.toLocaleString() + ' FBu',
+          welcome_bonus: newBonusTotal.toLocaleString() + ' FBu',
           active_package: package_name,
           updated_at: new Date()
         }).eq('user_id', user_id);
@@ -392,18 +402,18 @@ exports.adminUpdateDeposit = async (req, res) => {
         await adminClient.from('dashboard').insert([{
           user_id,
           wallet_balance: '0 FBu',
-          welcome_bonus: cleanAmount.toLocaleString() + ' FBu',
+          welcome_bonus: cleanBonusToAdd.toLocaleString() + ' FBu',
           active_package: package_name,
           total_earnings: '0 FBu'
         }]);
       }
 
-      // Log success activity
+      // 3. Log success activity
       await adminClient.from('activity').insert([{
         user_id,
         title: 'Investment Confirmed',
-        value: `+${amount}`,
-        description: `Your investment in ${package_name} was approved.`,
+        value: `+${bonusStr}`,
+        description: `Your investment in ${package_name} was approved. Welcome bonus credited!`,
         date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
       }]);
     }
