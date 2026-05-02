@@ -229,7 +229,7 @@ class SolarApp {
           <p style="font-size: 13px; color: #64748b; margin-bottom: 24px;">Watch short videos from our advertisers (max 20s) to earn instant rewards.</p>
           
           <div id="task-video-container" style="display: none; background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 24px; position: relative;">
-            <video id="task-video" style="width: 100%; aspect-ratio: 16/9; display: block;" playsinline preload="auto"></video>
+            <video id="task-video" style="width: 100%; aspect-ratio: 16/9; display: block;" playsinline preload="auto" referrerpolicy="no-referrer"></video>
             <div id="task-video-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); color: white; font-weight: 800; font-size: 20px;">
               <button id="task-play-btn" style="background: #16a34a; color: white; border: none; padding: 12px 24px; border-radius: 30px; font-weight: 800; font-size: 16px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Play Video

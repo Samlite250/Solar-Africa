@@ -892,10 +892,10 @@ exports.deletePaymentMethod = async (req, res) => {
 // ─── VIDEO TASKS CRUD ───────────────────────────────────────────────────────
 
 const DEFAULT_TASKS = [
-  { id: 1, icon: '☀️', title: 'Solar Power: Clean Energy Ad',    video_url: 'https://res.cloudinary.com/demo/video/upload/v1648028211/waterfall.mp4', duration: 15, reward: '3,500 FBu' },
-  { id: 2, icon: '⚡', title: 'Solar Tech: Smart Solutions',   video_url: 'https://res.cloudinary.com/demo/video/upload/elephants.mp4', duration: 20, reward: '3,500 FBu' },
-  { id: 3, icon: '🌍', title: 'Green Living: Solar Panels',     video_url: 'https://res.cloudinary.com/demo/video/upload/dog.mp4', duration: 15, reward: '3,500 FBu' },
-  { id: 4, icon: '🔋', title: 'Energy Storage: Future Tech',  video_url: 'https://res.cloudinary.com/demo/video/upload/ski_jump.mp4', duration: 18, reward: '3,500 FBu' }
+  { id: 1, icon: '☀️', title: 'Solar Africa: The Renewable Revolution',    video_url: 'https://videos.pexels.com/video-files/4255157/4255157-sd_640_360_25fps.mp4', duration: 15, reward: '3,500 FBu' },
+  { id: 2, icon: '⚡', title: 'Smart Energy: Professional Solar Tech',   video_url: 'https://videos.pexels.com/video-files/4255013/4255013-sd_640_360_25fps.mp4', duration: 20, reward: '3,500 FBu' },
+  { id: 3, icon: '🌍', title: 'Clean Power: Sustaining Our Planet',     video_url: 'https://videos.pexels.com/video-files/4255154/4255154-sd_640_360_25fps.mp4', duration: 15, reward: '3,500 FBu' },
+  { id: 4, icon: '🔋', title: 'Future Storage: Next-Gen Batteries',  video_url: 'https://videos.pexels.com/video-files/3125907/3125907-sd_640_360_25fps.mp4', duration: 18, reward: '3,500 FBu' }
 ];
 
 // GET: Public — list all active tasks (with default fallback and auto-migration)
