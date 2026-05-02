@@ -1577,12 +1577,8 @@ class SolarApp {
 
       // Fetch dynamic payment info for user's country
       const userCountry = this.state.user?.country || 'Burundi';
-      let paymentPhone = '67270398';
-      let paymentAccount = 'RUKUNDO LOAUNGE';
-      let paymentDial = '*163#';
-      let paymentProvider = 'Lumicash';
+      
       // Fetch custom HTML payment instructions for the user's country
-      const userCountry = this.state.user?.country || 'Burundi';
       let paymentStepsHTML = '';
       try {
         const pmData = await fetch(`/api/payment-methods?country=${encodeURIComponent(userCountry)}`).then(r => r.json());
