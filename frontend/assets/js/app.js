@@ -2103,26 +2103,48 @@ class SolarApp {
       const amountRaw = amount.replace(/[^0-9]/g, '');
       
       // Smart extraction of variables from the admin's plain text textarea
-      const phoneMatch = rawInstructions.match(/\\b\\d{8,12}\\b/);
-      const paymentPhone = phoneMatch ? phoneMatch[0] : '67270398';
+      // 1. Find all potential phone numbers (8-13 digits, may start with +)
+      const phoneMatches = rawInstructions.match(/(?:\+?\d{8,13})/g) || [];
+      const uniquePhones = [...new Set(phoneMatches)];
       
-      const dialMatch = rawInstructions.match(/\\*\\d+[\\*\\d]*#/);
-      const paymentDial = dialMatch ? dialMatch[0] : '*163#';
+      // 2. Find USSD dial codes (*...#)
+      const dialMatches = rawInstructions.match(/\*\d+[\*\d]*#/g) || [];
+      const uniqueDials = [...new Set(dialMatches)];
       
       const copySvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+
+      let extraDetailsHTML = '';
+      
+      // Amount Row (Always first)
+      extraDetailsHTML += `
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:13px; font-weight:600; color:#166534;">Amount to pay:</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;"><strong style="color:#16a34a;font-size:16px;">${amountRaw}</strong><button onclick="navigator.clipboard.writeText('${amountRaw}');window.app?.showToast('Amount copied!','success');" style="background:none;border:none;color:#16a34a;cursor:pointer;padding:2px;">${copySvg}</button></span>
+        </div>`;
+
+      // Phone Numbers
+      uniquePhones.forEach((phone, idx) => {
+        extraDetailsHTML += `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:13px; font-weight:600; color:#166534;">${idx === 0 ? 'Payment Number:' : 'Alternative Number:'}</span>
+            <span style="display:inline-flex;align-items:center;gap:6px;"><strong style="color:#16a34a;font-size:16px;">${phone}</strong><button onclick="navigator.clipboard.writeText('${phone}');window.app?.showToast('Number copied!','success');" style="background:none;border:none;color:#16a34a;cursor:pointer;padding:2px;">${copySvg}</button></span>
+          </div>`;
+      });
+
+      // Dial Codes
+      uniqueDials.forEach((dial) => {
+        extraDetailsHTML += `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:13px; font-weight:600; color:#166534;">USSD Code:</span>
+            <span style="display:inline-flex;align-items:center;gap:6px;"><strong style="color:#16a34a;font-size:16px;">${dial}</strong><button onclick="navigator.clipboard.writeText('${dial}');window.app?.showToast('Code copied!','success');" style="background:none;border:none;color:#16a34a;cursor:pointer;padding:2px;">${copySvg}</button></span>
+          </div>`;
+      });
 
       const paymentStepsHTML = `
         <h4 style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:12px;border-bottom:1px solid #e2e8f0;padding-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;">${customHeader.replace(/</g, '&lt;')}</h4>
         <div style="white-space: pre-wrap; font-size: 14px; line-height: 1.6; color: #334155; margin-bottom: 16px;">${rawInstructions || 'Please contact support for instructions.'}</div>
         <div style="background:#f0fdf4; padding:12px; border-radius:8px; display:flex; flex-direction:column; gap:8px; border:1px dashed #22c55e;">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:13px; font-weight:600; color:#166534;">Amount to pay:</span>
-            <span style="display:inline-flex;align-items:center;gap:6px;"><strong style="color:#16a34a;font-size:16px;">${amountRaw}</strong><button onclick="navigator.clipboard.writeText('${amountRaw}');window.app?.showToast('Amount copied!','success');" style="background:none;border:none;color:#16a34a;cursor:pointer;padding:2px;">${copySvg}</button></span>
-          </div>
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:13px; font-weight:600; color:#166534;">Payment Number:</span>
-            <span style="display:inline-flex;align-items:center;gap:6px;"><strong style="color:#16a34a;font-size:16px;">${paymentPhone}</strong><button onclick="navigator.clipboard.writeText('${paymentPhone}');window.app?.showToast('Number copied!','success');" style="background:none;border:none;color:#16a34a;cursor:pointer;padding:2px;">${copySvg}</button></span>
-          </div>
+          ${extraDetailsHTML}
         </div>`;
 
       card.innerHTML = `
