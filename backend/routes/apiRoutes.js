@@ -6,7 +6,7 @@ const multer = require('multer');
 const upload = multer({ storage: multer.memoryStorage() });
 
 router.get('/status', apiController.getStatus);
-router.get('/packages', apiController.getPackages);
+router.get('/packages', protect, apiController.getPackages);
 router.get('/dashboard', protect, apiController.getDashboard);
 router.get('/team', protect, apiController.getTeam);
 router.get('/profile', protect, apiController.getProfile);

@@ -13,13 +13,59 @@ exports.getStatus = (req, res) => {
 exports.getPackages = async (req, res) => {
   if (isConfigured) {
     try {
-      const { data, error } = await client.from('packages').select('*');
-      if (!error && data) return res.json({ data });
+      let country = 'Burundi'; // Default
+      
+      // If user is logged in (via optional protection or token check)
+      if (req.user && req.user.id) {
+        const { data: profile } = await adminClient
+          .from('profiles')
+          .select('country')
+          .eq('user_id', req.user.id)
+          .single();
+        
+        if (profile && profile.country) {
+          country = profile.country;
+        }
+      } else if (req.query.country) {
+        // Allow passing country via query for public pages
+        country = req.query.country;
+      }
+
+      console.log(`[Packages] Fetching for country: ${country}`);
+
+      const { data, error } = await adminClient
+        .from('packages')
+        .select('*')
+        .eq('country', country)
+        .order('id', { ascending: true });
+
+      if (!error && data && data.length > 0) {
+        return res.json({ data });
+      }
+      
+      // Fallback: If no packages for this country, show Burundi (or Uganda if applicable)
+      if (country === 'Uganda') {
+        return res.json({ data: mockData.ugandaPackages });
+      }
+      
+      if (country !== 'Burundi') {
+        const { data: fallback } = await adminClient
+          .from('packages')
+          .select('*')
+          .eq('country', 'Burundi')
+          .order('id', { ascending: true });
+        if (fallback && fallback.length > 0) return res.json({ data: fallback });
+      }
     } catch (err) {
       console.warn('Supabase fetch error:', err.message);
     }
   }
-  res.json({ data: [] }); // Enforce real data
+  
+  // Final Mock Fallback
+  if (req.query.country === 'Uganda' || (req.user && req.user.country === 'Uganda')) {
+    return res.json({ data: mockData.ugandaPackages });
+  }
+  res.json({ data: mockData.packages });
 };
 
 exports.getDashboard = async (req, res) => {
