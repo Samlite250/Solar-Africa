@@ -351,10 +351,18 @@
                 <label style="display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px;">💰 Crypto TRC-20 Wallet Address</label>
                 <input type="text" id="setting-crypto" placeholder="T..." style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0;" />
               </div>
-              <div class="field">
-                <label style="display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px;">🌍 Crypto Enabled Countries</label>
-                <input type="text" id="setting-crypto-countries" placeholder="Rwanda, International, all" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0;" />
-                <p style="font-size:11px; color:#64748b; margin-top:4px;">Type <strong>all</strong> to enable for everyone, or specific countries separated by commas.</p>
+              <div class="field" style="grid-column: span 2;">
+                <label style="display: block; font-size: 13px; font-weight: 700; margin-bottom: 12px;">🌍 Crypto Enabled Countries</label>
+                <div id="crypto-countries-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                  <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;"><input type="checkbox" name="crypto-country" value="Burundi"> Burundi</label>
+                  <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;"><input type="checkbox" name="crypto-country" value="Rwanda"> Rwanda</label>
+                  <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;"><input type="checkbox" name="crypto-country" value="Kenya"> Kenya</label>
+                  <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;"><input type="checkbox" name="crypto-country" value="Uganda"> Uganda</label>
+                  <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;"><input type="checkbox" name="crypto-country" value="Tanzania"> Tanzania</label>
+                  <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;"><input type="checkbox" name="crypto-country" value="Congo RDC"> Congo RDC</label>
+                  <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;"><input type="checkbox" name="crypto-country" value="International"> International</label>
+                  <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; color: #0b6cff; font-weight: 700;"><input type="checkbox" name="crypto-country" value="all"> (Enable All)</label>
+                </div>
               </div>
             </div>
 

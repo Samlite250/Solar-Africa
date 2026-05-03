@@ -895,7 +895,12 @@ class SolarApp {
       document.getElementById('setting-telegram').value = settings.telegram_channel || '';
       document.getElementById('setting-email').value = settings.support_email || '';
       document.getElementById('setting-crypto').value = settings.crypto_address || '';
-      document.getElementById('setting-crypto-countries').value = settings.crypto_countries || '';
+      
+      // Populate Checkboxes
+      const savedCountries = (settings.crypto_countries || '').split(',').map(c => c.trim().toLowerCase());
+      document.querySelectorAll('input[name="crypto-country"]').forEach(cb => {
+        cb.checked = savedCountries.includes(cb.value.toLowerCase());
+      });
     }
 
     const settingsForm = document.getElementById('global-settings-form');
@@ -905,12 +910,17 @@ class SolarApp {
         const btn = e.target.querySelector('button');
         btn.disabled = true; btn.textContent = 'Saving Settings...';
         
+        // Collect checked countries
+        const selectedCountries = Array.from(document.querySelectorAll('input[name="crypto-country"]:checked'))
+          .map(cb => cb.value)
+          .join(', ');
+
         const payload = {
           whatsapp_group: document.getElementById('setting-whatsapp').value,
           telegram_channel: document.getElementById('setting-telegram').value,
           support_email: document.getElementById('setting-email').value,
           crypto_address: document.getElementById('setting-crypto').value,
-          crypto_countries: document.getElementById('setting-crypto-countries').value
+          crypto_countries: selectedCountries
         };
 
         const res = await this.fetchAPI('admin/settings', { method: 'PUT', body: JSON.stringify(payload) });
