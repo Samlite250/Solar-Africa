@@ -2130,6 +2130,41 @@ class SolarApp {
     if (modal) modal.style.display = 'none';
   }
 
+  switchPaymentTab(type) {
+    const momoSection = document.getElementById('momo-payment-section');
+    const cryptoSection = document.getElementById('crypto-payment-section');
+    const tabMomo = document.getElementById('tab-momo');
+    const tabCrypto = document.getElementById('tab-crypto');
+
+    if (type === 'momo') {
+      if (momoSection) momoSection.style.display = 'block';
+      if (cryptoSection) cryptoSection.style.display = 'none';
+      if (tabMomo) {
+        tabMomo.style.background = 'white';
+        tabMomo.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)';
+        tabMomo.style.color = '#1e293b';
+      }
+      if (tabCrypto) {
+        tabCrypto.style.background = 'none';
+        tabCrypto.style.boxShadow = 'none';
+        tabCrypto.style.color = '#64748b';
+      }
+    } else {
+      if (momoSection) momoSection.style.display = 'none';
+      if (cryptoSection) cryptoSection.style.display = 'block';
+      if (tabCrypto) {
+        tabCrypto.style.background = 'white';
+        tabCrypto.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)';
+        tabCrypto.style.color = '#1e293b';
+      }
+      if (tabMomo) {
+        tabMomo.style.background = 'none';
+        tabMomo.style.boxShadow = 'none';
+        tabMomo.style.color = '#64748b';
+      }
+    }
+  }
+
   // --- UTILITIES ---
 
   setLoading(isLoading) {
@@ -2330,7 +2365,8 @@ class SolarApp {
         }
       } catch(e) { console.warn('Payment method fetch failed'); }
 
-      const isBurundi = userCountry === 'Burundi';
+      const userCountryClean = (userCountry || 'Burundi').trim().toLowerCase();
+      const isBurundi = userCountryClean === 'burundi';
       const amountRaw = amount.replace(/[^0-9]/g, '');
       
       // Smart extraction of variables from the admin's plain text textarea
@@ -2411,8 +2447,8 @@ class SolarApp {
 
       const paymentTabsHTML = cryptoHTML ? `
         <div style="display: flex; background: #f1f5f9; padding: 4px; border-radius: 14px; margin-bottom: 24px;">
-          <button id="tab-momo" onclick="document.getElementById('momo-payment-section').style.display='block'; document.getElementById('crypto-payment-section').style.display='none'; this.style.background='white'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.05)'; document.getElementById('tab-crypto').style.background='none'; document.getElementById('tab-crypto').style.boxShadow='none';" style="flex:1; padding:10px; border-radius:10px; border:none; background:${isInternational ? 'none' : 'white'}; font-size:13px; font-weight:800; color:${isInternational ? '#64748b' : '#1e293b'}; cursor:pointer; box-shadow:${isInternational ? 'none' : '0 2px 8px rgba(0,0,0,0.05)'}; transition:all 0.2s;">🏦 Mobile Money</button>
-          <button id="tab-crypto" onclick="document.getElementById('momo-payment-section').style.display='none'; document.getElementById('crypto-payment-section').style.display='block'; this.style.background='white'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.05)'; document.getElementById('tab-momo').style.background='none'; document.getElementById('tab-momo').style.boxShadow='none';" style="flex:1; padding:10px; border-radius:10px; border:none; background:${isInternational ? 'white' : 'none'}; font-size:13px; font-weight:800; color:${isInternational ? '#1e293b' : '#64748b'}; cursor:pointer; box-shadow:${isInternational ? '0 2px 8px rgba(0,0,0,0.05)' : 'none'}; transition:all 0.2s;">₿ Crypto (USDT)</button>
+          <button id="tab-momo" onclick="window.app.switchPaymentTab('momo')" style="flex:1; padding:10px; border-radius:10px; border:none; background:${isInternational ? 'none' : 'white'}; font-size:13px; font-weight:800; color:${isInternational ? '#64748b' : '#1e293b'}; cursor:pointer; box-shadow:${isInternational ? 'none' : '0 2px 8px rgba(0,0,0,0.05)'}; transition:all 0.2s;">🏦 Mobile Money</button>
+          <button id="tab-crypto" onclick="window.app.switchPaymentTab('crypto')" style="flex:1; padding:10px; border-radius:10px; border:none; background:${isInternational ? 'white' : 'none'}; font-size:13px; font-weight:800; color:${isInternational ? '#1e293b' : '#64748b'}; cursor:pointer; box-shadow:${isInternational ? '0 2px 8px rgba(0,0,0,0.05)' : 'none'}; transition:all 0.2s;">₿ Crypto (USDT)</button>
         </div>
       ` : '';
 
