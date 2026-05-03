@@ -839,10 +839,10 @@ exports.deletePaymentMethod = async (req, res) => {
 // ─── VIDEO TASKS CRUD ───────────────────────────────────────────────────────
 
 const DEFAULT_TASKS = [
-  { id: 1, icon: '☀️', title: 'Solar Africa: The Renewable Revolution',    video_url: 'https://cdn.pixabay.com/video/2023/03/28/156444-812591952_large.mp4', duration: 15, reward: '3,500 FBu' },
-  { id: 2, icon: '⚡', title: 'Smart Energy: Professional Solar Tech',   video_url: 'https://cdn.pixabay.com/video/2021/05/02/72837-545276870_large.mp4', duration: 20, reward: '3,500 FBu' },
-  { id: 3, icon: '🌍', title: 'Clean Power: Sustaining Our Planet',     video_url: 'https://cdn.pixabay.com/video/2018/03/02/14609-258212436_large.mp4', duration: 15, reward: '3,500 FBu' },
-  { id: 4, icon: '🔋', title: 'Future Storage: Next-Gen Batteries',  video_url: 'https://cdn.pixabay.com/video/2015/10/09/922-141891343_medium.mp4', duration: 18, reward: '3,500 FBu' }
+  { id: 1, icon: '☀️', title: 'Solar Energy: The Renewable Power',    video_url: 'https://cdn.pixabay.com/video/2023/03/28/156444-812591952_large.mp4', duration: 15, reward: '3,500 FBu' },
+  { id: 2, icon: '⚡', title: 'Solar Tech: Smart Solutions',   video_url: 'https://cdn.pixabay.com/video/2018/03/02/14609-258212436_large.mp4', duration: 20, reward: '3,500 FBu' },
+  { id: 3, icon: '🌍', title: 'Clean Energy: Harvesting Sunlight',     video_url: 'https://cdn.pixabay.com/video/2021/05/02/72837-545276870_large.mp4', duration: 15, reward: '3,500 FBu' },
+  { id: 4, icon: '🔋', title: 'Future Tech: Sustainable Power',  video_url: 'https://cdn.pixabay.com/video/2015/10/09/922-141891343_medium.mp4', duration: 18, reward: '3,500 FBu' }
 ];
 
 // GET: Public — list all active tasks (with default fallback and auto-migration)
