@@ -2422,15 +2422,23 @@ class SolarApp {
           </div>`;
       });
 
+      let cryptoHTML = '';
       const cryptoAddr = this.state.settings?.crypto_address;
       const cryptoCountriesRaw = this.state.settings?.crypto_countries || '';
-      const cryptoCountries = cryptoCountriesRaw.split(',').map(c => c.trim().toLowerCase());
+      const cryptoCountries = cryptoCountriesRaw.split(',').map(c => c.trim().toLowerCase()).filter(Boolean);
       const isInternational = userCountryClean === 'international';
       
       // Robust check: includes country name, 'all', or is international
       const isCryptoEnabledForUser = cryptoCountries.some(c => c === userCountryClean || c === 'all') || isInternational;
 
-      console.log('[CryptoDebug]', { userCountryClean, cryptoCountries, isCryptoEnabledForUser });
+      console.log('[CryptoDebug]', { 
+        userCountryClean, 
+        cryptoCountriesRaw, 
+        cryptoCountries, 
+        isInternational,
+        isCryptoEnabledForUser,
+        hasAddress: !!cryptoAddr
+      });
 
       if (cryptoAddr && isCryptoEnabledForUser) {
         cryptoHTML = `
