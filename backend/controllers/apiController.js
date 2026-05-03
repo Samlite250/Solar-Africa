@@ -332,15 +332,20 @@ exports.getAdminStats = async (req, res) => {
         }
       }
 
+      // ✅ Calculate Real-Time Stats
+      const totalBonuses = (dashboardsRes.data || []).reduce((acc, d) => acc + (parseInt((d.welcome_bonus || '0').toString().replace(/[^0-9]/g, '')) || 0), 0);
+      const totalInvestments = (deposits.data || []).filter(d => d.status === 'approved').reduce((acc, d) => acc + (parseInt((d.amount || '0').toString().replace(/[^0-9]/g, '')) || 0), 0);
+
       const liveMetrics = {
         users: enrichedUsers.length,
         packages: (packages.data || []).length,
         deposits: (deposits.data || []).length,
         withdrawals: (withdrawals.data || []).length,
-        total_payouts: stats.data?.total_payouts || '0 BIF'
+        total_payouts: totalBonuses.toLocaleString() + ' BIF',
+        total_profit: (totalInvestments * 0.15).toLocaleString() + ' BIF' // Example 15% platform profit
       };
 
-      console.log(`[Admin] Returning ${enrichedUsers.length} users to admin panel`);
+      console.log(`[Admin] Returning real-time stats and ${enrichedUsers.length} users`);
 
       return res.json({
         metrics: liveMetrics,

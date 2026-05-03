@@ -540,7 +540,25 @@ class SolarApp {
       e('admin-total-deposits', (metrics.deposits||0).toLocaleString());
       e('admin-total-bonuses', metrics.total_payouts || '0 BIF');
       e('admin-total-withdrawals', (metrics.withdrawals||0).toLocaleString());
-      e('admin-total-profit', (((metrics.deposits || 0) * 1000) || 0).toLocaleString() + ' BIF');
+      e('admin-total-profit', metrics.total_profit || '0 BIF');
+
+      // Populate Recent Deposits List on Dashboard
+      const recentDepositsEl = document.getElementById('recent-deposits-list');
+      if (recentDepositsEl && deposits) {
+        const recent = (deposits.data || deposits).slice(0, 5); // handle both array or {data:[]}
+        recentDepositsEl.innerHTML = recent.map(d => `
+          <div class="list-item" style="display:flex; justify-content:space-between; align-items:center; padding:12px; border-bottom:1px solid #f1f5f9;">
+            <div>
+              <div style="font-weight:700; font-size:13px; color:#1e293b;">${d.user_name}</div>
+              <div style="font-size:11px; color:#64748b;">${new Date(d.created_at).toLocaleDateString()}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-weight:800; font-size:13px; color:#16a34a;">+${d.amount}</div>
+              <div style="font-size:10px; font-weight:700; color:${d.status==='approved'?'#16a34a':'#d97706'}; text-transform:uppercase;">${d.status}</div>
+            </div>
+          </div>
+        `).join('') || '<div style="padding:20px; text-align:center; color:#94a3b8;">No recent deposits</div>';
+      }
     }
 
     // 4. Populate Users Table (with Balance + Edit)
