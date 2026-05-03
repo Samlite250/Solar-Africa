@@ -1,6 +1,21 @@
 -- Add country column to packages
 ALTER TABLE packages ADD COLUMN IF NOT EXISTS country TEXT DEFAULT 'Burundi';
 
+-- Settings table
+CREATE TABLE IF NOT EXISTS settings (
+  id SERIAL PRIMARY KEY,
+  key TEXT UNIQUE NOT NULL,
+  value TEXT,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Seed initial settings
+INSERT INTO settings (key, value) VALUES 
+  ('whatsapp_group', 'https://chat.whatsapp.com/default'),
+  ('telegram_channel', 'https://t.me/default'),
+  ('support_email', 'support@solarafrica.com')
+ON CONFLICT (key) DO NOTHING;
+
 -- Update existing packages to be Burundi
 UPDATE packages SET country = 'Burundi' WHERE country IS NULL;
 

@@ -55,7 +55,7 @@ exports.getPackages = async (req, res) => {
       }
 
       // International Fallback for non-listed countries
-      const localCountries = ['Burundi', 'Kenya', 'Uganda', 'Rwanda', 'Tanzania', 'Congo'];
+      const localCountries = ['Burundi', 'Kenya', 'Uganda', 'Rwanda', 'Tanzania', 'Congo RDC'];
       if (!localCountries.includes(country)) {
         return res.json({ data: mockData.internationalPackages });
       }
@@ -85,7 +85,7 @@ exports.getPackages = async (req, res) => {
   }
 
   // Global International Mock Fallback
-  const localCountries = ['Burundi', 'Kenya', 'Uganda', 'Rwanda', 'Tanzania', 'Congo'];
+  const localCountries = ['Burundi', 'Kenya', 'Uganda', 'Rwanda', 'Tanzania', 'Congo RDC'];
   const userCountry = req.query.country || (req.user ? req.user.country : null);
   if (userCountry && !localCountries.includes(userCountry)) {
     return res.json({ data: mockData.internationalPackages });
