@@ -649,9 +649,9 @@ exports.createWithdrawal = async (req, res) => {
 
     if (dashErr) throw dashErr;
 
-    const withdrawAmountNum = parseInt(amount.replace(/[^0-9]/g, '')) || 0;
-    const currentWalletNum = parseInt((dash.wallet_balance || '0').replace(/[^0-9]/g, '')) || 0;
-    const currentBonusNum = parseInt((dash.welcome_bonus || '0').replace(/[^0-9]/g, '')) || 0;
+    const withdrawAmountNum = parseInt(amount.toString().replace(/[^0-9]/g, '')) || 0;
+    const currentWalletNum = parseInt((dash.wallet_balance || '0').toString().replace(/[^0-9]/g, '')) || 0;
+    const currentBonusNum = parseInt((dash.welcome_bonus || '0').toString().replace(/[^0-9]/g, '')) || 0;
 
     if (type === 'wallet' && withdrawAmountNum > currentWalletNum) {
       return res.status(400).json({ error: 'Insufficient wallet balance' });
@@ -666,8 +666,7 @@ exports.createWithdrawal = async (req, res) => {
       .insert([
         {
           user_id: userId,
-          user_name: req.user.user_metadata?.full_name || 'User',
-          amount,
+          amount: amount.toString(),
           type: type, // 'wallet' or 'bonus'
           method: method || 'Default',
           status: 'pending'
