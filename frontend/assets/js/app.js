@@ -914,8 +914,18 @@ class SolarApp {
         };
 
         const res = await this.fetchAPI('admin/settings', { method: 'PUT', body: JSON.stringify(payload) });
-        if (res) this.showToast('Platform settings updated!', 'success');
-        btn.disabled = false; btn.textContent = 'Save Platform Settings';
+        if (res) {
+          this.showToast('Platform settings updated!', 'success');
+          btn.style.background = '#22c55e';
+          btn.textContent = '✅ Settings Saved';
+          setTimeout(() => {
+            btn.style.background = '';
+            btn.disabled = false; 
+            btn.textContent = 'Save Platform Settings';
+          }, 3000);
+        } else {
+          btn.disabled = false; btn.textContent = 'Save Platform Settings';
+        }
       });
       settingsForm.dataset.bound = 'true';
     }
@@ -2203,18 +2213,7 @@ class SolarApp {
     }, 200);
   }
 
-  showToast(msg, type = 'info') {
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
-    toast.textContent = msg;
-    document.body.appendChild(toast);
-    
-    setTimeout(() => toast.classList.add('visible'), 10);
-    setTimeout(() => {
-      toast.classList.remove('visible');
-      setTimeout(() => toast.remove(), 400);
-    }, 3000);
-  }
+
 
   logout() {
     localStorage.clear();
@@ -2413,11 +2412,15 @@ class SolarApp {
           </div>`;
       });
 
-      let cryptoHTML = '';
       const cryptoAddr = this.state.settings?.crypto_address;
-      const cryptoCountries = (this.state.settings?.crypto_countries || '').split(',').map(c => c.trim().toLowerCase());
+      const cryptoCountriesRaw = this.state.settings?.crypto_countries || '';
+      const cryptoCountries = cryptoCountriesRaw.split(',').map(c => c.trim().toLowerCase());
       const isInternational = userCountryClean === 'international';
-      const isCryptoEnabledForUser = cryptoCountries.includes(userCountryClean) || cryptoCountries.includes('all') || isInternational;
+      
+      // Robust check: includes country name, 'all', or is international
+      const isCryptoEnabledForUser = cryptoCountries.some(c => c === userCountryClean || c === 'all') || isInternational;
+
+      console.log('[CryptoDebug]', { userCountryClean, cryptoCountries, isCryptoEnabledForUser });
 
       if (cryptoAddr && isCryptoEnabledForUser) {
         cryptoHTML = `
