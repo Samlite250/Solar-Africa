@@ -661,14 +661,16 @@ exports.createWithdrawal = async (req, res) => {
     }
 
     // 2. Create Withdrawal Record
+    // Note: The 'withdrawals' table currently lacks a 'type' column but requires 'user_name'.
+    // We merge the type into the method for tracking.
     const { data, error } = await adminClient
       .from('withdrawals')
       .insert([
         {
           user_id: userId,
+          user_name: req.user.user_metadata?.full_name || req.user.email || 'User',
           amount: amount.toString(),
-          type: type, // 'wallet' or 'bonus'
-          method: method || 'Default',
+          method: `${method || 'Default'} (${type})`,
           status: 'pending'
         }
       ])
