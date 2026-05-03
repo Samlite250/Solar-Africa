@@ -11,6 +11,9 @@ class SolarApp {
       user: JSON.parse(window.localStorage.getItem('solar_user') || 'null'),
       token: window.localStorage.getItem('solar_token'),
       view: 'dashboard',
+      page: document.body.dataset.page || 'home',
+      loading: false,
+      tickerIndex: 0,
       settings: {},
       pagination: {
         adminUsers: 1,
@@ -537,8 +540,7 @@ class SolarApp {
       e('admin-total-deposits', (metrics.deposits||0).toLocaleString());
       e('admin-total-bonuses', metrics.total_payouts || '0 BIF');
       e('admin-total-withdrawals', (metrics.withdrawals||0).toLocaleString());
-      // dummy profit calculation
-      e('admin-total-profit', ((metrics.deposits * 1000) || 0).toLocaleString() + ' BIF');
+      e('admin-total-profit', (((metrics.deposits || 0) * 1000) || 0).toLocaleString() + ' BIF');
     }
 
     // 4. Populate Users Table (with Balance + Edit)

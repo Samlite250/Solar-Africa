@@ -290,12 +290,15 @@ exports.getAdminStats = async (req, res) => {
       // ✅ Enrich users with dashboard balances + profile info
       // Only query what we know exists (no email/phone from profiles — may not exist)
       let enrichedUsers = rawUsers;
+      let depositList = deposits.data || [];
+      let withdrawalList = withdrawals.data || [];
+
       if (enrichedUsers.length > 0) {
         const userIds = enrichedUsers.map(u => u.user_id).filter(Boolean);
         if (userIds.length > 0) {
           const [dashboardsRes, profilesRes] = await Promise.all([
             adminClient.from('dashboard').select('user_id, wallet_balance, welcome_bonus, total_earnings').in('user_id', userIds),
-            adminClient.from('profiles').select('user_id, name, referred_by').in('user_id', userIds)
+            adminClient.from('profiles').select('user_id, name, referred_by, country, phone').in('user_id', userIds)
           ]);
 
           const dashMap = {};
@@ -317,12 +320,12 @@ exports.getAdminStats = async (req, res) => {
           }));
 
           // Enrich deposits and withdrawals with user country
-          const depositList = (deposits.data || []).map(d => ({
+          depositList = (deposits.data || []).map(d => ({
             ...d,
             country: profMap[d.user_id]?.country || 'Burundi'
           }));
 
-          const withdrawalList = (withdrawals.data || []).map(w => ({
+          withdrawalList = (withdrawals.data || []).map(w => ({
             ...w,
             country: profMap[w.user_id]?.country || 'Burundi'
           }));
