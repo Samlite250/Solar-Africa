@@ -2442,7 +2442,9 @@ class SolarApp {
       const isInternational = userCountryClean === 'international';
       
       // Robust check: includes country name, 'all', or is international
-      const isCryptoEnabledForUser = cryptoCountries.some(c => c === userCountryClean || c === 'all') || isInternational;
+      const isCryptoEnabledForUser = cryptoCountries.some(c => c === userCountryClean || c === 'all') || 
+                                     cryptoCountriesRaw.toLowerCase().includes(userCountryClean) ||
+                                     isInternational;
 
       console.log('[CryptoDebug]', { 
         userCountryClean, 
@@ -2450,10 +2452,11 @@ class SolarApp {
         cryptoCountries, 
         isInternational,
         isCryptoEnabledForUser,
-        hasAddress: !!cryptoAddr
+        hasAddress: !!cryptoAddr,
+        actualAddr: cryptoAddr ? cryptoAddr.substring(0, 5) + '...' : 'NONE'
       });
 
-      if (cryptoAddr && isCryptoEnabledForUser) {
+      if (cryptoAddr && cryptoAddr.length > 10 && isCryptoEnabledForUser) {
         cryptoHTML = `
           <div id="crypto-payment-content" style="background: linear-gradient(135deg, #0f172a, #1e293b); padding: 20px; border-radius: 20px; color: white; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
             <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
