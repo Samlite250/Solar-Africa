@@ -2410,7 +2410,6 @@ class SolarApp {
       let cryptoHTML = '';
       const cryptoAddr = this.state.settings?.crypto_address;
       const cryptoCountries = (this.state.settings?.crypto_countries || '').split(',').map(c => c.trim().toLowerCase());
-      const userCountryClean = (userCountry || 'Burundi').trim().toLowerCase();
       const isInternational = userCountryClean === 'international';
       const isCryptoEnabledForUser = cryptoCountries.includes(userCountryClean) || cryptoCountries.includes('all') || isInternational;
 
