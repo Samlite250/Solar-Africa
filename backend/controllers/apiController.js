@@ -53,18 +53,21 @@ exports.getPackages = async (req, res) => {
       if (country === 'Tanzania') {
         return res.json({ data: mockData.tanzaniaPackages });
       }
+
+      // International Fallback for non-listed countries
+      const localCountries = ['Burundi', 'Kenya', 'Uganda', 'Rwanda', 'Tanzania', 'Congo'];
+      if (!localCountries.includes(country)) {
+        return res.json({ data: mockData.internationalPackages });
+      }
       
-      // Default fallback for any other country (International)
-      const { data: fallback } = await adminClient
-        .from('packages')
-        .select('*')
-        .eq('country', 'International')
-        .order('id', { ascending: true });
-        
-      if (fallback && fallback.length > 0) return res.json({ data: fallback });
-      
-      // Mock Fallback for International
-      return res.json({ data: mockData.internationalPackages });
+      if (country !== 'Burundi') {
+        const { data: fallback } = await adminClient
+          .from('packages')
+          .select('*')
+          .eq('country', 'Burundi')
+          .order('id', { ascending: true });
+        if (fallback && fallback.length > 0) return res.json({ data: fallback });
+      }
     } catch (err) {
       console.warn('Supabase fetch error:', err.message);
     }
@@ -80,13 +83,15 @@ exports.getPackages = async (req, res) => {
   if (req.query.country === 'Tanzania' || (req.user && req.user.country === 'Tanzania')) {
     return res.json({ data: mockData.tanzaniaPackages });
   }
-  
-  // Burundi specific fallback if explicitly requested, otherwise International
-  if (req.query.country === 'Burundi' || (req.user && req.user.country === 'Burundi')) {
-    return res.json({ data: mockData.packages });
-  }
 
-  return res.json({ data: mockData.internationalPackages });
+  // Global International Mock Fallback
+  const localCountries = ['Burundi', 'Kenya', 'Uganda', 'Rwanda', 'Tanzania', 'Congo'];
+  const userCountry = req.query.country || (req.user ? req.user.country : null);
+  if (userCountry && !localCountries.includes(userCountry)) {
+    return res.json({ data: mockData.internationalPackages });
+  }
+  
+  res.json({ data: mockData.packages });
 };
 
 exports.getDashboard = async (req, res) => {

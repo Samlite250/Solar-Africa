@@ -1041,11 +1041,12 @@ class SolarApp {
         const password = document.getElementById('password').value;
         if (btn) { btn.disabled = true; btn.textContent = 'Creating account...'; }
         const ref = localStorage.getItem('solar_ref');
+        const finalCountry = country === 'Other' ? document.getElementById('other_country').value.trim() : country;
         try {
           const res = await fetch('/api/auth/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, email, phone, country, password, referred_by: ref })
+            body: JSON.stringify({ name, email, phone, country: finalCountry, password, referred_by: ref })
           });
           const data = await res.json();
           if (!res.ok) throw new Error(data.message || data.error || 'Registration failed');
