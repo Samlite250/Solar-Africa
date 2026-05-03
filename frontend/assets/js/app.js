@@ -2391,7 +2391,7 @@ class SolarApp {
       const isRwanda = userCountryClean === 'rwanda';
       const isBurundi = userCountryClean === 'burundi';
       
-      const rwfRate = 1350; // Current market rate for MOMO RWF
+      const rwfRate = 1450; // Updated rate: 1$ = 1450 RWF
       const localizedAmount = this.formatCurrency(amount);
       const amountRaw = amount.toString().replace(/[^0-9]/g, '');
       const amountRWF = (parseFloat(amountRaw) * rwfRate).toLocaleString() + ' RWF';
