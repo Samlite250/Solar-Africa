@@ -1455,7 +1455,7 @@ class SolarApp {
               <strong style="display: block; font-size: 14px; color: #1e293b; margin-bottom: 4px;">${t.title}</strong>
               <div style="display: flex; align-items: center; gap: 8px;">
                 <span style="font-size: 11px; background: #eff6ff; color: #3b82f6; padding: 2px 8px; border-radius: 100px; font-weight: 700;">${t.duration}s</span>
-                <span style="font-size: 13px; color: #16a34a; font-weight: 800;">+${this.formatCurrency(t.reward)}</span>
+                <span style="font-size: 13px; color: #16a34a; font-weight: 800;">+${(this.state.user?.country?.toLowerCase() === 'rwanda' || this.state.user?.country?.toLowerCase() === 'international') ? '$2.00' : this.formatCurrency(t.reward)}</span>
               </div>
             </div>
           </div>

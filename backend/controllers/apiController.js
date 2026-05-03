@@ -1112,12 +1112,23 @@ exports.completeTask = async (req, res) => {
 
     if (dashErr && dashErr.code !== 'PGRST116') throw dashErr;
 
-    const rewardValueNum = parseInt(reward.replace(/[^0-9]/g, '')) || 0;
+    // 2. Fetch User Profile for Country
+    const { data: profile } = await adminClient.from('profiles').select('country').eq('user_id', userId).single();
+    const userCountry = (profile?.country || 'Burundi').toLowerCase();
+    const isUSDUser = userCountry === 'rwanda' || userCountry === 'international';
+
+    let rewardValueNum = parseInt(reward.replace(/[^0-9]/g, '')) || 0;
+    if (isUSDUser) {
+      rewardValueNum = 2; // Fixed $2 reward for these regions
+    }
+
     const currentBalanceNum = parseInt((dash?.wallet_balance || '0').replace(/[^0-9]/g, '')) || 0;
     const currentEarningsNum = parseInt((dash?.total_earnings || '0').replace(/[^0-9]/g, '')) || 0;
 
-    const newBalance = `${(currentBalanceNum + rewardValueNum).toLocaleString()} FBu`;
-    const newEarnings = `${(currentEarningsNum + rewardValueNum).toLocaleString()} FBu`;
+    // Maintain suffix-based storage if not a USD user
+    const suffix = isUSDUser ? '' : ' FBu';
+    const newBalance = `${(currentBalanceNum + rewardValueNum).toLocaleString()}${suffix}`;
+    const newEarnings = `${(currentEarningsNum + rewardValueNum).toLocaleString()}${suffix}`;
 
     // 3. Update Dashboard (Safer logic)
     if (dash) {
