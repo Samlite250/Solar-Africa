@@ -2195,7 +2195,8 @@ class SolarApp {
 
       let cryptoHTML = '';
       const cryptoAddr = this.state.settings?.crypto_address;
-      if (cryptoAddr && (userCountry === 'International' || userCountry === 'Rwanda')) {
+      // Show crypto for ALL countries if an address is configured
+      if (cryptoAddr && cryptoAddr !== 'TTRC20ADDRESSPLACEHOLDER') {
         cryptoHTML = `
           <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #e2e8f0;">
             <h4 style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px;">💰 Pay with Crypto (USDT TRC-20)</h4>
