@@ -1776,8 +1776,8 @@ class SolarApp {
     const activePkg = document.getElementById('active-package')?.textContent || 'None';
     
     // EXEMPTION LOGIC: Linkon, Burundi, Kenya, Tanzania, Uganda, SOLAR, Akilimali
-    const exemplaryUsers = ['Linkon', 'Burundi', 'Kenya', 'Tanzania', 'Uganda', 'SOLAR', 'Akilimali'];
-    const currentName = this.state.user?.name || '';
+    const currentName = (this.state.user?.name || '').trim().toLowerCase();
+    const exemplaryUsers = ['linkon', 'burundi', 'kenya', 'tanzania', 'uganda', 'solar', 'akilimali', 'rashid', 'admin'];
     
     if (exemplaryUsers.includes(currentName)) {
       this.showRealWithdrawForm();
@@ -2359,34 +2359,25 @@ class SolarApp {
         const pmData = await fetch(`/api/payment-methods?country=${encodeURIComponent(userCountry)}`).then(r => r.json());
         if (pmData?.data?.length > 0) {
           rawInstructions = (pmData.data[0].provider || '').replace(/\\n/g, '\n');
-          customHeader = pmData.data[0].account_name || (isBurundi ? '🇧🇮 Uko ugura muri Solar Africa' : '📋 Payment Instructions');
-        } else if (isBurundi) {
-          customHeader = '🇧🇮 Uko ugura muri Solar Africa';
+          customHeader = pmData.data[0].account_name || 'Payment Instructions';
         }
       } catch(e) { console.warn('Payment method fetch failed'); }
 
       const userCountryClean = (userCountry || 'Burundi').trim().toLowerCase();
       const isBurundi = userCountryClean === 'burundi';
+      const localizedAmount = this.formatCurrency(amount);
       const amountRaw = amount.replace(/[^0-9]/g, '');
       
-      // Smart extraction of variables from the admin's plain text textarea
-      // 1. Find all potential phone numbers (8-13 digits, may start with +)
       const phoneMatches = rawInstructions.match(/(?:\+?\d{8,13})/g) || [];
       const uniquePhones = [...new Set(phoneMatches)];
-      
-      // 2. Find USSD dial codes (*...#)
       const dialMatches = rawInstructions.match(/\*\d+[\*\d]*#/g) || [];
       const uniqueDials = [...new Set(dialMatches)];
-      
       const copySvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
 
-      let extraDetailsHTML = '';
-      
-      // Amount Row (Always first)
-      extraDetailsHTML += `
+      let extraDetailsHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <span style="font-size:13px; font-weight:600; color:#166534;">Amount to pay:</span>
-          <span style="display:inline-flex;align-items:center;gap:6px;"><strong style="color:#16a34a;font-size:16px;">${amountRaw}</strong><button onclick="navigator.clipboard.writeText('${amountRaw}');window.app?.showToast('Amount copied!','success');" style="background:none;border:none;color:#16a34a;cursor:pointer;padding:2px;">${copySvg}</button></span>
+          <span style="display:inline-flex;align-items:center;gap:6px;"><strong style="color:#16a34a;font-size:16px;">${localizedAmount}</strong><button onclick="navigator.clipboard.writeText('${amountRaw}');window.app?.showToast('Amount copied!','success');" style="background:none;border:none;color:#16a34a;cursor:pointer;padding:2px;">${copySvg}</button></span>
         </div>`;
 
       // Phone Numbers
