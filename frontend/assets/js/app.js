@@ -2380,32 +2380,30 @@ class SolarApp {
 
       if (cryptoAddr && isCryptoEnabledForUser) {
         cryptoHTML = `
-          <div id="crypto-payment-section" style="margin-top: 24px; display: none; animation: fadeIn 0.3s ease-out;">
-            <div style="background: linear-gradient(135deg, #0f172a, #1e293b); padding: 20px; border-radius: 20px; color: white; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
-              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
-                <div style="width: 40px; height: 40px; background: #f7931a; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(247, 147, 26, 0.3);">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
-                </div>
-                <div>
-                  <h4 style="margin:0; font-size:15px; font-weight:800; letter-spacing:0.5px;">USDT TRC-20</h4>
-                  <p style="margin:0; font-size:11px; color:rgba(255,255,255,0.6); font-weight:600;">Secure Blockchain Payment</p>
-                </div>
+          <div id="crypto-payment-content" style="background: linear-gradient(135deg, #0f172a, #1e293b); padding: 20px; border-radius: 20px; color: white; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+              <div style="width: 40px; height: 40px; background: #f7931a; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(247, 147, 26, 0.3);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
               </div>
+              <div>
+                <h4 style="margin:0; font-size:15px; font-weight:800; letter-spacing:0.5px;">USDT TRC-20</h4>
+                <p style="margin:0; font-size:11px; color:rgba(255,255,255,0.6); font-weight:600;">Secure Blockchain Payment</p>
+              </div>
+            </div>
 
-              <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 16px; margin-bottom: 20px;">
-                <label style="display:block; font-size:11px; color:rgba(255,255,255,0.5); text-transform:uppercase; font-weight:800; margin-bottom:8px; letter-spacing:1px;">Destination Address</label>
-                <div style="display:flex; align-items:center; gap:10px;">
-                  <code style="background:rgba(255,255,255,0.1); padding:10px 14px; border-radius:10px; font-size:12px; color:#f7931a; flex:1; overflow:hidden; text-overflow:ellipsis; border:1px solid rgba(247,147,26,0.2); font-family:monospace;">${cryptoAddr}</code>
-                  <button onclick="navigator.clipboard.writeText('${cryptoAddr}');window.app?.showToast('Address copied!','success');" style="width:40px; height:40px; border-radius:10px; background:#f7931a; border:none; color:white; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                    ${copySvg}
-                  </button>
-                </div>
+            <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 16px; margin-bottom: 20px;">
+              <label style="display:block; font-size:11px; color:rgba(255,255,255,0.5); text-transform:uppercase; font-weight:800; margin-bottom:8px; letter-spacing:1px;">Destination Address</label>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <code style="background:rgba(255,255,255,0.1); padding:10px 14px; border-radius:10px; font-size:12px; color:#f7931a; flex:1; overflow:hidden; text-overflow:ellipsis; border:1px solid rgba(247,147,26,0.2); font-family:monospace;">${cryptoAddr}</code>
+                <button onclick="navigator.clipboard.writeText('${cryptoAddr}');window.app?.showToast('Address copied!','success');" style="width:40px; height:40px; border-radius:10px; background:#f7931a; border:none; color:white; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                  ${copySvg}
+                </button>
               </div>
+            </div>
 
-              <div style="display: flex; align-items: flex-start; gap: 10px; background: rgba(234, 179, 8, 0.1); padding: 12px; border-radius: 12px; border-left: 4px solid #eab308;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2.5" style="margin-top:2px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                <p style="margin:0; font-size:11px; line-height:1.5; color:#fde047; font-weight:500;">Please only send <strong>USDT</strong> using the <strong>TRC-20 (TRON)</strong> network. Sending other assets or using different networks will result in permanent loss.</p>
-              </div>
+            <div style="display: flex; align-items: flex-start; gap: 10px; background: rgba(234, 179, 8, 0.1); padding: 12px; border-radius: 12px; border-left: 4px solid #eab308;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2.5" style="margin-top:2px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <p style="margin:0; font-size:11px; line-height:1.5; color:#fde047; font-weight:500;">Please only send <strong>USDT</strong> using the <strong>TRC-20 (TRON)</strong> network. Sending other assets or using different networks will result in permanent loss.</p>
             </div>
           </div>
         `;
@@ -2419,14 +2417,14 @@ class SolarApp {
       ` : '';
 
       const paymentStepsHTML = `
-        <div id="momo-payment-section" style="${isInternational ? 'display:none' : ''}">
+        <div id="momo-payment-section" style="${isInternational ? 'display:none' : 'display:block'}">
           <h4 style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:12px;border-bottom:1px solid #e2e8f0;padding-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;">${customHeader.replace(/</g, '&lt;')}</h4>
           <div style="white-space: pre-wrap; font-size: 14px; line-height: 1.6; color: #334155; margin-bottom: 16px;">${rawInstructions || 'Please contact support for instructions.'}</div>
           <div style="background:#f0fdf4; padding:12px; border-radius:12px; display:flex; flex-direction:column; gap:8px; border:1px dashed #22c55e;">
             ${extraDetailsHTML}
           </div>
         </div>
-        <div id="crypto-payment-section" style="${isInternational ? 'display:block' : 'display:none'}">
+        <div id="crypto-payment-section" style="${isInternational ? 'display:block' : 'display:none'}; animation: fadeIn 0.3s ease-out;">
           ${cryptoHTML || '<p style="color:#64748b; font-size:13px; text-align:center; padding:20px;">Crypto payment is not yet configured for this region.</p>'}
         </div>`;
 
