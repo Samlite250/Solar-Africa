@@ -258,7 +258,7 @@ exports.getAdminStats = async (req, res) => {
         // Only select guaranteed columns (name, user_id, created_at)
         const { data: profilesData } = await adminClient
           .from('profiles')
-          .select('user_id, name, created_at')
+          .select('user_id, name, created_at, country, phone, referred_by')
           .order('created_at', { ascending: false })
           .limit(500);
         
@@ -308,10 +308,23 @@ exports.getAdminStats = async (req, res) => {
             ...u,
             // Use profile name as priority (it's what the user registered with)
             name: profMap[u.user_id]?.name || u.name,
+            country: profMap[u.user_id]?.country || 'Burundi',
+            phone: profMap[u.user_id]?.phone || 'N/A',
             upline: profMap[u.user_id]?.referred_by || 'SOLAR',
-            wallet_balance: dashMap[u.user_id]?.wallet_balance || '0 FBu',
-            welcome_bonus: dashMap[u.user_id]?.welcome_bonus || '0 FBu',
-            total_earnings: dashMap[u.user_id]?.total_earnings || '0 FBu'
+            wallet_balance: dashMap[u.user_id]?.wallet_balance || '0',
+            welcome_bonus: dashMap[u.user_id]?.welcome_bonus || '0',
+            total_earnings: dashMap[u.user_id]?.total_earnings || '0'
+          }));
+
+          // Enrich deposits and withdrawals with user country
+          const depositList = (deposits.data || []).map(d => ({
+            ...d,
+            country: profMap[d.user_id]?.country || 'Burundi'
+          }));
+
+          const withdrawalList = (withdrawals.data || []).map(w => ({
+            ...w,
+            country: profMap[w.user_id]?.country || 'Burundi'
           }));
         }
       }
@@ -328,10 +341,10 @@ exports.getAdminStats = async (req, res) => {
 
       return res.json({
         metrics: liveMetrics,
-        deposits: deposits.data || [],
+        deposits: depositList,
         packages: packages.data || [],
         users: enrichedUsers,
-        withdrawals: withdrawals.data || [],
+        withdrawals: withdrawalList,
         analytics: []
       });
     } catch (err) {

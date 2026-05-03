@@ -8,11 +8,9 @@ class SolarApp {
   constructor() {
     this.apiBase = '/api';
     this.state = {
-      user: JSON.parse(localStorage.getItem('solar_user')) || null,
-      token: localStorage.getItem('solar_token') || null,
-      page: document.body.dataset.page || 'home',
-      loading: false,
-      tickerIndex: 0,
+      user: JSON.parse(window.localStorage.getItem('solar_user') || 'null'),
+      token: window.localStorage.getItem('solar_token'),
+      view: 'dashboard',
       settings: {},
       pagination: {
         adminUsers: 1,
@@ -20,6 +18,14 @@ class SolarApp {
         adminWithdrawals: 1,
         userActivity: 1,
         userTeam: 1
+      },
+      currency: {
+        'Burundi': { symbol: 'FBu', rate: 1 },
+        'Kenya': { symbol: 'KES', rate: 0.05 },
+        'Uganda': { symbol: 'UGX', rate: 1.3 },
+        'Tanzania': { symbol: 'TZS', rate: 0.9 },
+        'Rwanda': { symbol: 'RWF', rate: 0.4 },
+        'International': { symbol: 'USDT', rate: 0.00035 }
       }
     };
 
@@ -74,6 +80,21 @@ class SolarApp {
     if (newPage < 1) return;
     this.state.pagination[key] = newPage;
     this.hydrate();
+  }
+
+  formatCurrency(val, country = null) {
+    if (!val) return '0';
+    const userCountry = country || this.state.user?.country || 'Burundi';
+    const info = this.state.currency[userCountry] || this.state.currency['Burundi'];
+    
+    // If value is a string with currency (like "80,000 BIF"), extract the number
+    let numericVal = val;
+    if (typeof val === 'string') {
+      numericVal = parseFloat(val.replace(/[^0-9.]/g, '')) || 0;
+    }
+    
+    const converted = numericVal * info.rate;
+    return converted.toLocaleString(undefined, { maximumFractionDigits: 0 }) + ' ' + info.symbol;
   }
 
   // --- CORE ENGINE ---
@@ -532,10 +553,10 @@ class SolarApp {
           <td style="color:#64748b;font-size:13px;">${u.email||'N/A'}</td>
           <td style="color:#0b6cff;font-size:12px;font-weight:700;">${u.upline||'SOLAR'}</td>
           <td style="color:#64748b;font-size:13px;">${new Date(u.created_at).toLocaleDateString()}</td>
-          <td style="color:#10b981;font-weight:700;">${u.wallet_balance||'0 FBu'}</td>
+          <td style="color:#10b981;font-weight:700;">${this.formatCurrency(u.wallet_balance, u.country)}</td>
           <td><span style="background:${u.status==='active'?'#dcfce7':'#fee2e2'};color:${u.status==='active'?'#16a34a':'#dc2626'};padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;">${(u.status||'active').toUpperCase()}</span></td>
           <td style="display:flex;gap:6px;flex-wrap:wrap;">
-            <button onclick="window.app.openBalanceModal('${u.user_id}', '${u.name}', '${u.wallet_balance||'0 FBu'}', '${u.welcome_bonus||'0 FBu'}', '${u.total_earnings||'0 FBu'}', '${u.email||''}', '${u.phone||''}', '${u.country||''}', '${u.upline||''}')" class="btn-admin btn-admin-primary" style="padding:6px 12px;font-size:11px;">Edit User</button>
+            <button onclick="window.app.openBalanceModal('${u.user_id}', '${u.name}', '${u.wallet_balance||'0'}', '${u.welcome_bonus||'0'}', '${u.total_earnings||'0'}', '${u.email||''}', '${u.phone||''}', '${u.country||''}', '${u.upline||''}')" class="btn-admin btn-admin-primary" style="padding:6px 12px;font-size:11px;">Edit User</button>
             <button onclick="window.app.toggleUserStatus(${u.id}, '${u.status==='active'?'suspended':'active'}')" class="btn-admin ${u.status==='active'?'btn-admin-outline':'btn-admin-primary'}" style="padding:6px 12px;font-size:11px;">${u.status==='active'?'Suspend':'Activate'}</button>
           </td>
         </tr>
@@ -569,9 +590,9 @@ class SolarApp {
       transTable.innerHTML = paginatedDeposits.map(d => `
         <tr>
           <td style="color:#64748b;font-family:monospace;font-size:12px;">#DEP-${d.id}</td>
-          <td><span style="background:#eff6ff;color:#0b6cff;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:800;">DEPOSIT</span></td>
+          <td><span style="background:#eff6ff;color:#0b6cff;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:800;text-transform:uppercase;">DEPOSIT</span></td>
           <td><strong>${d.user_name}</strong></td>
-          <td style="color:#10b981;font-weight:700;">${d.amount}</td>
+          <td style="color:#10b981;font-weight:700;">${this.formatCurrency(d.amount, d.country)}</td>
           <td style="color:#64748b;font-size:13px;">${new Date(d.created_at).toLocaleDateString()}</td>
           <td><span style="background:${d.status==='approved'?'#dcfce7':(d.status==='rejected'?'#fee2e2':'#fef3c7')};color:${d.status==='approved'?'#16a34a':(d.status==='rejected'?'#dc2626':'#d97706')};padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;">${d.status.toUpperCase()}</span></td>
           <td>
@@ -595,7 +616,7 @@ class SolarApp {
       withdrawTable.innerHTML = paginatedWithdrawals.map(w => `
         <tr>
           <td><strong>${w.user_name}</strong></td>
-          <td style="color:#dc2626;font-weight:700;">-${w.amount}</td>
+          <td style="color:#dc2626;font-weight:700;">-${this.formatCurrency(w.amount, w.country)}</td>
           <td><span style="background:#f4f7fe;color:#334155;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:800;text-transform:uppercase;">${w.type || 'wallet'}</span></td>
           <td style="color:#0b6cff;font-weight:700;font-size:12px;">${w.method || '<span style="color:#94a3b8;">Default</span>'}</td>
           <td style="color:#64748b;font-size:13px;">${new Date(w.created_at).toLocaleDateString()}</td>
@@ -1280,9 +1301,9 @@ class SolarApp {
     this.state.completedTasks = data?.completedTasks || [];
 
     // Use Mockup Data if API fails or for initial match
-    this.updateElement('wallet-balance', data?.wallet_balance || '0 FBu');
-    this.updateElement('welcome-bonus', data?.welcome_bonus || '0 FBu');
-    this.updateElement('total-earnings', data?.total_earnings || '0 FBu');
+    this.updateElement('wallet-balance', this.formatCurrency(data?.wallet_balance || 0));
+    this.updateElement('welcome-bonus', this.formatCurrency(data?.welcome_bonus || 0));
+    this.updateElement('total-earnings', this.formatCurrency(data?.total_earnings || 0));
     this.updateElement('active-package', data?.active_package || 'None');
 
     const activities = data?.activities || [];
@@ -1323,7 +1344,7 @@ class SolarApp {
             <strong>${act.title}</strong>
             <span>${act.date || 'Today, 10:30 AM'}</span>
           </div>
-          <div class="act-value ${act.value?.includes('+') ? 'green' : ''}">${act.value}</div>
+          <div class="act-value ${act.value?.includes('+') ? 'green' : ''}">${this.formatCurrency(act.value)}</div>
         </div>
       `;
     }).join('') + `<div id="pagination-activity"></div>`;
@@ -1382,11 +1403,11 @@ class SolarApp {
         </div>
         <div class="pkg-item-info">
           <h4>${p.name}</h4>
-          <p>${p.amount}</p>
+          <p>${this.formatCurrency(p.amount)}</p>
         </div>
         <div class="pkg-item-bonus">
           <span>Bonus</span>
-          <strong>${p.bonus}</strong>
+          <strong>${this.formatCurrency(p.bonus)}</strong>
         </div>
       </div>
     `).join('');
@@ -1430,7 +1451,7 @@ class SolarApp {
               <strong style="display: block; font-size: 14px; color: #1e293b; margin-bottom: 4px;">${t.title}</strong>
               <div style="display: flex; align-items: center; gap: 8px;">
                 <span style="font-size: 11px; background: #eff6ff; color: #3b82f6; padding: 2px 8px; border-radius: 100px; font-weight: 700;">${t.duration}s</span>
-                <span style="font-size: 13px; color: #16a34a; font-weight: 800;">+${t.reward}</span>
+                <span style="font-size: 13px; color: #16a34a; font-weight: 800;">+${this.formatCurrency(t.reward)}</span>
               </div>
             </div>
           </div>
@@ -1505,10 +1526,10 @@ class SolarApp {
                     const currentVal = parseInt(walletEl.textContent.replace(/[^0-9]/g, ''));
                     const rewardVal = parseInt(reward.replace(/[^0-9]/g, ''));
                     if (!isNaN(currentVal) && !isNaN(rewardVal)) {
-                        walletEl.textContent = (currentVal + rewardVal).toLocaleString() + ' FBu';
+                        walletEl.textContent = this.formatCurrency(currentVal + rewardVal);
                     }
                 }
-                this.showToast(`Success! ${reward} accredited to your wallet.`, 'success');
+                this.showToast(`Success! ${this.formatCurrency(reward)} accredited to your wallet.`, 'success');
             } else {
                 this.showToast(`Error: Reward could not be accredited. Please try again.`, 'error');
             }
@@ -1777,7 +1798,7 @@ class SolarApp {
     } catch(e) { console.warn('Failed to fetch package value for fee calculation'); }
 
     const feeAmount = Math.floor(pkgValue / 2);
-    const feeFormatted = feeAmount.toLocaleString() + ' FBu';
+    const feeFormatted = this.formatCurrency(feeAmount);
 
     // 2. Fetch Payment Instructions
     const userCountry = this.state.user?.country || 'Burundi';
@@ -2242,11 +2263,11 @@ class SolarApp {
             </div>
           </div>
           <h3 style="font-size:16px; font-weight:800; color:#374151; margin-bottom:4px;">${name}</h3>
-          <div style="font-size:28px; font-weight:900; color:#111827; margin-bottom:16px;">${amount}</div>
+          <div style="font-size:28px; font-weight:900; color:#111827; margin-bottom:16px;">${this.formatCurrency(amount)}</div>
           
           <div style="background:#f8fafc; border-radius:16px; padding:16px; margin-bottom:24px;">
             <span style="display:block; font-size:12px; color:#64748b; font-weight:700; margin-bottom:2px;">Welcome Bonus</span>
-            <strong style="font-size:20px; font-weight:900; color:#16a34a;">${bonus}</strong>
+            <strong style="font-size:20px; font-weight:900; color:#16a34a;">${this.formatCurrency(bonus)}</strong>
           </div>
 
           <div style="text-align:left; margin-bottom:24px;">
