@@ -30,3 +30,30 @@ INSERT INTO packages (name, amount, bonus, description, active, country) VALUES
   ('Solar Array', '1,400,000 UGX', '4,800,000 UGX', 'Large scale solar array investment.', 10, 'Uganda'),
   ('Solar Plant', '1,800,000 UGX', '6,200,000 UGX', 'Industrial solar plant ownership.', 8, 'Uganda'),
   ('Commercial Solar', '2,500,000 UGX', '8,500,000 UGX', 'Top-tier commercial solar partnership.', 5, 'Uganda');
+
+-- Insert Kenya packages
+INSERT INTO packages (name, amount, bonus, description, active, country) VALUES
+  ('Mono Starter', '4,000 KSh', '10,500 KSh', 'Entry-level solar investment with instant rewards.', 144, 'Kenya'),
+  ('Poly Basic', '6,000 KSh', '16,000 KSh', 'Standard solar plan for consistent growth.', 102, 'Kenya'),
+  ('Thin Film', '8,000 KSh', '22,000 KSh', 'Flexible solar technology investment.', 94, 'Kenya'),
+  ('Off-Grid Lite', '10,000 KSh', '30,000 KSh', 'Small scale off-grid solar solution.', 88, 'Kenya'),
+  ('Hybrid Lite', '12,000 KSh', '40,000 KSh', 'Combined energy source lite investment.', 76, 'Kenya'),
+  ('Grid-Tied Lite', '14,000 KSh', '50,000 KSh', 'Connected grid lite solar plan.', 65, 'Kenya'),
+  ('Solar Storage', '16,000 KSh', '65,000 KSh', 'Advanced battery storage solar investment.', 58, 'Kenya'),
+  ('Smart Solar', '18,000 KSh', '85,000 KSh', 'Intelligent energy management plan.', 52, 'Kenya'),
+  ('PV Entry', '20,000 KSh', '105,000 KSh', 'Entry level Photovoltaic investment.', 48, 'Kenya'),
+  ('PV Basic', '22,000 KSh', '125,000 KSh', 'Fundamental PV solar system plan.', 44, 'Kenya'),
+  ('PV Standard', '24,000 KSh', '150,000 KSh', 'Standard PV performance investment.', 40, 'Kenya'),
+  ('PV Plus', '26,000 KSh', '180,000 KSh', 'Enhanced PV solar returns plan.', 38, 'Kenya'),
+  ('PV Pro', '28,000 KSh', '210,000 KSh', 'Professional grade PV investment.', 35, 'Kenya'),
+  ('PV Max', '30,000 KSh', '240,000 KSh', 'Maximum capacity PV solar plan.', 32, 'Kenya'),
+  ('Off-Grid Pro', '32,000 KSh', '270,000 KSh', 'Professional off-grid solar systems.', 28, 'Kenya'),
+  ('Hybrid Pro', '34,000 KSh', '300,000 KSh', 'High-end hybrid solar solution.', 25, 'Kenya'),
+  ('Grid-Tied Pro', '36,000 KSh', '330,000 KSh', 'Full grid-tied professional system.', 22, 'Kenya'),
+  ('Solar Battery', '38,000 KSh', '360,000 KSh', 'Dedicated high-capacity battery plan.', 20, 'Kenya'),
+  ('Storage Plus', '40,000 KSh', '400,000 KSh', 'Ultimate storage and energy backup.', 18, 'Kenya'),
+  ('Smart Hybrid', '45,000 KSh', '450,000 KSh', 'Intelligent hybrid energy investment.', 15, 'Kenya'),
+  ('PV Ultra', '50,000 KSh', '520,000 KSh', 'Ultra-performance solar technology.', 12, 'Kenya'),
+  ('Solar Array', '60,000 KSh', '650,000 KSh', 'Large scale solar array investment.', 10, 'Kenya'),
+  ('Solar Plant', '80,000 KSh', '850,000 KSh', 'Industrial solar plant ownership.', 8, 'Kenya'),
+  ('Commercial Solar', '100,000 KSh', '1,100,000 KSh', 'Top-tier commercial solar partnership.', 5, 'Kenya');

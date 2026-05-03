@@ -177,4 +177,31 @@ const ugandaPackages = [
   { id: 124, name: 'Commercial Solar', amount: '2,500,000 UGX', bonus: '8,500,000 UGX', description: 'Top-tier commercial solar partnership.', active: 5, img: 'assets/img/packages/pkg_10.jpg' },
 ];
 
-module.exports = { packages, ugandaPackages, stats, dashboard, profile, team, deposits, users, analytics, notifications };
+const kenyaPackages = [
+  { id: 201, name: 'Mono Starter', amount: '4,000 KSh', bonus: '10,500 KSh', description: 'Entry-level solar investment with instant rewards.', active: 144, img: 'assets/img/packages/pkg_1.jpg' },
+  { id: 202, name: 'Poly Basic', amount: '6,000 KSh', bonus: '16,000 KSh', description: 'Standard solar plan for consistent growth.', active: 102, img: 'assets/img/packages/pkg_2.jpg' },
+  { id: 203, name: 'Thin Film', amount: '8,000 KSh', bonus: '22,000 KSh', description: 'Flexible solar technology investment.', active: 94, img: 'assets/img/packages/pkg_3.jpg' },
+  { id: 204, name: 'Off-Grid Lite', amount: '10,000 KSh', bonus: '30,000 KSh', description: 'Small scale off-grid solar solution.', active: 88, img: 'assets/img/packages/pkg_4.jpg' },
+  { id: 205, name: 'Hybrid Lite', amount: '12,000 KSh', bonus: '40,000 KSh', description: 'Combined energy source lite investment.', active: 76, img: 'assets/img/packages/pkg_5.jpg' },
+  { id: 206, name: 'Grid-Tied Lite', amount: '14,000 KSh', bonus: '50,000 KSh', description: 'Connected grid lite solar plan.', active: 65, img: 'assets/img/packages/pkg_6.jpg' },
+  { id: 207, name: 'Solar Storage', amount: '16,000 KSh', bonus: '65,000 KSh', description: 'Advanced battery storage solar investment.', active: 58, img: 'assets/img/packages/pkg_7.jpg' },
+  { id: 208, name: 'Smart Solar', amount: '18,000 KSh', bonus: '85,000 KSh', description: 'Intelligent energy management plan.', active: 52, img: 'assets/img/packages/pkg_8.jpg' },
+  { id: 209, name: 'PV Entry', amount: '20,000 KSh', bonus: '105,000 KSh', description: 'Entry level Photovoltaic investment.', active: 48, img: 'assets/img/packages/pkg_9.jpg' },
+  { id: 210, name: 'PV Basic', amount: '22,000 KSh', bonus: '125,000 KSh', description: 'Fundamental PV solar system plan.', active: 44, img: 'assets/img/packages/pkg_10.jpg' },
+  { id: 211, name: 'PV Standard', amount: '24,000 KSh', bonus: '150,000 KSh', description: 'Standard PV performance investment.', active: 40, img: 'assets/img/packages/pkg_11.jpg' },
+  { id: 212, name: 'PV Plus', amount: '26,000 KSh', bonus: '180,000 KSh', description: 'Enhanced PV solar returns plan.', active: 38, img: 'assets/img/packages/pkg_12.jpg' },
+  { id: 213, name: 'PV Pro', amount: '28,000 KSh', bonus: '210,000 KSh', description: 'Professional grade PV investment.', active: 35, img: 'assets/img/packages/pkg_13.jpg' },
+  { id: 214, name: 'PV Max', amount: '30,000 KSh', bonus: '240,000 KSh', description: 'Maximum capacity PV solar plan.', active: 32, img: 'assets/img/packages/pkg_14.jpg' },
+  { id: 215, name: 'Off-Grid Pro', amount: '32,000 KSh', bonus: '270,000 KSh', description: 'Professional off-grid solar systems.', active: 28, img: 'assets/img/packages/pkg_1.jpg' },
+  { id: 216, name: 'Hybrid Pro', amount: '34,000 KSh', bonus: '300,000 KSh', description: 'High-end hybrid solar solution.', active: 25, img: 'assets/img/packages/pkg_2.jpg' },
+  { id: 217, name: 'Grid-Tied Pro', amount: '36,000 KSh', bonus: '330,000 KSh', description: 'Full grid-tied professional system.', active: 22, img: 'assets/img/packages/pkg_3.jpg' },
+  { id: 218, name: 'Solar Battery', amount: '38,000 KSh', bonus: '360,000 KSh', description: 'Dedicated high-capacity battery plan.', active: 20, img: 'assets/img/packages/pkg_4.jpg' },
+  { id: 219, name: 'Storage Plus', amount: '40,000 KSh', bonus: '400,000 KSh', description: 'Ultimate storage and energy backup.', active: 18, img: 'assets/img/packages/pkg_5.jpg' },
+  { id: 220, name: 'Smart Hybrid', amount: '45,000 KSh', bonus: '450,000 KSh', description: 'Intelligent hybrid energy investment.', active: 15, img: 'assets/img/packages/pkg_6.jpg' },
+  { id: 221, name: 'PV Ultra', amount: '50,000 KSh', bonus: '520,000 KSh', description: 'Ultra-performance solar technology.', active: 12, img: 'assets/img/packages/pkg_7.jpg' },
+  { id: 222, name: 'Solar Array', amount: '60,000 KSh', bonus: '650,000 KSh', description: 'Large scale solar array investment.', active: 10, img: 'assets/img/packages/pkg_8.jpg' },
+  { id: 223, name: 'Solar Plant', amount: '80,000 KSh', bonus: '850,000 KSh', description: 'Industrial solar plant ownership.', active: 8, img: 'assets/img/packages/pkg_9.jpg' },
+  { id: 224, name: 'Commercial Solar', amount: '100,000 KSh', bonus: '1,100,000 KSh', description: 'Top-tier commercial solar partnership.', active: 5, img: 'assets/img/packages/pkg_10.jpg' },
+];
+
+module.exports = { packages, ugandaPackages, kenyaPackages, stats, dashboard, profile, team, deposits, users, analytics, notifications };

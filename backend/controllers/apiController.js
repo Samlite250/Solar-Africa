@@ -43,9 +43,12 @@ exports.getPackages = async (req, res) => {
         return res.json({ data });
       }
       
-      // Fallback: If no packages for this country, show Burundi (or Uganda if applicable)
+      // Fallback: If no packages for this country, show Burundi (or Uganda/Kenya if applicable)
       if (country === 'Uganda') {
         return res.json({ data: mockData.ugandaPackages });
+      }
+      if (country === 'Kenya') {
+        return res.json({ data: mockData.kenyaPackages });
       }
       
       if (country !== 'Burundi') {
@@ -64,6 +67,9 @@ exports.getPackages = async (req, res) => {
   // Final Mock Fallback
   if (req.query.country === 'Uganda' || (req.user && req.user.country === 'Uganda')) {
     return res.json({ data: mockData.ugandaPackages });
+  }
+  if (req.query.country === 'Kenya' || (req.user && req.user.country === 'Kenya')) {
+    return res.json({ data: mockData.kenyaPackages });
   }
   res.json({ data: mockData.packages });
 };
