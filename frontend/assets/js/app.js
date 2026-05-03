@@ -12,7 +12,8 @@ class SolarApp {
       token: localStorage.getItem('solar_token') || null,
       page: document.body.dataset.page || 'home',
       loading: false,
-      tickerIndex: 0
+      tickerIndex: 0,
+      settings: {}
     };
 
     // Currency Formatter
@@ -23,6 +24,21 @@ class SolarApp {
     });
 
     this.init();
+  }
+
+  formatSupportLink(val, type = 'whatsapp') {
+    if (!val) return '#';
+    if (val.startsWith('http')) return val;
+    if (type === 'whatsapp') {
+      // Clean non-numeric characters for WhatsApp
+      const clean = val.replace(/\D/g, '');
+      return `https://wa.me/${clean}`;
+    }
+    if (type === 'telegram') {
+      const clean = val.replace('@', '');
+      return `https://t.me/${clean}`;
+    }
+    return val;
   }
 
   // --- CORE ENGINE ---
@@ -72,7 +88,10 @@ class SolarApp {
     // Support FAB
     const fab = document.querySelector('.support-fab');
     if (fab) {
-      fab.onclick = () => window.open('https://wa.me/25760000000', '_blank');
+      fab.onclick = () => {
+        const url = this.formatSupportLink(this.state.settings?.whatsapp_group);
+        window.open(url, '_blank');
+      };
     }
   }
 
@@ -1508,10 +1527,9 @@ class SolarApp {
     this.showToast('Referral link copied!', 'success');
   }
 
-  async showSupportCenter() {
-    const settingsRes = await this.fetchAPI('settings');
-    const settings = settingsRes?.data || {
-      whatsapp_group: 'https://wa.me/25760000000',
+  showSupportCenter() {
+    const settings = this.state.settings || {
+      whatsapp_group: 'https://chat.whatsapp.com/default',
       telegram_channel: 'https://t.me/solarafrica',
       support_email: 'support@solarafrica.com'
     };
@@ -1529,7 +1547,7 @@ class SolarApp {
         <p style="font-size: 14px; color: #64748b; line-height: 1.6; margin-bottom: 24px;">Need help? Connect with our team through any of these channels.</p>
         
         <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
-          <a href="${settings.whatsapp_group}" target="_blank" style="display: flex; align-items: center; gap: 14px; background: #f0fdf4; padding: 16px; border-radius: 18px; text-decoration: none; border: 1px solid #dcfce7; transition: transform 0.2s;">
+          <a href="${this.formatSupportLink(settings.whatsapp_group, 'whatsapp')}" target="_blank" style="display: flex; align-items: center; gap: 14px; background: #f0fdf4; padding: 16px; border-radius: 18px; text-decoration: none; border: 1px solid #dcfce7; transition: transform 0.2s;">
             <div style="width: 40px; height: 40px; background: #22c55e; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white;">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.284l-.582 2.166 2.234-.58c1.012.545 1.987.848 3.104.848 3.183 0 5.771-2.588 5.771-5.766 0-3.18-2.586-5.768-5.768-5.768zm3.393 8.24c-.15.429-.86.813-1.189.865-.29.047-.665.074-1.077-.058-.253-.082-.572-.187-1.01-.377-1.864-.81-3.057-2.727-3.15-2.85-.093-.124-.757-.993-.757-1.906 0-.913.473-1.36.643-1.545.17-.185.37-.231.493-.231.124 0 .248 0 .354.004.113.004.263-.042.412.316.15.358.513 1.25.558 1.342.045.092.075.2.015.32-.06.12-.09.195-.181.301-.091.106-.188.236-.268.327-.091.106-.188.219-.083.403.105.185.474.78.917 1.173.57.507 1.05.664 1.2 1.233.15.569.24.403.39-.185.15-.588.614-.15.864.06.25.21 1.574.772 1.635.854.06.082.06.124-.045.289z"/></svg>
             </div>
@@ -1539,7 +1557,7 @@ class SolarApp {
             </div>
           </a>
           
-          <a href="${settings.telegram_channel}" target="_blank" style="display: flex; align-items: center; gap: 14px; background: #eff6ff; padding: 16px; border-radius: 18px; text-decoration: none; border: 1px solid #dbeafe; transition: transform 0.2s;">
+          <a href="${this.formatSupportLink(settings.telegram_channel, 'telegram')}" target="_blank" style="display: flex; align-items: center; gap: 14px; background: #eff6ff; padding: 16px; border-radius: 18px; text-decoration: none; border: 1px solid #dbeafe; transition: transform 0.2s;">
             <div style="width: 40px; height: 40px; background: #3b82f6; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white;">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.13-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
             </div>
@@ -1808,26 +1826,6 @@ class SolarApp {
     document.getElementById('change-pass-btn').onclick = () => {
       this.showToast('Feature coming soon in full release!', 'info');
     };
-  }
-
-  showSupportCenter() {
-    const html = `
-      <div style="padding: 24px; text-align: center;">
-        <div style="font-size: 48px; margin-bottom: 16px;">🎧</div>
-        <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 12px;">How can we help?</h3>
-        <p style="font-size: 14px; color: #64748b; margin-bottom: 24px; line-height: 1.6;">Our support team is available 24/7 to assist you with your investments and account issues.</p>
-        <div style="display: flex; flex-direction: column; gap: 12px;">
-          <a href="https://wa.me/25760000000" target="_blank" class="btn" style="background:#25D366; color:white; font-weight:800; gap:8px;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.01 2.01c-5.52 0-9.99 4.47-9.99 9.99 0 1.77.46 3.44 1.28 4.91L2 22l5.24-1.37c1.41.77 3.01 1.21 4.7 1.21 5.52 0 9.99-4.47 9.99-9.99s-4.47-9.99-9.92-9.99z"/></svg> 
-            Chat on WhatsApp
-          </a>
-          <a href="https://t.me/solarafrica" target="_blank" class="btn" style="background:#0088cc; color:white; font-weight:800; gap:8px;">
-            Telegram Channel
-          </a>
-        </div>
-      </div>
-    `;
-    this.showModal('Support Center', html);
   }
 
   // showNotifications is defined above (line ~772) — no duplicate needed
