@@ -2388,21 +2388,29 @@ class SolarApp {
       } catch(e) { console.warn('Payment method fetch failed'); }
 
       const userCountryClean = (userCountry || 'Burundi').trim().toLowerCase();
+      const isRwanda = userCountryClean === 'rwanda';
       const isBurundi = userCountryClean === 'burundi';
-      const localizedAmount = this.formatCurrency(amount);
-      const amountRaw = amount.replace(/[^0-9]/g, '');
       
-      const phoneMatches = rawInstructions.match(/(?:\+?\d{8,13})/g) || [];
-      const uniquePhones = [...new Set(phoneMatches)];
-      const dialMatches = rawInstructions.match(/\*\d+[\*\d]*#/g) || [];
-      const uniqueDials = [...new Set(dialMatches)];
+      const rwfRate = 1350; // Current market rate for MOMO RWF
+      const localizedAmount = this.formatCurrency(amount);
+      const amountRaw = amount.toString().replace(/[^0-9]/g, '');
+      const amountRWF = (parseFloat(amountRaw) * rwfRate).toLocaleString() + ' RWF';
+
       const copySvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
 
       let extraDetailsHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <span style="font-size:13px; font-weight:600; color:#166534;">Amount to pay:</span>
-          <span style="display:inline-flex;align-items:center;gap:6px;"><strong style="color:#16a34a;font-size:16px;">${localizedAmount}</strong><button onclick="navigator.clipboard.writeText('${amountRaw}');window.app?.showToast('Amount copied!','success');" style="background:none;border:none;color:#16a34a;cursor:pointer;padding:2px;">${copySvg}</button></span>
+          <span style="display:inline-flex;align-items:center;gap:6px;"><strong style="color:#16a34a;font-size:16px;">${isRwanda ? amountRWF : localizedAmount}</strong><button onclick="navigator.clipboard.writeText('${isRwanda ? (parseFloat(amountRaw) * rwfRate) : amountRaw}');window.app?.showToast('Amount copied!','success');" style="background:none;border:none;color:#16a34a;cursor:pointer;padding:2px;">${copySvg}</button></span>
         </div>`;
+
+      if (isRwanda) {
+        extraDetailsHTML += `
+          <div style="font-size:11px; color:#166534; font-weight:500; margin-top:4px; text-align:right;">
+            * Rate: 1$ = ${rwfRate.toLocaleString()} RWF
+          </div>
+        `;
+      }
 
       // Phone Numbers
       uniquePhones.forEach((phone, idx) => {
@@ -2450,6 +2458,10 @@ class SolarApp {
               <div>
                 <h4 style="margin:0; font-size:15px; font-weight:800; letter-spacing:0.5px;">USDT TRC-20</h4>
                 <p style="margin:0; font-size:11px; color:rgba(255,255,255,0.6); font-weight:600;">Secure Blockchain Payment</p>
+              </div>
+              <div style="margin-left: auto; text-align: right;">
+                <div style="font-size: 18px; font-weight: 900; color: #f7931a;">${localizedAmount}</div>
+                <div style="font-size: 10px; opacity: 0.7; font-weight: 700; text-transform: uppercase;">Amount in USD</div>
               </div>
             </div>
 
