@@ -101,6 +101,33 @@ INSERT INTO packages (name, amount, bonus, description, active, country) VALUES
   ('Solar Plant', '1,440,000 TSH', '4,960,000 TSH', 'Industrial solar plant ownership.', 8, 'Tanzania'),
   ('Commercial Solar', '2,000,000 TSH', '6,800,000 TSH', 'Top-tier commercial solar partnership.', 5, 'Tanzania');
 
+-- Insert Rwanda packages (USD)
+INSERT INTO packages (name, amount, bonus, description, active, country) VALUES
+  ('Mono Starter', '$25', '$50', 'Entry-level solar investment with instant rewards.', 144, 'Rwanda'),
+  ('Poly Basic', '$50', '$85', 'Standard solar plan for consistent growth.', 102, 'Rwanda'),
+  ('Thin Film', '$75', '$120', 'Flexible solar technology investment.', 94, 'Rwanda'),
+  ('Off-Grid Lite', '$100', '$160', 'Small scale off-grid solar solution.', 88, 'Rwanda'),
+  ('Hybrid Lite', '$125', '$200', 'Combined energy source lite investment.', 76, 'Rwanda'),
+  ('Grid-Tied Lite', '$150', '$240', 'Connected grid lite solar plan.', 65, 'Rwanda'),
+  ('Solar Storage', '$175', '$285', 'Advanced battery storage solar investment.', 58, 'Rwanda'),
+  ('Smart Solar', '$200', '$330', 'Intelligent energy management plan.', 52, 'Rwanda'),
+  ('PV Entry', '$250', '$410', 'Entry level Photovoltaic investment.', 48, 'Rwanda'),
+  ('PV Basic', '$300', '$500', 'Fundamental PV solar system plan.', 44, 'Rwanda'),
+  ('PV Standard', '$350', '$590', 'Standard PV performance investment.', 40, 'Rwanda'),
+  ('PV Plus', '$400', '$680', 'Enhanced PV solar returns plan.', 38, 'Rwanda'),
+  ('PV Pro', '$450', '$770', 'Professional grade PV investment.', 35, 'Rwanda'),
+  ('PV Max', '$500', '$860', 'Maximum capacity PV solar plan.', 32, 'Rwanda'),
+  ('Off-Grid Pro', '$550', '$950', 'Professional off-grid solar systems.', 28, 'Rwanda'),
+  ('Hybrid Pro', '$600', '$1,040', 'High-end hybrid solar solution.', 25, 'Rwanda'),
+  ('Grid-Tied Pro', '$650', '$1,130', 'Full grid-tied professional system.', 22, 'Rwanda'),
+  ('Solar Battery', '$700', '$1,220', 'Dedicated high-capacity battery plan.', 20, 'Rwanda'),
+  ('Storage Plus', '$750', '$1,310', 'Ultimate storage and energy backup.', 18, 'Rwanda'),
+  ('Smart Hybrid', '$800', '$1,400', 'Intelligent hybrid energy investment.', 15, 'Rwanda'),
+  ('PV Ultra', '$850', '$1,500', 'Ultra-performance solar technology.', 12, 'Rwanda'),
+  ('Solar Array', '$900', '$1,600', 'Large scale solar array investment.', 10, 'Rwanda'),
+  ('Solar Plant', '$950', '$1,700', 'Industrial solar plant ownership.', 8, 'Rwanda'),
+  ('Commercial Solar', '$1,000', '$1,800', 'Top-tier commercial solar partnership.', 5, 'Rwanda');
+
 -- Insert International packages (USD)
 INSERT INTO packages (name, amount, bonus, description, active, country) VALUES
   ('Mono Starter', '$50', '$125', 'Entry-level solar investment with instant rewards.', 144, 'International'),

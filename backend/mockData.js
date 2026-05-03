@@ -258,4 +258,31 @@ const internationalPackages = [
   { id: 424, name: 'Commercial Solar', amount: '$3,500', bonus: '$10,500', description: 'Top-tier commercial solar partnership.', active: 5, img: 'assets/img/packages/pkg_10.jpg' },
 ];
 
-module.exports = { packages, ugandaPackages, kenyaPackages, tanzaniaPackages, internationalPackages, stats, dashboard, profile, team, deposits, users, analytics, notifications };
+const rwandaPackages = [
+  { id: 501, name: 'Mono Starter', amount: '$25', bonus: '$50', description: 'Entry-level solar investment with instant rewards.', active: 144, img: 'assets/img/packages/pkg_1.jpg' },
+  { id: 502, name: 'Poly Basic', amount: '$50', bonus: '$85', description: 'Standard solar plan for consistent growth.', active: 102, img: 'assets/img/packages/pkg_2.jpg' },
+  { id: 503, name: 'Thin Film', amount: '$75', bonus: '$120', description: 'Flexible solar technology investment.', active: 94, img: 'assets/img/packages/pkg_3.jpg' },
+  { id: 504, name: 'Off-Grid Lite', amount: '$100', bonus: '$160', description: 'Small scale off-grid solar solution.', active: 88, img: 'assets/img/packages/pkg_4.jpg' },
+  { id: 505, name: 'Hybrid Lite', amount: '$125', bonus: '$200', description: 'Combined energy source lite investment.', active: 76, img: 'assets/img/packages/pkg_5.jpg' },
+  { id: 506, name: 'Grid-Tied Lite', amount: '$150', bonus: '$240', description: 'Connected grid lite solar plan.', active: 65, img: 'assets/img/packages/pkg_6.jpg' },
+  { id: 507, name: 'Solar Storage', amount: '$175', bonus: '$285', description: 'Advanced battery storage solar investment.', active: 58, img: 'assets/img/packages/pkg_7.jpg' },
+  { id: 508, name: 'Smart Solar', amount: '$200', bonus: '$330', description: 'Intelligent energy management plan.', active: 52, img: 'assets/img/packages/pkg_8.jpg' },
+  { id: 509, name: 'PV Entry', amount: '$250', bonus: '$410', description: 'Entry level Photovoltaic investment.', active: 48, img: 'assets/img/packages/pkg_9.jpg' },
+  { id: 510, name: 'PV Basic', amount: '$300', bonus: '$500', description: 'Fundamental PV solar system plan.', active: 44, img: 'assets/img/packages/pkg_10.jpg' },
+  { id: 511, name: 'PV Standard', amount: '$350', bonus: '$590', description: 'Standard PV performance investment.', active: 40, img: 'assets/img/packages/pkg_11.jpg' },
+  { id: 512, name: 'PV Plus', amount: '$400', bonus: '$680', description: 'Enhanced PV solar returns plan.', active: 38, img: 'assets/img/packages/pkg_12.jpg' },
+  { id: 513, name: 'PV Pro', amount: '$450', bonus: '$770', description: 'Professional grade PV investment.', active: 35, img: 'assets/img/packages/pkg_13.jpg' },
+  { id: 514, name: 'PV Max', amount: '$500', bonus: '$860', description: 'Maximum capacity PV solar plan.', active: 32, img: 'assets/img/packages/pkg_14.jpg' },
+  { id: 515, name: 'Off-Grid Pro', amount: '$550', bonus: '$950', description: 'Professional off-grid solar systems.', active: 28, img: 'assets/img/packages/pkg_1.jpg' },
+  { id: 516, name: 'Hybrid Pro', amount: '$600', bonus: '$1,040', description: 'High-end hybrid solar solution.', active: 25, img: 'assets/img/packages/pkg_2.jpg' },
+  { id: 517, name: 'Grid-Tied Pro', amount: '$650', bonus: '$1,130', description: 'Full grid-tied professional system.', active: 22, img: 'assets/img/packages/pkg_3.jpg' },
+  { id: 518, name: 'Solar Battery', amount: '$700', bonus: '$1,220', description: 'Dedicated high-capacity battery plan.', active: 20, img: 'assets/img/packages/pkg_4.jpg' },
+  { id: 519, name: 'Storage Plus', amount: '$750', bonus: '$1,310', description: 'Ultimate storage and energy backup.', active: 18, img: 'assets/img/packages/pkg_5.jpg' },
+  { id: 520, name: 'Smart Hybrid', amount: '$800', bonus: '$1,400', description: 'Intelligent hybrid energy investment.', active: 15, img: 'assets/img/packages/pkg_6.jpg' },
+  { id: 521, name: 'PV Ultra', amount: '$850', bonus: '$1,500', description: 'Ultra-performance solar technology.', active: 12, img: 'assets/img/packages/pkg_7.jpg' },
+  { id: 522, name: 'Solar Array', amount: '$900', bonus: '$1,600', description: 'Large scale solar array investment.', active: 10, img: 'assets/img/packages/pkg_8.jpg' },
+  { id: 523, name: 'Solar Plant', amount: '$950', bonus: '$1,700', description: 'Industrial solar plant ownership.', active: 8, img: 'assets/img/packages/pkg_9.jpg' },
+  { id: 524, name: 'Commercial Solar', amount: '$1,000', bonus: '$1,800', description: 'Top-tier commercial solar partnership.', active: 5, img: 'assets/img/packages/pkg_10.jpg' },
+];
+
+module.exports = { packages, ugandaPackages, kenyaPackages, tanzaniaPackages, internationalPackages, rwandaPackages, stats, dashboard, profile, team, deposits, users, analytics, notifications };

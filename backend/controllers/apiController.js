@@ -53,6 +53,9 @@ exports.getPackages = async (req, res) => {
       if (country === 'Tanzania') {
         return res.json({ data: mockData.tanzaniaPackages });
       }
+      if (country === 'Rwanda') {
+        return res.json({ data: mockData.rwandaPackages });
+      }
 
       // International Fallback for non-listed countries
       const localCountries = ['Burundi', 'Kenya', 'Uganda', 'Rwanda', 'Tanzania', 'Congo RDC'];
@@ -82,6 +85,9 @@ exports.getPackages = async (req, res) => {
   }
   if (req.query.country === 'Tanzania' || (req.user && req.user.country === 'Tanzania')) {
     return res.json({ data: mockData.tanzaniaPackages });
+  }
+  if (req.query.country === 'Rwanda' || (req.user && req.user.country === 'Rwanda')) {
+    return res.json({ data: mockData.rwandaPackages });
   }
 
   // Global International Mock Fallback
