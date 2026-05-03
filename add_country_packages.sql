@@ -57,3 +57,30 @@ INSERT INTO packages (name, amount, bonus, description, active, country) VALUES
   ('Solar Array', '60,000 KSh', '650,000 KSh', 'Large scale solar array investment.', 10, 'Kenya'),
   ('Solar Plant', '80,000 KSh', '850,000 KSh', 'Industrial solar plant ownership.', 8, 'Kenya'),
   ('Commercial Solar', '100,000 KSh', '1,100,000 KSh', 'Top-tier commercial solar partnership.', 5, 'Kenya');
+
+-- Insert Tanzania packages
+INSERT INTO packages (name, amount, bonus, description, active, country) VALUES
+  ('Mono Starter', '80,000 TSH', '200,000 TSH', 'Entry-level solar investment with instant rewards.', 144, 'Tanzania'),
+  ('Poly Basic', '120,000 TSH', '300,000 TSH', 'Standard solar plan for consistent growth.', 102, 'Tanzania'),
+  ('Thin Film', '160,000 TSH', '400,000 TSH', 'Flexible solar technology investment.', 94, 'Tanzania'),
+  ('Off-Grid Lite', '200,000 TSH', '520,000 TSH', 'Small scale off-grid solar solution.', 88, 'Tanzania'),
+  ('Hybrid Lite', '240,000 TSH', '624,000 TSH', 'Combined energy source lite investment.', 76, 'Tanzania'),
+  ('Grid-Tied Lite', '280,000 TSH', '728,000 TSH', 'Connected grid lite solar plan.', 65, 'Tanzania'),
+  ('Solar Storage', '320,000 TSH', '840,000 TSH', 'Advanced battery storage solar investment.', 58, 'Tanzania'),
+  ('Smart Solar', '360,000 TSH', '960,000 TSH', 'Intelligent energy management plan.', 52, 'Tanzania'),
+  ('PV Entry', '400,000 TSH', '1,080,000 TSH', 'Entry level Photovoltaic investment.', 48, 'Tanzania'),
+  ('PV Basic', '440,000 TSH', '1,200,000 TSH', 'Fundamental PV solar system plan.', 44, 'Tanzania'),
+  ('PV Standard', '480,000 TSH', '1,360,000 TSH', 'Standard PV performance investment.', 40, 'Tanzania'),
+  ('PV Plus', '520,000 TSH', '1,520,000 TSH', 'Enhanced PV solar returns plan.', 38, 'Tanzania'),
+  ('PV Pro', '560,000 TSH', '1,680,000 TSH', 'Professional grade PV investment.', 35, 'Tanzania'),
+  ('PV Max', '600,000 TSH', '1,840,000 TSH', 'Maximum capacity PV solar plan.', 32, 'Tanzania'),
+  ('Off-Grid Pro', '640,000 TSH', '2,000,000 TSH', 'Professional off-grid solar systems.', 28, 'Tanzania'),
+  ('Hybrid Pro', '680,000 TSH', '2,160,000 TSH', 'High-end hybrid solar solution.', 25, 'Tanzania'),
+  ('Grid-Tied Pro', '720,000 TSH', '2,320,000 TSH', 'Full grid-tied professional system.', 22, 'Tanzania'),
+  ('Solar Battery', '760,000 TSH', '2,480,000 TSH', 'Dedicated high-capacity battery plan.', 20, 'Tanzania'),
+  ('Storage Plus', '800,000 TSH', '2,640,000 TSH', 'Ultimate storage and energy backup.', 18, 'Tanzania'),
+  ('Smart Hybrid', '880,000 TSH', '2,960,000 TSH', 'Intelligent hybrid energy investment.', 15, 'Tanzania'),
+  ('PV Ultra', '960,000 TSH', '3,280,000 TSH', 'Ultra-performance solar technology.', 12, 'Tanzania'),
+  ('Solar Array', '1,120,000 TSH', '3,840,000 TSH', 'Large scale solar array investment.', 10, 'Tanzania'),
+  ('Solar Plant', '1,440,000 TSH', '4,960,000 TSH', 'Industrial solar plant ownership.', 8, 'Tanzania'),
+  ('Commercial Solar', '2,000,000 TSH', '6,800,000 TSH', 'Top-tier commercial solar partnership.', 5, 'Tanzania');

@@ -50,6 +50,9 @@ exports.getPackages = async (req, res) => {
       if (country === 'Kenya') {
         return res.json({ data: mockData.kenyaPackages });
       }
+      if (country === 'Tanzania') {
+        return res.json({ data: mockData.tanzaniaPackages });
+      }
       
       if (country !== 'Burundi') {
         const { data: fallback } = await adminClient
@@ -70,6 +73,9 @@ exports.getPackages = async (req, res) => {
   }
   if (req.query.country === 'Kenya' || (req.user && req.user.country === 'Kenya')) {
     return res.json({ data: mockData.kenyaPackages });
+  }
+  if (req.query.country === 'Tanzania' || (req.user && req.user.country === 'Tanzania')) {
+    return res.json({ data: mockData.tanzaniaPackages });
   }
   res.json({ data: mockData.packages });
 };

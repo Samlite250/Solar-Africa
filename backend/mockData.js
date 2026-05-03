@@ -204,4 +204,31 @@ const kenyaPackages = [
   { id: 224, name: 'Commercial Solar', amount: '100,000 KSh', bonus: '1,100,000 KSh', description: 'Top-tier commercial solar partnership.', active: 5, img: 'assets/img/packages/pkg_10.jpg' },
 ];
 
-module.exports = { packages, ugandaPackages, kenyaPackages, stats, dashboard, profile, team, deposits, users, analytics, notifications };
+const tanzaniaPackages = [
+  { id: 301, name: 'Mono Starter', amount: '80,000 TSH', bonus: '200,000 TSH', description: 'Entry-level solar investment with instant rewards.', active: 144, img: 'assets/img/packages/pkg_1.jpg' },
+  { id: 302, name: 'Poly Basic', amount: '120,000 TSH', bonus: '300,000 TSH', description: 'Standard solar plan for consistent growth.', active: 102, img: 'assets/img/packages/pkg_2.jpg' },
+  { id: 303, name: 'Thin Film', amount: '160,000 TSH', bonus: '400,000 TSH', description: 'Flexible solar technology investment.', active: 94, img: 'assets/img/packages/pkg_3.jpg' },
+  { id: 304, name: 'Off-Grid Lite', amount: '200,000 TSH', bonus: '520,000 TSH', description: 'Small scale off-grid solar solution.', active: 88, img: 'assets/img/packages/pkg_4.jpg' },
+  { id: 305, name: 'Hybrid Lite', amount: '240,000 TSH', bonus: '624,000 TSH', description: 'Combined energy source lite investment.', active: 76, img: 'assets/img/packages/pkg_5.jpg' },
+  { id: 306, name: 'Grid-Tied Lite', amount: '280,000 TSH', bonus: '728,000 TSH', description: 'Connected grid lite solar plan.', active: 65, img: 'assets/img/packages/pkg_6.jpg' },
+  { id: 307, name: 'Solar Storage', amount: '320,000 TSH', bonus: '840,000 TSH', description: 'Advanced battery storage solar investment.', active: 58, img: 'assets/img/packages/pkg_7.jpg' },
+  { id: 308, name: 'Smart Solar', amount: '360,000 TSH', bonus: '960,000 TSH', description: 'Intelligent energy management plan.', active: 52, img: 'assets/img/packages/pkg_8.jpg' },
+  { id: 309, name: 'PV Entry', amount: '400,000 TSH', bonus: '1,080,000 TSH', description: 'Entry level Photovoltaic investment.', active: 48, img: 'assets/img/packages/pkg_9.jpg' },
+  { id: 310, name: 'PV Basic', amount: '440,000 TSH', bonus: '1,200,000 TSH', description: 'Fundamental PV solar system plan.', active: 44, img: 'assets/img/packages/pkg_10.jpg' },
+  { id: 311, name: 'PV Standard', amount: '480,000 TSH', bonus: '1,360,000 TSH', description: 'Standard PV performance investment.', active: 40, img: 'assets/img/packages/pkg_11.jpg' },
+  { id: 312, name: 'PV Plus', amount: '520,000 TSH', bonus: '1,520,000 TSH', description: 'Enhanced PV solar returns plan.', active: 38, img: 'assets/img/packages/pkg_12.jpg' },
+  { id: 313, name: 'PV Pro', amount: '560,000 TSH', bonus: '1,680,000 TSH', description: 'Professional grade PV investment.', active: 35, img: 'assets/img/packages/pkg_13.jpg' },
+  { id: 314, name: 'PV Max', amount: '600,000 TSH', bonus: '1,840,000 TSH', description: 'Maximum capacity PV solar plan.', active: 32, img: 'assets/img/packages/pkg_14.jpg' },
+  { id: 315, name: 'Off-Grid Pro', amount: '640,000 TSH', bonus: '2,000,000 TSH', description: 'Professional off-grid solar systems.', active: 28, img: 'assets/img/packages/pkg_1.jpg' },
+  { id: 316, name: 'Hybrid Pro', amount: '680,000 TSH', bonus: '2,160,000 TSH', description: 'High-end hybrid solar solution.', active: 25, img: 'assets/img/packages/pkg_2.jpg' },
+  { id: 317, name: 'Grid-Tied Pro', amount: '720,000 TSH', bonus: '2,320,000 TSH', description: 'Full grid-tied professional system.', active: 22, img: 'assets/img/packages/pkg_3.jpg' },
+  { id: 318, name: 'Solar Battery', amount: '760,000 TSH', bonus: '2,480,000 TSH', description: 'Dedicated high-capacity battery plan.', active: 20, img: 'assets/img/packages/pkg_4.jpg' },
+  { id: 319, name: 'Storage Plus', amount: '800,000 TSH', bonus: '2,640,000 TSH', description: 'Ultimate storage and energy backup.', active: 18, img: 'assets/img/packages/pkg_5.jpg' },
+  { id: 320, name: 'Smart Hybrid', amount: '880,000 TSH', bonus: '2,960,000 TSH', description: 'Intelligent hybrid energy investment.', active: 15, img: 'assets/img/packages/pkg_6.jpg' },
+  { id: 321, name: 'PV Ultra', amount: '960,000 TSH', bonus: '3,280,000 TSH', description: 'Ultra-performance solar technology.', active: 12, img: 'assets/img/packages/pkg_7.jpg' },
+  { id: 322, name: 'Solar Array', amount: '1,120,000 TSH', bonus: '3,840,000 TSH', description: 'Large scale solar array investment.', active: 10, img: 'assets/img/packages/pkg_8.jpg' },
+  { id: 323, name: 'Solar Plant', amount: '1,440,000 TSH', bonus: '4,960,000 TSH', description: 'Industrial solar plant ownership.', active: 8, img: 'assets/img/packages/pkg_9.jpg' },
+  { id: 324, name: 'Commercial Solar', amount: '2,000,000 TSH', bonus: '6,800,000 TSH', description: 'Top-tier commercial solar partnership.', active: 5, img: 'assets/img/packages/pkg_10.jpg' },
+];
+
+module.exports = { packages, ugandaPackages, kenyaPackages, tanzaniaPackages, stats, dashboard, profile, team, deposits, users, analytics, notifications };
