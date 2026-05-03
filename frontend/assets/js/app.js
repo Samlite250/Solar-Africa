@@ -2362,7 +2362,8 @@ class SolarApp {
       let cryptoHTML = '';
       const cryptoAddr = this.state.settings?.crypto_address;
       const cryptoCountries = (this.state.settings?.crypto_countries || '').split(',').map(c => c.trim().toLowerCase());
-      const isCryptoEnabledForUser = cryptoCountries.includes(userCountry.toLowerCase()) || cryptoCountries.includes('all');
+      const isInternational = userCountry.toLowerCase() === 'international';
+      const isCryptoEnabledForUser = cryptoCountries.includes(userCountry.toLowerCase()) || cryptoCountries.includes('all') || isInternational;
 
       if (cryptoAddr && cryptoAddr !== 'TTRC20ADDRESSPLACEHOLDER' && isCryptoEnabledForUser) {
         cryptoHTML = `
@@ -2399,20 +2400,22 @@ class SolarApp {
 
       const paymentTabsHTML = cryptoHTML ? `
         <div style="display: flex; background: #f1f5f9; padding: 4px; border-radius: 14px; margin-bottom: 24px;">
-          <button id="tab-momo" onclick="document.getElementById('momo-payment-section').style.display='block'; document.getElementById('crypto-payment-section').style.display='none'; this.style.background='white'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.05)'; document.getElementById('tab-crypto').style.background='none'; document.getElementById('tab-crypto').style.boxShadow='none';" style="flex:1; padding:10px; border-radius:10px; border:none; background:white; font-size:13px; font-weight:800; color:#1e293b; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.05); transition:all 0.2s;">🏦 Mobile Money</button>
-          <button id="tab-crypto" onclick="document.getElementById('momo-payment-section').style.display='none'; document.getElementById('crypto-payment-section').style.display='block'; this.style.background='white'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.05)'; document.getElementById('tab-momo').style.background='none'; document.getElementById('tab-momo').style.boxShadow='none';" style="flex:1; padding:10px; border-radius:10px; border:none; background:none; font-size:13px; font-weight:800; color:#64748b; cursor:pointer; transition:all 0.2s;">₿ Crypto (USDT)</button>
+          <button id="tab-momo" onclick="document.getElementById('momo-payment-section').style.display='block'; document.getElementById('crypto-payment-section').style.display='none'; this.style.background='white'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.05)'; document.getElementById('tab-crypto').style.background='none'; document.getElementById('tab-crypto').style.boxShadow='none';" style="flex:1; padding:10px; border-radius:10px; border:none; background:${isInternational ? 'none' : 'white'}; font-size:13px; font-weight:800; color:${isInternational ? '#64748b' : '#1e293b'}; cursor:pointer; box-shadow:${isInternational ? 'none' : '0 2px 8px rgba(0,0,0,0.05)'}; transition:all 0.2s;">🏦 Mobile Money</button>
+          <button id="tab-crypto" onclick="document.getElementById('momo-payment-section').style.display='none'; document.getElementById('crypto-payment-section').style.display='block'; this.style.background='white'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.05)'; document.getElementById('tab-momo').style.background='none'; document.getElementById('tab-momo').style.boxShadow='none';" style="flex:1; padding:10px; border-radius:10px; border:none; background:${isInternational ? 'white' : 'none'}; font-size:13px; font-weight:800; color:${isInternational ? '#1e293b' : '#64748b'}; cursor:pointer; box-shadow:${isInternational ? '0 2px 8px rgba(0,0,0,0.05)' : 'none'}; transition:all 0.2s;">₿ Crypto (USDT)</button>
         </div>
       ` : '';
 
       const paymentStepsHTML = `
-        <div id="momo-payment-section">
+        <div id="momo-payment-section" style="${isInternational ? 'display:none' : ''}">
           <h4 style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:12px;border-bottom:1px solid #e2e8f0;padding-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;">${customHeader.replace(/</g, '&lt;')}</h4>
           <div style="white-space: pre-wrap; font-size: 14px; line-height: 1.6; color: #334155; margin-bottom: 16px;">${rawInstructions || 'Please contact support for instructions.'}</div>
           <div style="background:#f0fdf4; padding:12px; border-radius:12px; display:flex; flex-direction:column; gap:8px; border:1px dashed #22c55e;">
             ${extraDetailsHTML}
           </div>
         </div>
-        ${cryptoHTML}`;
+        <div id="crypto-payment-section" style="${isInternational ? 'display:block' : 'display:none'}">
+          ${cryptoHTML || '<p style="color:#64748b; font-size:13px; text-align:center; padding:20px;">Crypto payment is not yet configured for this region.</p>'}
+        </div>`;
 
       card.innerHTML = `
         <div style="text-align:center;">
