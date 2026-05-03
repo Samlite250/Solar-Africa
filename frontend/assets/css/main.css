@@ -1245,3 +1245,10 @@ body.loading .loading-overlay {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+/* Pagination Controls */
+#pagination-users, #pagination-deposits, #pagination-withdrawals, #pagination-activity, #pagination-team {
+  margin-top: 10px;
+  padding: 10px;
+  border-top: 1px solid var(--border-subtle);
+}

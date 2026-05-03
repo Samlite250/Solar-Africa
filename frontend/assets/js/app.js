@@ -13,7 +13,14 @@ class SolarApp {
       page: document.body.dataset.page || 'home',
       loading: false,
       tickerIndex: 0,
-      settings: {}
+      settings: {},
+      pagination: {
+        adminUsers: 1,
+        adminDeposits: 1,
+        adminWithdrawals: 1,
+        userActivity: 1,
+        userTeam: 1
+      }
     };
 
     // Currency Formatter
@@ -39,6 +46,34 @@ class SolarApp {
       return `https://t.me/${clean}`;
     }
     return val;
+  }
+
+  getPaginatedData(array, page, limit = 10) {
+    const start = (page - 1) * limit;
+    return array.slice(start, start + limit);
+  }
+
+  renderPaginationControls(array, page, limit = 10, key = '') {
+    if (array.length <= limit) return '';
+    const totalPages = Math.ceil(array.length / limit);
+    
+    return `
+      <div style="display: flex; justify-content: center; align-items: center; gap: 20px; margin-top: 20px; padding: 10px;">
+        <button onclick="window.app.changePage('${key}', ${page - 1})" ${page === 1 ? 'disabled' : ''} class="btn-admin" style="background:#f1f5f9; color:#475569; padding: 8px 16px; border-radius: 8px; border:1px solid #e2e8f0; cursor:pointer; opacity:${page === 1 ? '0.5' : '1'}; transition: all 0.2s;">
+          ← Previous
+        </button>
+        <span style="font-size: 13px; font-weight: 700; color: #64748b;">Page ${page} of ${totalPages}</span>
+        <button onclick="window.app.changePage('${key}', ${page + 1})" ${page === totalPages ? 'disabled' : ''} class="btn-admin" style="background:#f1f5f9; color:#475569; padding: 8px 16px; border-radius: 8px; border:1px solid #e2e8f0; cursor:pointer; opacity:${page === totalPages ? '0.5' : '1'}; transition: all 0.2s;">
+          Next →
+        </button>
+      </div>
+    `;
+  }
+
+  changePage(key, newPage) {
+    if (newPage < 1) return;
+    this.state.pagination[key] = newPage;
+    this.hydrate();
   }
 
   // --- CORE ENGINE ---
@@ -486,7 +521,9 @@ class SolarApp {
     // 4. Populate Users Table (with Balance + Edit)
     const userTable = document.getElementById('full-user-list');
     if (userTable && users) {
-      userTable.innerHTML = users.map(u => `
+      const page = this.state.pagination.adminUsers;
+      const paginatedUsers = this.getPaginatedData(users, page);
+      userTable.innerHTML = paginatedUsers.map(u => `
         <tr>
           <td><div style="display:flex;align-items:center;gap:12px;">
             <img src="https://ui-avatars.com/api/?name=${u.name}&background=eff6ff&color=0b6cff" style="width:36px;height:36px;border-radius:10px;">
@@ -503,6 +540,10 @@ class SolarApp {
           </td>
         </tr>
       `).join('');
+
+      const controls = this.renderPaginationControls(users, page, 10, 'adminUsers');
+      const pagContainer = document.getElementById('pagination-users');
+      if (pagContainer) pagContainer.innerHTML = controls;
     }
 
     // 5. Populate Packages Table
@@ -523,7 +564,9 @@ class SolarApp {
     // 6. Populate Transactions Ledger
     const transTable = document.getElementById('full-transaction-ledger');
     if (transTable && deposits) {
-      transTable.innerHTML = deposits.map(d => `
+      const page = this.state.pagination.adminDeposits;
+      const paginatedDeposits = this.getPaginatedData(deposits, page);
+      transTable.innerHTML = paginatedDeposits.map(d => `
         <tr>
           <td style="color:#64748b;font-family:monospace;font-size:12px;">#DEP-${d.id}</td>
           <td><span style="background:#eff6ff;color:#0b6cff;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:800;">DEPOSIT</span></td>
@@ -539,13 +582,18 @@ class SolarApp {
           </td>
         </tr>
       `).join('');
+
+      const controls = this.renderPaginationControls(deposits, page, 10, 'adminDeposits');
+      const pagContainer = document.getElementById('pagination-deposits');
+      if (pagContainer) pagContainer.innerHTML = controls;
     }
 
     // 6.5 Populate Withdrawals Management
     const withdrawTable = document.getElementById('admin-withdrawals-list');
     const withdrawals = data.withdrawals;
-    if (withdrawTable && withdrawals) {
-      withdrawTable.innerHTML = withdrawals.map(w => `
+      const page = this.state.pagination.adminWithdrawals;
+      const paginatedWithdrawals = this.getPaginatedData(withdrawals, page);
+      withdrawTable.innerHTML = paginatedWithdrawals.map(w => `
         <tr>
           <td><strong>${w.user_name}</strong></td>
           <td style="color:#dc2626;font-weight:700;">-${w.amount}</td>
@@ -560,6 +608,10 @@ class SolarApp {
           </td>
         </tr>
       `).join('');
+
+      const controls = this.renderPaginationControls(withdrawals, page, 10, 'adminWithdrawals');
+      const pagContainer = document.getElementById('pagination-withdrawals');
+      if (pagContainer) pagContainer.innerHTML = controls;
     }
 
     // 7. Bind Push Notification Form
@@ -1250,7 +1302,10 @@ class SolarApp {
       return;
     }
 
-    list.innerHTML = activities.map(act => {
+    const page = this.state.pagination.userActivity;
+    const paginatedActivities = this.getPaginatedData(activities, page);
+
+    list.innerHTML = paginatedActivities.map(act => {
       let iconClass = 'blue';
       let icon = '⚡';
       if (act.type === 'bonus') { iconClass = 'green'; icon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 12V8H4v4M2 12h20M12 22V12M12 8V2"/></svg>'; }
@@ -1269,7 +1324,11 @@ class SolarApp {
           <div class="act-value ${act.value?.includes('+') ? 'green' : ''}">${act.value}</div>
         </div>
       `;
-    }).join('');
+    }).join('') + `<div id="pagination-activity"></div>`;
+
+    const controls = this.renderPaginationControls(activities, page, 10, 'userActivity');
+    const pagContainer = document.getElementById('pagination-activity');
+    if (pagContainer) pagContainer.innerHTML = controls;
   }
 
   // --- PACKAGES HYDRATION ---
@@ -1489,6 +1548,9 @@ class SolarApp {
       return;
     }
 
+    const page = this.state.pagination.userTeam;
+    const paginatedData = this.getPaginatedData(data, page);
+
     list.innerHTML = `
       <div style="overflow-x: auto; border-radius: 16px; border: 1px solid #e2e8f0; background: white; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.04);">
         <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
@@ -1497,13 +1559,13 @@ class SolarApp {
               <th style="padding: 14px 12px; text-align: center; color: white; font-weight: 800; font-size: 12px; letter-spacing: 0.5px; width: 40px;">#</th>
               <th style="padding: 14px 12px; text-align: left; color: white; font-weight: 800; font-size: 12px; letter-spacing: 0.5px;">USERNAME</th>
               <th style="padding: 14px 12px; text-align: left; color: white; font-weight: 800; font-size: 12px; letter-spacing: 0.5px;">PHONE</th>
-              <th style="padding: 14px 12px; text-align: left; color: white; font-weight: 800; font-size: 12px; letter-spacing: 0.5px;">REG DATE</th>
+              <th style="padding: 14px 12px; text-align: left; color: white; font-weight: 800; font-size: 12px; letter-spacing: 0.5px;">JOINED</th>
             </tr>
           </thead>
           <tbody>
-            ${data.map((m, i) => `
+            ${paginatedData.map((m, i) => `
               <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
-                <td style="padding: 14px 12px; text-align: center; font-weight: 800; color: #94a3b8; font-size: 12px;">${i + 1}</td>
+                <td style="padding: 14px 12px; text-align: center; font-weight: 800; color: #94a3b8; font-size: 12px;">${((page-1)*10) + i + 1}</td>
                 <td style="padding: 14px 12px; font-weight: 700; color: #1e293b;">${m.name}</td>
                 <td style="padding: 14px 12px; color: #334155; font-weight: 600;">
                   ${m.phone && m.phone !== 'N/A' ? m.phone : '<span style="color:#cbd5e1;">—</span>'}
@@ -1518,6 +1580,13 @@ class SolarApp {
         </div>
       </div>
     `;
+
+    const controls = this.renderPaginationControls(data, page, 10, 'userTeam');
+    if (controls) {
+      const div = document.createElement('div');
+      div.innerHTML = controls;
+      list.appendChild(div);
+    }
   }
 
   copyRefLink() {

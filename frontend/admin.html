@@ -222,6 +222,7 @@
               <tbody id="full-user-list"></tbody>
             </table>
           </div>
+          <div id="pagination-users"></div>
         </div>
       </div>
 
@@ -242,26 +243,25 @@
 
       <div id="view-transactions" class="admin-view" style="display: none; padding: 40px;">
         <div class="panel-card">
-          <div class="panel-header"><h4 class="panel-title">Transaction Ledger</h4></div>
           <div class="table-container">
             <table>
               <thead><tr><th>ID</th><th>Type</th><th>User</th><th>Amount</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
               <tbody id="full-transaction-ledger"></tbody>
             </table>
           </div>
+          <div id="pagination-deposits"></div>
         </div>
       </div>
 
       <div id="view-withdrawals" class="admin-view" style="display: none; padding: 40px;">
         <div class="panel-card">
-          <div class="panel-header"><h4 class="panel-title">🏧 Withdrawal Management</h4></div>
-          <p style="font-size:13px; color:#64748b; margin: -10px 0 20px 20px;">Review and process user payout requests.</p>
           <div class="table-container">
             <table>
               <thead><tr><th>User</th><th>Amount</th><th>Type</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
               <tbody id="admin-withdrawals-list"></tbody>
             </table>
           </div>
+          <div id="pagination-withdrawals"></div>
         </div>
       </div>
 
