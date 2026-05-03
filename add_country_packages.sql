@@ -84,3 +84,30 @@ INSERT INTO packages (name, amount, bonus, description, active, country) VALUES
   ('Solar Array', '1,120,000 TSH', '3,840,000 TSH', 'Large scale solar array investment.', 10, 'Tanzania'),
   ('Solar Plant', '1,440,000 TSH', '4,960,000 TSH', 'Industrial solar plant ownership.', 8, 'Tanzania'),
   ('Commercial Solar', '2,000,000 TSH', '6,800,000 TSH', 'Top-tier commercial solar partnership.', 5, 'Tanzania');
+
+-- Insert International packages (USD)
+INSERT INTO packages (name, amount, bonus, description, active, country) VALUES
+  ('Mono Starter', '$40', '$100', 'Entry-level solar investment with instant rewards.', 144, 'International'),
+  ('Poly Basic', '$60', '$150', 'Standard solar plan for consistent growth.', 102, 'International'),
+  ('Thin Film', '$80', '$200', 'Flexible solar technology investment.', 94, 'International'),
+  ('Off-Grid Lite', '$100', '$260', 'Small scale off-grid solar solution.', 88, 'International'),
+  ('Hybrid Lite', '$120', '$312', 'Combined energy source lite investment.', 76, 'International'),
+  ('Grid-Tied Lite', '$140', '$364', 'Connected grid lite solar plan.', 65, 'International'),
+  ('Solar Storage', '$160', '$420', 'Advanced battery storage solar investment.', 58, 'International'),
+  ('Smart Solar', '$180', '$480', 'Intelligent energy management plan.', 52, 'International'),
+  ('PV Entry', '$200', '$540', 'Entry level Photovoltaic investment.', 48, 'International'),
+  ('PV Basic', '$220', '$600', 'Fundamental PV solar system plan.', 44, 'International'),
+  ('PV Standard', '$240', '$680', 'Standard PV performance investment.', 40, 'International'),
+  ('PV Plus', '$260', '$760', 'Enhanced PV solar returns plan.', 38, 'International'),
+  ('PV Pro', '$280', '$840', 'Professional grade PV investment.', 35, 'International'),
+  ('PV Max', '$300', '$920', 'Maximum capacity PV solar plan.', 32, 'International'),
+  ('Off-Grid Pro', '$320', '$1,000', 'Professional off-grid solar systems.', 28, 'International'),
+  ('Hybrid Pro', '$340', '$1,080', 'High-end hybrid solar solution.', 25, 'International'),
+  ('Grid-Tied Pro', '$360', '$1,160', 'Full grid-tied professional system.', 22, 'International'),
+  ('Solar Battery', '$380', '$1,240', 'Dedicated high-capacity battery plan.', 20, 'International'),
+  ('Storage Plus', '$400', '$1,320', 'Ultimate storage and energy backup.', 18, 'International'),
+  ('Smart Hybrid', '$440', '$1,480', 'Intelligent hybrid energy investment.', 15, 'International'),
+  ('PV Ultra', '$480', '$1,640', 'Ultra-performance solar technology.', 12, 'International'),
+  ('Solar Array', '$560', '$1,920', 'Large scale solar array investment.', 10, 'International'),
+  ('Solar Plant', '$720', '$2,480', 'Industrial solar plant ownership.', 8, 'International'),
+  ('Commercial Solar', '$1,000', '$3,400', 'Top-tier commercial solar partnership.', 5, 'International');

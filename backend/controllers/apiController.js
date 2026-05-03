@@ -54,14 +54,17 @@ exports.getPackages = async (req, res) => {
         return res.json({ data: mockData.tanzaniaPackages });
       }
       
-      if (country !== 'Burundi') {
-        const { data: fallback } = await adminClient
-          .from('packages')
-          .select('*')
-          .eq('country', 'Burundi')
-          .order('id', { ascending: true });
-        if (fallback && fallback.length > 0) return res.json({ data: fallback });
-      }
+      // Default fallback for any other country (International)
+      const { data: fallback } = await adminClient
+        .from('packages')
+        .select('*')
+        .eq('country', 'International')
+        .order('id', { ascending: true });
+        
+      if (fallback && fallback.length > 0) return res.json({ data: fallback });
+      
+      // Mock Fallback for International
+      return res.json({ data: mockData.internationalPackages });
     } catch (err) {
       console.warn('Supabase fetch error:', err.message);
     }
@@ -77,7 +80,13 @@ exports.getPackages = async (req, res) => {
   if (req.query.country === 'Tanzania' || (req.user && req.user.country === 'Tanzania')) {
     return res.json({ data: mockData.tanzaniaPackages });
   }
-  res.json({ data: mockData.packages });
+  
+  // Burundi specific fallback if explicitly requested, otherwise International
+  if (req.query.country === 'Burundi' || (req.user && req.user.country === 'Burundi')) {
+    return res.json({ data: mockData.packages });
+  }
+
+  return res.json({ data: mockData.internationalPackages });
 };
 
 exports.getDashboard = async (req, res) => {
