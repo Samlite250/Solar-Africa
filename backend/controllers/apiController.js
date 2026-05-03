@@ -753,7 +753,7 @@ exports.adminUpdateWithdrawal = async (req, res) => {
     // 3. Update withdrawal status
     const { error: updateErr } = await adminClient
       .from('withdrawals')
-      .update({ status, updated_at: new Date().toISOString() })
+      .update({ status })
       .eq('id', id);
 
     if (updateErr) throw updateErr;
