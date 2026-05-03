@@ -24,8 +24,8 @@ class SolarApp {
         'Kenya': { symbol: 'KES', rate: 0.05 },
         'Uganda': { symbol: 'UGX', rate: 1.3 },
         'Tanzania': { symbol: 'TZS', rate: 0.9 },
-        'Rwanda': { symbol: 'RWF', rate: 0.4 },
-        'International': { symbol: 'USDT', rate: 0.00035 }
+        'Rwanda': { symbol: '$', rate: 1 },
+        'International': { symbol: 'USDT', rate: 1 }
       }
     };
 
@@ -94,7 +94,9 @@ class SolarApp {
     }
     
     const converted = numericVal * info.rate;
-    return converted.toLocaleString(undefined, { maximumFractionDigits: 0 }) + ' ' + info.symbol;
+    const formatted = converted.toLocaleString(undefined, { maximumFractionDigits: (info.symbol === '$' || info.symbol === 'USDT') ? 2 : 0 });
+    
+    return info.symbol === '$' ? `$${formatted}` : `${formatted} ${info.symbol}`;
   }
 
   // --- CORE ENGINE ---
