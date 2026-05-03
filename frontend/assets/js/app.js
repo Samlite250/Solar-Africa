@@ -1763,8 +1763,18 @@ class SolarApp {
       });
 
       if (res) {
-        this.showToast('Withdrawal request submitted! It will be processed soon.', 'success');
-        document.getElementById('app-modal').remove();
+        const successHtml = `
+          <div style="padding: 40px 20px; text-align: center;">
+            <div style="width:80px; height:80px; background:#f0fdf4; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 24px; color:#22c55e;">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            </div>
+            <h3 style="font-size:22px; font-weight:800; color:#1e293b; margin-bottom:12px;">Request Successful!</h3>
+            <p style="font-size:14px; color:#64748b; margin-bottom:32px;">Your withdrawal request for <strong>${amount}</strong> has been submitted. Our team will verify and process it within 2-24 hours.</p>
+            <button onclick="document.getElementById('app-modal').remove();" class="btn btn-blue btn-full" style="padding:16px; border-radius:14px;">Great, Thanks!</button>
+          </div>
+        `;
+        const modalBody = document.querySelector('#app-modal .modal-body') || document.querySelector('#app-modal');
+        if (modalBody) modalBody.innerHTML = successHtml;
         this.hydrateDashboard();
       } else {
         btn.disabled = false; btn.textContent = 'Submit Request';

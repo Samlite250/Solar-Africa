@@ -724,24 +724,28 @@ exports.adminUpdateWithdrawal = async (req, res) => {
 
       if (dashErr) throw dashErr;
 
-      const withdrawAmountNum = parseInt(withdrawal.amount.replace(/[^0-9]/g, '')) || 0;
+      const withdrawAmountNum = parseInt(withdrawal.amount.toString().replace(/[^0-9]/g, '')) || 0;
       
-      if (withdrawal.type === 'bonus') {
-        const currentBonusNum = parseInt((dash.welcome_bonus || '0').replace(/[^0-9]/g, '')) || 0;
+      // Determine type from method since column is missing
+      const isBonus = (withdrawal.method || '').toLowerCase().includes('(bonus)');
+      const typeStr = isBonus ? 'bonus' : 'wallet';
+
+      if (isBonus) {
+        const currentBonusNum = parseInt((dash.welcome_bonus || '0').toString().replace(/[^0-9]/g, '')) || 0;
         const newBonus = `${(currentBonusNum - withdrawAmountNum).toLocaleString()} FBu`;
-        await adminClient.from('dashboard').update({ welcome_bonus: newBonus }).eq('id', dash.id);
+        await adminClient.from('dashboard').update({ welcome_bonus: newBonus }).eq('user_id', withdrawal.user_id);
       } else {
-        const currentWalletNum = parseInt((dash.wallet_balance || '0').replace(/[^0-9]/g, '')) || 0;
+        const currentWalletNum = parseInt((dash.wallet_balance || '0').toString().replace(/[^0-9]/g, '')) || 0;
         const newWallet = `${(currentWalletNum - withdrawAmountNum).toLocaleString()} FBu`;
-        await adminClient.from('dashboard').update({ wallet_balance: newWallet }).eq('id', dash.id);
+        await adminClient.from('dashboard').update({ wallet_balance: newWallet }).eq('user_id', withdrawal.user_id);
       }
       
-      // Update activity to "Completed"
+      // Update activity
       await adminClient.from('activity').insert([{
         user_id: withdrawal.user_id,
         title: 'Withdrawal Approved',
         value: `-${withdrawal.amount}`,
-        description: `Your ${withdrawal.type} withdrawal was successful.`,
+        description: `Your ${typeStr} withdrawal was successful.`,
         date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
       }]);
     }
