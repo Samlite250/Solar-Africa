@@ -24,9 +24,9 @@ class SolarApp {
       },
       currency: {
         'Burundi': { symbol: 'FBu', rate: 1 },
-        'Kenya': { symbol: 'KES', rate: 0.05 },
-        'Uganda': { symbol: 'UGX', rate: 1.3 },
-        'Tanzania': { symbol: 'TZS', rate: 0.9 },
+        'Kenya': { symbol: 'KSh', rate: 1 },
+        'Uganda': { symbol: 'UGX', rate: 1 },
+        'Tanzania': { symbol: 'TSH', rate: 1 },
         'Rwanda': { symbol: '$', rate: 1 },
         'International': { symbol: 'USDT', rate: 1 }
       }
