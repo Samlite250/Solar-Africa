@@ -288,18 +288,21 @@ exports.getAdminStats = async (req, res) => {
       }
 
       // ✅ Enrich users with dashboard balances + profile info
-      // Only query what we know exists (no email/phone from profiles — may not exist)
       let enrichedUsers = rawUsers;
       let depositList = deposits.data || [];
       let withdrawalList = withdrawals.data || [];
+      let dashboardsRes = { data: [] };
+      let profilesRes = { data: [] };
 
       if (enrichedUsers.length > 0) {
         const userIds = enrichedUsers.map(u => u.user_id).filter(Boolean);
         if (userIds.length > 0) {
-          const [dashboardsRes, profilesRes] = await Promise.all([
+          const [dRes, pRes] = await Promise.all([
             adminClient.from('dashboard').select('user_id, wallet_balance, welcome_bonus, total_earnings').in('user_id', userIds),
             adminClient.from('profiles').select('user_id, name, referred_by, country, phone').in('user_id', userIds)
           ]);
+          dashboardsRes = dRes;
+          profilesRes = pRes;
 
           const dashMap = {};
           (dashboardsRes.data || []).forEach(d => { dashMap[d.user_id] = d; });
@@ -333,8 +336,12 @@ exports.getAdminStats = async (req, res) => {
       }
 
       // ✅ Calculate Real-Time Stats
-      const totalBonuses = (dashboardsRes.data || []).reduce((acc, d) => acc + (parseInt((d.welcome_bonus || '0').toString().replace(/[^0-9]/g, '')) || 0), 0);
-      const totalInvestments = (deposits.data || []).filter(d => d.status === 'approved').reduce((acc, d) => acc + (parseInt((d.amount || '0').toString().replace(/[^0-9]/g, '')) || 0), 0);
+      let totalBonuses = 0;
+      let totalInvestments = (deposits.data || []).filter(d => d.status === 'approved').reduce((acc, d) => acc + (parseInt((d.amount || '0').toString().replace(/[^0-9]/g, '')) || 0), 0);
+
+      if (typeof dashboardsRes !== 'undefined' && dashboardsRes.data) {
+        totalBonuses = dashboardsRes.data.reduce((acc, d) => acc + (parseInt((d.welcome_bonus || '0').toString().replace(/[^0-9]/g, '')) || 0), 0);
+      }
 
       const liveMetrics = {
         users: enrichedUsers.length,
