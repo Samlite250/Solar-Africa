@@ -1194,11 +1194,16 @@ class SolarApp {
         return null;
       }
 
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const msg = errorData.error || errorData.message || `HTTP ${response.status}`;
+        this.showToast(msg, 'error');
+        throw new Error(msg);
+      }
       const result = await response.json();
       return result.data || result;
     } catch (err) {
-      console.error(`[Engine] API Error (${endpoint}):`, err);
+      console.error(`[Engine] API Error (${endpoint}):`, err.message);
       return null;
     } finally {
       this.setLoading(false);
