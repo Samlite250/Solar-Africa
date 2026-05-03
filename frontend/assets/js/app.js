@@ -507,7 +507,7 @@ class SolarApp {
     if (!data) return; // if 401 it will logout
     
     // 3. Populate Metrics View
-    const { metrics, deposits, packages, users } = data;
+    const { metrics, deposits, packages, users, withdrawals } = data;
     if (metrics) {
       const e = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
       e('admin-total-users', (metrics.users||0).toLocaleString());
@@ -588,9 +588,8 @@ class SolarApp {
       if (pagContainer) pagContainer.innerHTML = controls;
     }
 
-    // 6.5 Populate Withdrawals Management
     const withdrawTable = document.getElementById('admin-withdrawals-list');
-    const withdrawals = data.withdrawals;
+    if (withdrawTable && withdrawals) {
       const page = this.state.pagination.adminWithdrawals;
       const paginatedWithdrawals = this.getPaginatedData(withdrawals, page);
       withdrawTable.innerHTML = paginatedWithdrawals.map(w => `
@@ -598,6 +597,7 @@ class SolarApp {
           <td><strong>${w.user_name}</strong></td>
           <td style="color:#dc2626;font-weight:700;">-${w.amount}</td>
           <td><span style="background:#f4f7fe;color:#334155;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:800;text-transform:uppercase;">${w.type || 'wallet'}</span></td>
+          <td style="color:#0b6cff;font-weight:700;font-size:12px;">${w.method || '<span style="color:#94a3b8;">Default</span>'}</td>
           <td style="color:#64748b;font-size:13px;">${new Date(w.created_at).toLocaleDateString()}</td>
           <td><span style="background:${w.status==='approved'?'#dcfce7':(w.status==='rejected'?'#fee2e2':'#fef3c7')};color:${w.status==='approved'?'#16a34a':(w.status==='rejected'?'#dc2626':'#d97706')};padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;">${w.status.toUpperCase()}</span></td>
           <td>
@@ -1715,7 +1715,7 @@ class SolarApp {
       </div>
     `;
 
-    this.showModal('Exemplary Withdrawal', html);
+    this.showModal('Withdrawal Request', html);
 
     document.getElementById('submit-withdraw-btn').onclick = async () => {
       const btn = document.getElementById('submit-withdraw-btn');
