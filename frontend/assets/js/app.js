@@ -1300,7 +1300,7 @@ class SolarApp {
           <strong style="font-size:18px;">${title}</strong>
           <button onclick="document.getElementById('app-modal').remove()" style="background:#f1f5f9; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">Close</button>
         </div>
-        <div style="max-height:70vh; overflow-y:auto;">
+        <div class="modal-body" style="max-height:70vh; overflow-y:auto;">
           ${html}
         </div>
       </div>
@@ -1789,17 +1789,29 @@ class SolarApp {
 
       if (res) {
         const successHtml = `
-          <div style="padding: 40px 20px; text-align: center;">
-            <div style="width:80px; height:80px; background:#f0fdf4; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 24px; color:#22c55e;">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+          <div style="padding: 40px 24px; text-align: center; background: white;">
+            <div style="width:80px; height:80px; background:#f0fdf4; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 24px; color:#16a34a; box-shadow: 0 10px 20px rgba(22, 163, 74, 0.1);">
+              <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
             </div>
-            <h3 style="font-size:22px; font-weight:800; color:#1e293b; margin-bottom:12px;">Request Successful!</h3>
-            <p style="font-size:14px; color:#64748b; margin-bottom:32px;">Your withdrawal request for <strong>${amount}</strong> has been submitted. Our team will verify and process it within 2-24 hours.</p>
-            <button onclick="document.getElementById('app-modal').remove();" class="btn btn-blue btn-full" style="padding:16px; border-radius:14px;">Great, Thanks!</button>
+            <h3 style="font-size:24px; font-weight:900; color:#0f172a; margin-bottom:12px;">Request Successful!</h3>
+            <p style="font-size:15px; color:#334155; line-height:1.6; margin-bottom:32px; font-weight:500;">
+              Your withdrawal request for <strong style="color:#16a34a; font-size:18px;">${amount}</strong> has been submitted. 
+              <br><br>
+              Our financial team will verify and process it within <strong>2-24 hours</strong>.
+            </p>
+            <button onclick="document.getElementById('app-modal').remove();" class="btn btn-blue btn-full" style="padding:18px; border-radius:16px; font-size:16px; font-weight:800; width:100%; border:none; cursor:pointer; box-shadow: 0 4px 12px rgba(11, 108, 255, 0.2);">
+              Great, Thanks!
+            </button>
           </div>
         `;
-        const modalBody = document.querySelector('#app-modal .modal-body') || document.querySelector('#app-modal');
-        if (modalBody) modalBody.innerHTML = successHtml;
+        const modalBody = document.querySelector('#app-modal .modal-body');
+        if (modalBody) {
+          modalBody.innerHTML = successHtml;
+          // Also hide the header to make it look like a clean success card
+          const modalHeader = modalBody.previousElementSibling;
+          if (modalHeader) modalHeader.style.display = 'none';
+          modalBody.parentElement.style.borderRadius = '32px';
+        }
         this.hydrateDashboard();
       } else {
         btn.disabled = false; btn.textContent = 'Submit Request';
