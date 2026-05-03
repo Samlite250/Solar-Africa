@@ -530,7 +530,7 @@ class SolarApp {
             <strong style="color:#0f172a;">${u.name}</strong>
           </div></td>
           <td style="color:#64748b;font-size:13px;">${u.email||'N/A'}</td>
-          <td style="color:#0b6cff;font-size:12px;font-weight:700;">${u.upline||'Solar Africa'}</td>
+          <td style="color:#0b6cff;font-size:12px;font-weight:700;">${u.upline||'SOLAR'}</td>
           <td style="color:#64748b;font-size:13px;">${new Date(u.created_at).toLocaleDateString()}</td>
           <td style="color:#10b981;font-weight:700;">${u.wallet_balance||'0 FBu'}</td>
           <td><span style="background:${u.status==='active'?'#dcfce7':'#fee2e2'};color:${u.status==='active'?'#16a34a':'#dc2626'};padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;">${(u.status||'active').toUpperCase()}</span></td>

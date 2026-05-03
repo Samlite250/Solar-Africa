@@ -308,7 +308,7 @@ exports.getAdminStats = async (req, res) => {
             ...u,
             // Use profile name as priority (it's what the user registered with)
             name: profMap[u.user_id]?.name || u.name,
-            upline: profMap[u.user_id]?.referred_by || 'Solar Africa',
+            upline: profMap[u.user_id]?.referred_by || 'SOLAR',
             wallet_balance: dashMap[u.user_id]?.wallet_balance || '0 FBu',
             welcome_bonus: dashMap[u.user_id]?.welcome_bonus || '0 FBu',
             total_earnings: dashMap[u.user_id]?.total_earnings || '0 FBu'
