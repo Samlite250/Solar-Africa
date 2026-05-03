@@ -1171,7 +1171,7 @@ exports.completeTask = async (req, res) => {
 exports.getSettings = async (req, res) => {
   if (!isConfigured) return res.json({ data: {} });
   try {
-    const { data, error } = await client.from('settings').select('key, value');
+    const { data, error } = await adminClient.from('settings').select('key, value');
     if (error) throw error;
     
     // Transform array of [{key, value}] into a single object {key: value}

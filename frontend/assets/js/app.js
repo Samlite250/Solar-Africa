@@ -2307,6 +2307,14 @@ class SolarApp {
       const card = modal.querySelector('.pkg-detail-card');
       card.innerHTML = `<div style="text-align:center;padding:40px;"><div class="spinner" style="margin:0 auto 12px;"></div><p style="color:#64748b;">Loading payment info...</p></div>`;
 
+      // 0. Ensure settings are loaded
+      if (!this.state.settings || Object.keys(this.state.settings).length === 0) {
+        try {
+          const res = await this.fetchAPI('settings');
+          if (res?.data) this.state.settings = res.data;
+        } catch (e) { console.warn('Failed to fetch settings in modal'); }
+      }
+
       // Fetch dynamic payment info for user's country
       const userCountry = this.state.user?.country || 'Burundi';
       
@@ -2366,10 +2374,11 @@ class SolarApp {
       let cryptoHTML = '';
       const cryptoAddr = this.state.settings?.crypto_address;
       const cryptoCountries = (this.state.settings?.crypto_countries || '').split(',').map(c => c.trim().toLowerCase());
-      const isInternational = userCountry.toLowerCase() === 'international';
-      const isCryptoEnabledForUser = cryptoCountries.includes(userCountry.toLowerCase()) || cryptoCountries.includes('all') || isInternational;
+      const userCountryClean = (userCountry || 'Burundi').trim().toLowerCase();
+      const isInternational = userCountryClean === 'international';
+      const isCryptoEnabledForUser = cryptoCountries.includes(userCountryClean) || cryptoCountries.includes('all') || isInternational;
 
-      if (cryptoAddr && cryptoAddr !== 'TTRC20ADDRESSPLACEHOLDER' && isCryptoEnabledForUser) {
+      if (cryptoAddr && isCryptoEnabledForUser) {
         cryptoHTML = `
           <div id="crypto-payment-section" style="margin-top: 24px; display: none; animation: fadeIn 0.3s ease-out;">
             <div style="background: linear-gradient(135deg, #0f172a, #1e293b); padding: 20px; border-radius: 20px; color: white; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
