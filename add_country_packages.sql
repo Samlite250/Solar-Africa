@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS settings (
 INSERT INTO settings (key, value) VALUES 
   ('whatsapp_group', 'https://chat.whatsapp.com/default'),
   ('telegram_channel', 'https://t.me/default'),
-  ('support_email', 'support@solarafrica.com')
+  ('support_email', 'support@solarafrica.com'),
+  ('crypto_address', 'TTRC20ADDRESSPLACEHOLDER')
 ON CONFLICT (key) DO NOTHING;
 
 -- Update existing packages to be Burundi

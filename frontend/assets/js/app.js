@@ -30,6 +30,12 @@ class SolarApp {
   async init() {
     console.log('☀️ Solar Africa Engine Starting...');
     
+    // Fetch global settings early
+    try {
+      const settingsRes = await this.fetchAPI('settings');
+      this.state.settings = settingsRes?.data || {};
+    } catch (e) { console.warn('Settings fetch failed'); }
+    
     // 1. Initial UI Setup
     this.setupGlobalListeners();
     this.setupNavigation();
@@ -792,6 +798,7 @@ class SolarApp {
       document.getElementById('setting-whatsapp').value = settings.whatsapp_group || '';
       document.getElementById('setting-telegram').value = settings.telegram_channel || '';
       document.getElementById('setting-email').value = settings.support_email || '';
+      document.getElementById('setting-crypto').value = settings.crypto_address || '';
     }
 
     const settingsForm = document.getElementById('global-settings-form');
@@ -804,7 +811,8 @@ class SolarApp {
         const payload = {
           whatsapp_group: document.getElementById('setting-whatsapp').value,
           telegram_channel: document.getElementById('setting-telegram').value,
-          support_email: document.getElementById('setting-email').value
+          support_email: document.getElementById('setting-email').value,
+          crypto_address: document.getElementById('setting-crypto').value
         };
 
         const res = await this.fetchAPI('admin/settings', { method: 'PUT', body: JSON.stringify(payload) });
@@ -2185,12 +2193,33 @@ class SolarApp {
           </div>`;
       });
 
+      let cryptoHTML = '';
+      const cryptoAddr = this.state.settings?.crypto_address;
+      if (cryptoAddr && (userCountry === 'International' || userCountry === 'Rwanda')) {
+        cryptoHTML = `
+          <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #e2e8f0;">
+            <h4 style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px;">💰 Pay with Crypto (USDT TRC-20)</h4>
+            <div style="background:#fff7ed; padding:12px; border-radius:10px; border:1px solid #fed7aa; display:flex; flex-direction:column; gap:8px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:12px; font-weight:600; color:#9a3412;">TRC-20 Address:</span>
+                <span style="display:inline-flex;align-items:center;gap:6px;">
+                  <code style="background:white; padding:4px 8px; border-radius:4px; font-size:11px; border:1px solid #ffedd5; color:#c2410c; max-width:140px; overflow:hidden; text-overflow:ellipsis;">${cryptoAddr}</code>
+                  <button onclick="navigator.clipboard.writeText('${cryptoAddr}');window.app?.showToast('Address copied!','success');" style="background:none;border:none;color:#c2410c;cursor:pointer;padding:2px;">${copySvg}</button>
+                </span>
+              </div>
+              <p style="font-size:10px; color:#c2410c; margin:0; font-weight:500;">Only send USDT via TRC-20 network to this address.</p>
+            </div>
+          </div>
+        `;
+      }
+
       const paymentStepsHTML = `
         <h4 style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:12px;border-bottom:1px solid #e2e8f0;padding-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;">${customHeader.replace(/</g, '&lt;')}</h4>
         <div style="white-space: pre-wrap; font-size: 14px; line-height: 1.6; color: #334155; margin-bottom: 16px;">${rawInstructions || 'Please contact support for instructions.'}</div>
         <div style="background:#f0fdf4; padding:12px; border-radius:8px; display:flex; flex-direction:column; gap:8px; border:1px dashed #22c55e;">
           ${extraDetailsHTML}
-        </div>`;
+        </div>
+        ${cryptoHTML}`;
 
       card.innerHTML = `
         <div style="text-align:center;">
