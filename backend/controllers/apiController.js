@@ -619,7 +619,7 @@ exports.createWithdrawal = async (req, res) => {
   }
 
   try {
-    const { amount, type } = req.body; // type: 'wallet' or 'bonus'
+    const { amount, type, method } = req.body; // type: 'wallet' or 'bonus'
     const userId = req.user.id;
     
     if (!amount || !type) return res.status(400).json({ error: 'Amount and type are required' });
@@ -653,6 +653,7 @@ exports.createWithdrawal = async (req, res) => {
           user_name: req.user.user_metadata?.full_name || 'User',
           amount,
           type: type, // 'wallet' or 'bonus'
+          method: method || 'Default',
           status: 'pending'
         }
       ])

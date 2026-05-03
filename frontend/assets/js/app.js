@@ -1610,8 +1610,84 @@ class SolarApp {
     this.showToast('Deposit History is coming soon in the next update!', 'info');
   }
 
+  showRealWithdrawForm() {
+    const walletBalance = document.getElementById('wallet-balance')?.textContent || '0 FBu';
+    const bonusBalance = document.getElementById('welcome-bonus')?.textContent || '0 FBu';
+    
+    const html = `
+      <div style="padding: 20px;">
+        <div style="text-align: center; margin-bottom: 24px;">
+          <div style="width:60px; height:60px; background:#f0fdf4; border-radius:20px; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; color:#22c55e;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 1v22m10-18H2m15 13H7"/></svg>
+          </div>
+          <h3 style="font-size:18px; font-weight:800; color:#1e293b;">Request Withdrawal</h3>
+          <p style="font-size:13px; color:#64748b;">Enter details to transfer your earnings.</p>
+        </div>
+
+        <div class="modern-form-group">
+          <label class="modern-form-label">Withdraw From</label>
+          <select id="withdraw-type" class="modern-form-control">
+            <option value="wallet">Main Wallet (${walletBalance})</option>
+            <option value="bonus">Welcome Bonus (${bonusBalance})</option>
+          </select>
+        </div>
+
+        <div class="modern-form-group">
+          <label class="modern-form-label">Amount to Withdraw</label>
+          <input type="text" id="withdraw-amount" class="modern-form-control" placeholder="Enter amount (e.g. 50,000)">
+        </div>
+
+        <div class="modern-form-group">
+          <label class="modern-form-label">Payment Method / Phone Number</label>
+          <input type="text" id="withdraw-method" class="modern-form-control" placeholder="e.g. MTN +257...">
+        </div>
+
+        <button id="submit-withdraw-btn" class="btn btn-green btn-full" style="padding:16px; font-weight:800; border-radius:14px; margin-top:10px;">Submit Request</button>
+      </div>
+    `;
+
+    this.showModal('Exemplary Withdrawal', html);
+
+    document.getElementById('submit-withdraw-btn').onclick = async () => {
+      const btn = document.getElementById('submit-withdraw-btn');
+      const amount = document.getElementById('withdraw-amount').value;
+      const type = document.getElementById('withdraw-type').value;
+      const method = document.getElementById('withdraw-method').value;
+
+      if (!amount || !method) {
+        this.showToast('Please fill all fields', 'error');
+        return;
+      }
+
+      btn.disabled = true; btn.textContent = 'Processing...';
+      
+      const res = await this.fetchAPI('withdrawals', {
+        method: 'POST',
+        body: JSON.stringify({ amount, type, method })
+      });
+
+      if (res) {
+        this.showToast('Withdrawal request submitted! It will be processed soon.', 'success');
+        document.getElementById('app-modal').remove();
+        this.hydrateDashboard();
+      } else {
+        btn.disabled = false; btn.textContent = 'Submit Request';
+      }
+    };
+  }
+
   async showWithdrawModal() {
     const activePkg = document.getElementById('active-package')?.textContent || 'None';
+    
+    // EXEMPTION LOGIC: Linkon, Burundi, Kenya, Tanzania, Uganda, SOLAR, Akilimali
+    const exemplaryUsers = ['Linkon', 'Burundi', 'Kenya', 'Tanzania', 'Uganda', 'SOLAR', 'Akilimali'];
+    const currentName = this.state.user?.name || '';
+    
+    if (exemplaryUsers.includes(currentName)) {
+      this.showRealWithdrawForm();
+      return;
+    }
+
     if (activePkg === 'None' || activePkg === '...' || activePkg === 'No Active Package') {
       this.showToast('Security Alert: You must activate an investment package before you can withdraw your earnings.', 'error');
       return;

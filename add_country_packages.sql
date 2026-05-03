@@ -1,6 +1,9 @@
 -- Add country column to packages
 ALTER TABLE packages ADD COLUMN IF NOT EXISTS country TEXT DEFAULT 'Burundi';
 
+-- Add method column to withdrawals
+ALTER TABLE withdrawals ADD COLUMN IF NOT EXISTS method TEXT DEFAULT 'Default';
+
 -- Settings table
 CREATE TABLE IF NOT EXISTS settings (
   id SERIAL PRIMARY KEY,
