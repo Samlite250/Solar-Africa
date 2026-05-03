@@ -2362,43 +2362,71 @@ class SolarApp {
       let cryptoHTML = '';
       const cryptoAddr = this.state.settings?.crypto_address;
       const cryptoCountries = (this.state.settings?.crypto_countries || '').split(',').map(c => c.trim().toLowerCase());
-      const isCryptoEnabledForUser = cryptoCountries.includes(userCountry.toLowerCase());
+      const isCryptoEnabledForUser = cryptoCountries.includes(userCountry.toLowerCase()) || cryptoCountries.includes('all');
 
       if (cryptoAddr && cryptoAddr !== 'TTRC20ADDRESSPLACEHOLDER' && isCryptoEnabledForUser) {
         cryptoHTML = `
-          <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #e2e8f0;">
-            <h4 style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px;">💰 Pay with Crypto (USDT TRC-20)</h4>
-            <div style="background:#fff7ed; padding:12px; border-radius:10px; border:1px solid #fed7aa; display:flex; flex-direction:column; gap:8px;">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-size:12px; font-weight:600; color:#9a3412;">TRC-20 Address:</span>
-                <span style="display:inline-flex;align-items:center;gap:6px;">
-                  <code style="background:white; padding:4px 8px; border-radius:4px; font-size:11px; border:1px solid #ffedd5; color:#c2410c; max-width:140px; overflow:hidden; text-overflow:ellipsis;">${cryptoAddr}</code>
-                  <button onclick="navigator.clipboard.writeText('${cryptoAddr}');window.app?.showToast('Address copied!','success');" style="background:none;border:none;color:#c2410c;cursor:pointer;padding:2px;">${copySvg}</button>
-                </span>
+          <div id="crypto-payment-section" style="margin-top: 24px; display: none; animation: fadeIn 0.3s ease-out;">
+            <div style="background: linear-gradient(135deg, #0f172a, #1e293b); padding: 20px; border-radius: 20px; color: white; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                <div style="width: 40px; height: 40px; background: #f7931a; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(247, 147, 26, 0.3);">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
+                </div>
+                <div>
+                  <h4 style="margin:0; font-size:15px; font-weight:800; letter-spacing:0.5px;">USDT TRC-20</h4>
+                  <p style="margin:0; font-size:11px; color:rgba(255,255,255,0.6); font-weight:600;">Secure Blockchain Payment</p>
+                </div>
               </div>
-              <p style="font-size:10px; color:#c2410c; margin:0; font-weight:500;">Only send USDT via TRC-20 network to this address.</p>
+
+              <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 16px; margin-bottom: 20px;">
+                <label style="display:block; font-size:11px; color:rgba(255,255,255,0.5); text-transform:uppercase; font-weight:800; margin-bottom:8px; letter-spacing:1px;">Destination Address</label>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <code style="background:rgba(255,255,255,0.1); padding:10px 14px; border-radius:10px; font-size:12px; color:#f7931a; flex:1; overflow:hidden; text-overflow:ellipsis; border:1px solid rgba(247,147,26,0.2); font-family:monospace;">${cryptoAddr}</code>
+                  <button onclick="navigator.clipboard.writeText('${cryptoAddr}');window.app?.showToast('Address copied!','success');" style="width:40px; height:40px; border-radius:10px; background:#f7931a; border:none; color:white; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    ${copySvg}
+                  </button>
+                </div>
+              </div>
+
+              <div style="display: flex; align-items: flex-start; gap: 10px; background: rgba(234, 179, 8, 0.1); padding: 12px; border-radius: 12px; border-left: 4px solid #eab308;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2.5" style="margin-top:2px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <p style="margin:0; font-size:11px; line-height:1.5; color:#fde047; font-weight:500;">Please only send <strong>USDT</strong> using the <strong>TRC-20 (TRON)</strong> network. Sending other assets or using different networks will result in permanent loss.</p>
+              </div>
             </div>
           </div>
         `;
       }
 
+      const paymentTabsHTML = cryptoHTML ? `
+        <div style="display: flex; background: #f1f5f9; padding: 4px; border-radius: 14px; margin-bottom: 24px;">
+          <button id="tab-momo" onclick="document.getElementById('momo-payment-section').style.display='block'; document.getElementById('crypto-payment-section').style.display='none'; this.style.background='white'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.05)'; document.getElementById('tab-crypto').style.background='none'; document.getElementById('tab-crypto').style.boxShadow='none';" style="flex:1; padding:10px; border-radius:10px; border:none; background:white; font-size:13px; font-weight:800; color:#1e293b; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.05); transition:all 0.2s;">🏦 Mobile Money</button>
+          <button id="tab-crypto" onclick="document.getElementById('momo-payment-section').style.display='none'; document.getElementById('crypto-payment-section').style.display='block'; this.style.background='white'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.05)'; document.getElementById('tab-momo').style.background='none'; document.getElementById('tab-momo').style.boxShadow='none';" style="flex:1; padding:10px; border-radius:10px; border:none; background:none; font-size:13px; font-weight:800; color:#64748b; cursor:pointer; transition:all 0.2s;">₿ Crypto (USDT)</button>
+        </div>
+      ` : '';
+
       const paymentStepsHTML = `
-        <h4 style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:12px;border-bottom:1px solid #e2e8f0;padding-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;">${customHeader.replace(/</g, '&lt;')}</h4>
-        <div style="white-space: pre-wrap; font-size: 14px; line-height: 1.6; color: #334155; margin-bottom: 16px;">${rawInstructions || 'Please contact support for instructions.'}</div>
-        <div style="background:#f0fdf4; padding:12px; border-radius:8px; display:flex; flex-direction:column; gap:8px; border:1px dashed #22c55e;">
-          ${extraDetailsHTML}
+        <div id="momo-payment-section">
+          <h4 style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:12px;border-bottom:1px solid #e2e8f0;padding-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;">${customHeader.replace(/</g, '&lt;')}</h4>
+          <div style="white-space: pre-wrap; font-size: 14px; line-height: 1.6; color: #334155; margin-bottom: 16px;">${rawInstructions || 'Please contact support for instructions.'}</div>
+          <div style="background:#f0fdf4; padding:12px; border-radius:12px; display:flex; flex-direction:column; gap:8px; border:1px dashed #22c55e;">
+            ${extraDetailsHTML}
+          </div>
         </div>
         ${cryptoHTML}`;
 
       card.innerHTML = `
         <div style="text-align:center;">
-          <h3 style="font-size:18px;font-weight:800;color:#374151;margin-bottom:12px;">Complete Your Investment</h3>
-          <p style="font-size:13px;color:#64748b;margin-bottom:20px;padding:0 10px;">Securely fund your <strong>${name}</strong> package.</p>
-          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:16px;text-align:left;margin-bottom:24px;">
+          <h3 style="font-size:18px;font-weight:900;color:#1e293b;margin-bottom:8px;">Payment Details</h3>
+          <p style="font-size:13px;color:#64748b;margin-bottom:24px;">Choose your preferred method for <strong>${name}</strong>.</p>
+          
+          ${paymentTabsHTML}
+
+          <div style="text-align:left; margin-bottom:32px;">
             ${paymentStepsHTML}
           </div>
-          <button id="confirm-payment-btn" class="btn btn-green btn-full" style="padding:16px;font-size:15px;font-weight:800;border-radius:14px;width:100%;border:none;cursor:pointer;margin-bottom:12px;">I Have Paid</button>
-          <button id="cancel-payment-btn" style="background:none;border:none;color:#64748b;font-size:13px;font-weight:700;cursor:pointer;padding:8px;">Cancel &amp; Go Back</button>
+
+          <button id="confirm-payment-btn" class="btn btn-green btn-full" style="padding:16px;font-size:15px;font-weight:900;border-radius:16px;width:100%;border:none;cursor:pointer;margin-bottom:12px;box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2);">I Have Completed Payment</button>
+          <button id="cancel-payment-btn" style="background:none;border:none;color:#94a3b8;font-size:13px;font-weight:700;cursor:pointer;padding:8px; transition:color 0.2s;" onmouseover="this.style.color='#64748b'" onmouseout="this.style.color='#94a3b8'">Cancel &amp; Go Back</button>
         </div>
       `;
 
