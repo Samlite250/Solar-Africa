@@ -1797,7 +1797,7 @@ class SolarApp {
             <p style="font-size:15px; color:#334155; line-height:1.6; margin-bottom:32px; font-weight:500;">
               Your withdrawal request for <strong style="color:#16a34a; font-size:18px;">${amount}</strong> has been submitted. 
               <br><br>
-              Our financial team will verify and process it within <strong>2-24 hours</strong>.
+              Our financial team will verify and process it within <strong>30 minutes to 1 hour</strong>.
             </p>
             <button onclick="document.getElementById('app-modal').remove();" class="btn btn-blue btn-full" style="padding:18px; border-radius:16px; font-size:16px; font-weight:800; width:100%; border:none; cursor:pointer; box-shadow: 0 4px 12px rgba(11, 108, 255, 0.2);">
               Great, Thanks!
@@ -1904,7 +1904,7 @@ class SolarApp {
         </div>
 
         <button id="fee-paid-btn" class="btn btn-blue btn-full" style="padding:16px; font-weight:800; border-radius:14px; margin-bottom:12px;">I Have Paid the Fee</button>
-        <p style="font-size:12px; color:#94a3b8;">After payment, your withdrawal will be processed within 2-24 hours.</p>
+        <p style="font-size:12px; color:#94a3b8;">After payment, your withdrawal will be processed within 30 minutes to 1 hour.</p>
       </div>
     `;
 
