@@ -2435,9 +2435,13 @@ class SolarApp {
           </div>`;
       });
 
+      // 2. Fetch fresh settings specifically for this modal to avoid any state desync
+      const settingsRes = await fetch('/api/settings').then(r => r.json()).catch(() => ({data:{}}));
+      const activeSettings = settingsRes?.data || this.state.settings || {};
+      
       let cryptoHTML = '';
-      const cryptoAddr = this.state.settings?.crypto_address;
-      const cryptoCountriesRaw = this.state.settings?.crypto_countries || '';
+      const cryptoAddr = activeSettings.crypto_address;
+      const cryptoCountriesRaw = activeSettings.crypto_countries || '';
       const cryptoCountries = cryptoCountriesRaw.split(',').map(c => c.trim().toLowerCase()).filter(Boolean);
       const isInternational = userCountryClean === 'international';
       
@@ -2446,14 +2450,13 @@ class SolarApp {
                                      cryptoCountriesRaw.toLowerCase().includes(userCountryClean) ||
                                      isInternational;
 
-      console.log('[CryptoDebug]', { 
+      console.log('[CryptoDebug] MODAL_FETCH', { 
         userCountryClean, 
         cryptoCountriesRaw, 
         cryptoCountries, 
-        isInternational,
         isCryptoEnabledForUser,
         hasAddress: !!cryptoAddr,
-        actualAddr: cryptoAddr ? cryptoAddr.substring(0, 5) + '...' : 'NONE'
+        addrLen: cryptoAddr?.length || 0
       });
 
       if (cryptoAddr && cryptoAddr.length > 10 && isCryptoEnabledForUser) {
