@@ -2341,26 +2341,23 @@ class SolarApp {
     };
   }
 
-  async approveWithdrawal(id) {
+  async updateWithdrawal(id, status) {
     const res = await this.fetchAPI(`admin/withdrawals/${id}`, {
       method: 'PUT',
-      body: JSON.stringify({ status: 'approved' })
+      body: JSON.stringify({ status })
     });
     if (res) {
-      this.showToast('Withdrawal approved successfully', 'success');
+      this.showToast(`Withdrawal ${status} successfully`, 'success');
       this.hydrateAdmin();
     }
   }
 
+  async approveWithdrawal(id) {
+    await this.updateWithdrawal(id, 'approved');
+  }
+
   async rejectWithdrawal(id) {
-    const res = await this.fetchAPI(`admin/withdrawals/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify({ status: 'rejected' })
-    });
-    if (res) {
-      this.showToast('Withdrawal rejected', 'warning');
-      this.hydrateAdmin();
-    }
+    await this.updateWithdrawal(id, 'rejected');
   }
 
   async approveDeposit(id) {
