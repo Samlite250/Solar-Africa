@@ -870,6 +870,7 @@ class SolarApp {
       document.getElementById('setting-telegram').value = settings.telegram_channel || '';
       document.getElementById('setting-email').value = settings.support_email || '';
       document.getElementById('setting-crypto').value = settings.crypto_address || '';
+      document.getElementById('setting-crypto-countries').value = settings.crypto_countries || '';
     }
 
     const settingsForm = document.getElementById('global-settings-form');
@@ -883,7 +884,8 @@ class SolarApp {
           whatsapp_group: document.getElementById('setting-whatsapp').value,
           telegram_channel: document.getElementById('setting-telegram').value,
           support_email: document.getElementById('setting-email').value,
-          crypto_address: document.getElementById('setting-crypto').value
+          crypto_address: document.getElementById('setting-crypto').value,
+          crypto_countries: document.getElementById('setting-crypto-countries').value
         };
 
         const res = await this.fetchAPI('admin/settings', { method: 'PUT', body: JSON.stringify(payload) });
@@ -2338,8 +2340,10 @@ class SolarApp {
 
       let cryptoHTML = '';
       const cryptoAddr = this.state.settings?.crypto_address;
-      // Show crypto for ALL countries if an address is configured
-      if (cryptoAddr && cryptoAddr !== 'TTRC20ADDRESSPLACEHOLDER') {
+      const cryptoCountries = (this.state.settings?.crypto_countries || '').split(',').map(c => c.trim().toLowerCase());
+      const isCryptoEnabledForUser = cryptoCountries.includes(userCountry.toLowerCase());
+
+      if (cryptoAddr && cryptoAddr !== 'TTRC20ADDRESSPLACEHOLDER' && isCryptoEnabledForUser) {
         cryptoHTML = `
           <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #e2e8f0;">
             <h4 style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px;">💰 Pay with Crypto (USDT TRC-20)</h4>
