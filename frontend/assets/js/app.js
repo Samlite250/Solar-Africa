@@ -2530,7 +2530,15 @@ class SolarApp {
       modal.querySelector('#confirm-payment-btn').onclick = async () => {
         const btn = modal.querySelector('#confirm-payment-btn');
         btn.disabled = true; btn.textContent = 'Submitting...';
-        const res = await this.fetchAPI('deposits',{method:'POST',body:JSON.stringify({package_name:name,amount})});
+
+        const method = this.state.activePaymentTab || 'momo';
+        const displayAmount = method === 'crypto' ? this.formatCurrency(amount) : (this.state.user?.country?.toLowerCase() === 'rwanda' ? ((parseFloat(amount.toString().replace(/[^0-9]/g, '')) * 1450).toLocaleString() + ' RWF') : this.formatCurrency(amount));
+        const finalAmount = `${displayAmount} (${method.toUpperCase()})`;
+
+        const res = await this.fetchAPI('deposits',{method:'POST',body:JSON.stringify({
+          package_name: name,
+          amount: finalAmount
+        })});
         if (res) {
           // Success view
           card.innerHTML = `
