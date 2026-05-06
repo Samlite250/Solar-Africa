@@ -556,32 +556,46 @@ exports.adminUpdateUser = async (req, res) => {
     } = req.body;
     
     // 1. Update Profiles table
-    await adminClient.from('profiles').update({
-      name, email, phone, country, referred_by, updated_at: new Date()
-    }).eq('user_id', id);
+    const profileUpdates = { updated_at: new Date() };
+    if (name !== undefined) profileUpdates.name = name;
+    if (email !== undefined) profileUpdates.email = email;
+    if (phone !== undefined) profileUpdates.phone = phone;
+    if (country !== undefined) profileUpdates.country = country;
+    if (referred_by !== undefined) profileUpdates.referred_by = referred_by;
+
+    if (Object.keys(profileUpdates).length > 1) {
+      await adminClient.from('profiles').update(profileUpdates).eq('user_id', id);
+    }
 
     // 2. Update Dashboard table
-    const { error: dashErr } = await adminClient.from('dashboard').update({
-      wallet_balance: wallet_balance || '0 FBu',
-      welcome_bonus: welcome_bonus || '0 FBu',
-      total_earnings: total_earnings || '0 FBu',
-      updated_at: new Date()
-    }).eq('user_id', id);
+    const dashUpdates = { updated_at: new Date() };
+    if (wallet_balance !== undefined) dashUpdates.wallet_balance = wallet_balance;
+    if (welcome_bonus !== undefined) dashUpdates.welcome_bonus = welcome_bonus;
+    if (total_earnings !== undefined) dashUpdates.total_earnings = total_earnings;
 
-    if (dashErr && dashErr.code === 'PGRST116') {
-      // Create if missing
-      await adminClient.from('dashboard').insert([{
-        user_id: id,
-        wallet_balance: wallet_balance || '0 FBu',
-        welcome_bonus: welcome_bonus || '0 FBu',
-        total_earnings: total_earnings || '0 FBu'
-      }]);
+    if (Object.keys(dashUpdates).length > 1) {
+      const { error: dashErr } = await adminClient.from('dashboard').update(dashUpdates).eq('user_id', id);
+      if (dashErr && dashErr.code === 'PGRST116') {
+        // Create if missing
+        await adminClient.from('dashboard').insert([{
+          user_id: id,
+          wallet_balance: wallet_balance || '0 FBu',
+          welcome_bonus: welcome_bonus || '0 FBu',
+          total_earnings: total_earnings || '0 FBu'
+        }]);
+      }
     }
 
     // 3. Update Users table (admin metadata)
-    await adminClient.from('users').update({
-      name, email, country, status, updated_at: new Date()
-    }).eq('user_id', id);
+    const userUpdates = { updated_at: new Date() };
+    if (name !== undefined) userUpdates.name = name;
+    if (email !== undefined) userUpdates.email = email;
+    if (country !== undefined) userUpdates.country = country;
+    if (status !== undefined) userUpdates.status = status;
+
+    if (Object.keys(userUpdates).length > 1) {
+      await adminClient.from('users').update(userUpdates).eq('user_id', id);
+    }
     
     res.json({ message: 'User updated successfully' });
   } catch (err) {
@@ -621,25 +635,7 @@ exports.adminDeletePackage = async (req, res) => {
   }
 };
 
-exports.adminUpdateUser = async (req, res) => {
-  if (!isConfigured) return res.status(503).json({ error: 'Supabase not configured' });
 
-  try {
-    const { id } = req.params;
-    const { status } = req.body;
-    const { data, error } = await client
-      .from('users')
-      .update({ status })
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) throw error;
-    res.json({ message: `User status updated to ${status}`, data });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
 
 exports.createWithdrawal = async (req, res) => {
   if (!isConfigured) {
