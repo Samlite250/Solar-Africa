@@ -610,7 +610,11 @@ class SolarApp {
           </td>
           <td>
             ${d.proof_url 
-              ? `<a href="${d.proof_url}" target="_blank" class="btn-admin btn-admin-primary" style="padding:5px 10px;font-size:11px;text-decoration:none;">📷 View Proof</a>` 
+              ? `<img src="${d.proof_url}" alt="Payment Proof" 
+                  onclick="window.open().document.write('<img src=\\'${d.proof_url}\\' style=\\'max-width:100%;\\'/>')"
+                  style="width:52px;height:52px;object-fit:cover;border-radius:8px;cursor:pointer;border:2px solid #e2e8f0;transition:transform 0.2s;"
+                  onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"
+                  title="Click to view full screenshot" />` 
               : '<span style="color:#94a3b8;font-size:12px;">No proof</span>'}
           </td>
           <td style="color:#64748b;font-size:13px;">${new Date(d.created_at).toLocaleDateString()}</td>
@@ -2725,14 +2729,32 @@ class SolarApp {
               : this.formatCurrency(amount));
         const finalAmount = `${displayAmount} (${method.toUpperCase()})`;
 
-        const formData = new FormData();
-        formData.append('package_name', name);
-        formData.append('amount', finalAmount);
-        formData.append('payment_name', proofNameEl.value.trim());
-        formData.append('payment_number', proofNumEl.value.trim());
-        formData.append('proof', proofFileEl.files[0]);
+        // Convert image to base64 so it can be stored directly in Supabase DB
+        // This avoids needing a Storage bucket configuration
+        let proofData = null;
+        try {
+          proofData = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result); // gives "data:image/jpeg;base64,..."
+            reader.onerror = reject;
+            reader.readAsDataURL(proofFileEl.files[0]);
+          });
+        } catch(e) {
+          this.showToast('Could not read image file. Please try again.', 'error');
+          submitBtn.disabled = false; submitBtn.textContent = 'Submit Proof & Confirm Payment';
+          return;
+        }
 
-        const res = await this.fetchAPI('deposits', { method: 'POST', body: formData });
+        const res = await this.fetchAPI('deposits', {
+          method: 'POST',
+          body: JSON.stringify({
+            package_name: name,
+            amount: finalAmount,
+            payment_name: proofNameEl.value.trim(),
+            payment_number: proofNumEl.value.trim(),
+            proof_data: proofData
+          })
+        });
 
         if (res) {
           card.innerHTML = `

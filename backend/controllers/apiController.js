@@ -426,27 +426,8 @@ exports.createDeposit = async (req, res) => {
   try {
     const { amount, package_name, payment_name, payment_number } = req.body;
 
-    let proofUrl = null;
-    if (req.file) {
-      try {
-        const fileName = `${Date.now()}-${Math.round(Math.random() * 1E9)}.jpg`;
-        const { data: uploadData, error: uploadErr } = await adminClient.storage
-          .from('receipts')
-          .upload(fileName, req.file.buffer, {
-            contentType: req.file.mimetype,
-            upsert: false
-          });
-          
-        if (!uploadErr) {
-          const { data: publicData } = adminClient.storage.from('receipts').getPublicUrl(fileName);
-          proofUrl = publicData?.publicUrl || null;
-        } else {
-          console.warn('Storage upload error (receipts bucket):', uploadErr.message);
-        }
-      } catch (e) {
-        console.warn('Failed to upload proof image:', e.message);
-      }
-    }
+    // Accept base64 proof image directly from JSON body — no Storage bucket needed
+    const proofUrl = req.body.proof_data || null;
 
     // Fetch real username from profiles table
     let userName = req.user.user_metadata?.full_name || 'User';
