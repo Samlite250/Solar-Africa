@@ -1145,12 +1145,15 @@ exports.completeTask = async (req, res) => {
       rewardValueNum = 5000;
       suffix = ' UGX';
     } else if (userCountry === 'tanzania') {
-      rewardValueNum = 4500;
+      rewardValueNum = 500;
       suffix = ' TZS';
+    } else if (userCountry === 'congo rdc' || userCountry === 'congo') {
+      rewardValueNum = 10000;
+      suffix = ' CDF';
     } else {
       // Default: Burundi
       rewardValueNum = 3500;
-      suffix = ' BIF';
+      suffix = ' FBu';
     }
 
     const currentBalanceNum = parseInt((dash?.wallet_balance || '0').replace(/[^0-9]/g, '')) || 0;

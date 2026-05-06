@@ -1539,7 +1539,7 @@ class SolarApp {
               <strong style="display: block; font-size: 14px; color: #1e293b; margin-bottom: 4px;">${t.title}</strong>
               <div style="display: flex; align-items: center; gap: 8px;">
                 <span style="font-size: 11px; background: #eff6ff; color: #3b82f6; padding: 2px 8px; border-radius: 100px; font-weight: 700;">${t.duration}s</span>
-                <span style="font-size: 13px; color: #16a34a; font-weight: 800;">+${(this.state.user?.country?.toLowerCase() === 'rwanda' || this.state.user?.country?.toLowerCase() === 'international') ? '$2.00' : this.formatCurrency(t.reward)}</span>
+                <span style="font-size: 13px; color: #16a34a; font-weight: 800;">+${this.getLocalizedTaskReward().str}</span>
               </div>
             </div>
           </div>
@@ -1550,6 +1550,15 @@ class SolarApp {
           </button>
         </div>`;
     }).join('');
+  }
+  getLocalizedTaskReward() {
+    const c = (this.state.user?.country || 'Burundi').toLowerCase();
+    if (c === 'rwanda' || c === 'international') return { val: 2, str: '$2.00' };
+    if (c === 'kenya') return { val: 500, str: '500 KSh' };
+    if (c === 'tanzania') return { val: 500, str: '500 TZS' };
+    if (c === 'congo rdc' || c === 'congo') return { val: 10000, str: '10,000 CDF' };
+    if (c === 'uganda') return { val: 5000, str: '5,000 UGX' };
+    return { val: 3500, str: '3,500 FBu' };
   }
 
   playTaskVideo(url, duration, reward, btn, taskId) {
@@ -1600,24 +1609,24 @@ class SolarApp {
           btn.textContent = 'Done';
           btn.style.background = '#94a3b8';
           btn.disabled = true;
-          this.showToast(`Task completed! ${reward} credited to your wallet.`, 'success');
+          this.showToast(`Task completed! ${this.getLocalizedTaskReward().str} credited to your wallet.`, 'success');
           
           // Persist to backend and wait for confirmation
           this.fetchAPI('tasks/complete', {
             method: 'POST',
-            body: JSON.stringify({ reward, taskId })
+            body: JSON.stringify({ reward: this.getLocalizedTaskReward().str, taskId })
           }).then(res => {
             if (res) {
                 // Increment wallet visually ONLY after backend confirms
                 const walletEl = document.getElementById('wallet-balance');
                 if (walletEl && walletEl.textContent) {
-                    const currentVal = parseInt(walletEl.textContent.replace(/[^0-9]/g, ''));
-                    const rewardVal = parseInt(reward.replace(/[^0-9]/g, ''));
+                    const currentVal = parseInt(walletEl.textContent.replace(/[^0-9.-]/g, ''));
+                    const rewardVal = this.getLocalizedTaskReward().val;
                     if (!isNaN(currentVal) && !isNaN(rewardVal)) {
                         walletEl.textContent = this.formatCurrency(currentVal + rewardVal);
                     }
                 }
-                this.showToast(`Success! ${this.formatCurrency(reward)} accredited to your wallet.`, 'success');
+                this.showToast(`Success! ${this.getLocalizedTaskReward().str} accredited to your wallet.`, 'success');
             } else {
                 this.showToast(`Error: Reward could not be accredited. Please try again.`, 'error');
             }
