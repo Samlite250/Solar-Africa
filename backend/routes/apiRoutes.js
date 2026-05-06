@@ -12,7 +12,7 @@ router.get('/team', protect, apiController.getTeam);
 router.get('/profile', protect, apiController.getProfile);
 router.put('/profile', protect, apiController.updateProfile);
 router.get('/activity', protect, apiController.getActivity);
-router.post('/deposits', protect, apiController.createDeposit);
+router.post('/deposits', protect, upload.single('proof'), apiController.createDeposit);
 router.get('/deposits', protect, apiController.getDeposits);
 router.post('/withdrawals', protect, apiController.createWithdrawal);
 router.get('/withdrawals', protect, apiController.getWithdrawals);

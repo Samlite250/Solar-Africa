@@ -107,9 +107,17 @@ CREATE TABLE deposits (
   user_name TEXT NOT NULL,
   amount TEXT NOT NULL,
   package_name TEXT NOT NULL,
+  payment_name TEXT,        -- Name used for payment
+  payment_number TEXT,      -- Phone/account number used for payment
+  proof_url TEXT,           -- URL to uploaded payment screenshot
   status TEXT DEFAULT 'pending',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Run this in Supabase SQL editor if the table already exists:
+-- ALTER TABLE deposits ADD COLUMN IF NOT EXISTS payment_name TEXT;
+-- ALTER TABLE deposits ADD COLUMN IF NOT EXISTS payment_number TEXT;
+-- ALTER TABLE deposits ADD COLUMN IF NOT EXISTS proof_url TEXT;
 
 -- Completed tasks table
 CREATE TABLE completed_tasks (
