@@ -255,10 +255,10 @@ exports.getAdminStats = async (req, res) => {
       
       if (rawUsers.length === 0) {
         console.log('[Admin] users table empty — trying profiles table');
-        // Only select guaranteed columns (name, user_id, created_at)
+        // Only select guaranteed columns (name, user_id, email, created_at)
         const { data: profilesData } = await adminClient
           .from('profiles')
-          .select('user_id, name, created_at, country, phone, referred_by')
+          .select('user_id, name, email, created_at, country, phone, referred_by')
           .order('created_at', { ascending: false })
           .limit(500);
         
@@ -266,6 +266,7 @@ exports.getAdminStats = async (req, res) => {
           rawUsers = profilesData.map(p => ({
             user_id: p.user_id,
             name: p.name,
+            email: p.email,
             status: 'active',
             created_at: p.created_at
           }));
@@ -299,7 +300,7 @@ exports.getAdminStats = async (req, res) => {
         if (userIds.length > 0) {
           const [dRes, pRes] = await Promise.all([
             adminClient.from('dashboard').select('user_id, wallet_balance, welcome_bonus, total_earnings').in('user_id', userIds),
-            adminClient.from('profiles').select('user_id, name, referred_by, country, phone').in('user_id', userIds)
+            adminClient.from('profiles').select('user_id, name, email, referred_by, country, phone').in('user_id', userIds)
           ]);
           dashboardsRes = dRes;
           profilesRes = pRes;
@@ -314,6 +315,7 @@ exports.getAdminStats = async (req, res) => {
             ...u,
             // Use profile name as priority (it's what the user registered with)
             name: profMap[u.user_id]?.name || u.name,
+            email: profMap[u.user_id]?.email || u.email || '',
             country: profMap[u.user_id]?.country || 'Burundi',
             phone: profMap[u.user_id]?.phone || 'N/A',
             upline: profMap[u.user_id]?.referred_by || 'SOLAR',
