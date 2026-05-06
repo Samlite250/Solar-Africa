@@ -1048,7 +1048,7 @@ class SolarApp {
         <td style="color:#10b981;font-weight:700;">${this.formatCurrency(u.wallet_balance, u.country)}</td>
         <td><span style="background:${u.status==='active'?'#dcfce7':'#fee2e2'};color:${u.status==='active'?'#16a34a':'#dc2626'};padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;">${(u.status||'active').toUpperCase()}</span></td>
         <td style="display:flex;gap:6px;flex-wrap:wrap;">
-          <button onclick="window.app.openBalanceModal('${u.user_id}', '${u.name}', '${u.wallet_balance||'0'}', '${u.welcome_bonus||'0'}', '${u.total_earnings||'0'}', '${u.email||''}', '${u.phone||''}', '${u.country||''}', '${u.upline||''}')" class="btn-admin btn-admin-primary" style="padding:6px 12px;font-size:11px;">Edit User</button>
+          <button onclick="window.app.openBalanceModal('${u.user_id}', '${u.name}', '${this.formatCurrency(u.wallet_balance, u.country)}', '${this.formatCurrency(u.welcome_bonus, u.country)}', '${this.formatCurrency(u.total_earnings, u.country)}', '${u.email||''}', '${u.phone||''}', '${u.country||''}', '${u.upline||''}')" class="btn-admin btn-admin-primary" style="padding:6px 12px;font-size:11px;">Edit User</button>
           <button onclick="window.app.toggleUserStatus(${u.id}, '${u.status==='active'?'suspended':'active'}')" class="btn-admin ${u.status==='active'?'btn-admin-outline':'btn-admin-primary'}" style="padding:6px 12px;font-size:11px;">${u.status==='active'?'Suspend':'Activate'}</button>
         </td>
       </tr>
