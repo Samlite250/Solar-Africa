@@ -2605,101 +2605,156 @@ class SolarApp {
           ${cryptoHTML || '<p style="color:#64748b; font-size:13px; text-align:center; padding:20px;">Crypto payment is not yet configured for this region.</p>'}
         </div>`;
 
-      card.innerHTML = `
-        <div style="text-align:center;">
-          <h3 style="font-size:18px;font-weight:900;color:#1e293b;margin-bottom:8px;">Payment Details</h3>
-          <p style="font-size:13px;color:#64748b;margin-bottom:24px;">Choose your preferred method for <strong>${name}</strong>.</p>
-          
-          ${paymentTabsHTML}
+      const method_c = this.state.activePaymentTab || (isInternational ? 'crypto' : 'momo');
+      const displayAmt_c = method_c === 'crypto'
+        ? this.formatCurrency(amount)
+        : (this.state.user?.country?.toLowerCase() === 'rwanda'
+            ? ((parseFloat(amount.toString().replace(/[^0-9]/g, '')) * 1450).toLocaleString() + ' RWF')
+            : this.formatCurrency(amount));
 
-          <div style="text-align:left; margin-bottom:32px;">
-            ${paymentStepsHTML}
+      card.innerHTML = `
+        <div style="display:flex;flex-direction:column;gap:0;">
+
+          <!-- HEADER BADGE -->
+          <div style="text-align:center;padding-bottom:20px;border-bottom:1px solid #f1f5f9;margin-bottom:22px;">
+            <div style="display:inline-flex;align-items:center;gap:8px;background:#eff6ff;padding:6px 16px;border-radius:100px;margin-bottom:14px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0b6cff" stroke-width="2.5"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+              <span style="font-size:11px;font-weight:800;color:#0b6cff;text-transform:uppercase;letter-spacing:0.8px;">Secure Payment</span>
+            </div>
+            <h3 style="font-size:20px;font-weight:900;color:#0f172a;margin:0 0 6px;">${name}</h3>
+            <div style="font-size:26px;font-weight:900;color:#16a34a;margin-bottom:4px;">${displayAmt_c}</div>
+            <div style="font-size:12px;color:#94a3b8;font-weight:600;">Welcome Bonus: <strong style="color:#f59e0b;">${bonus}</strong></div>
           </div>
 
-          <button id="confirm-payment-btn" class="btn btn-green btn-full" style="padding:16px;font-size:15px;font-weight:900;border-radius:16px;width:100%;border:none;cursor:pointer;margin-bottom:12px;box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2);">I Have Completed Payment</button>
-          <button id="cancel-payment-btn" style="background:none;border:none;color:#94a3b8;font-size:13px;font-weight:700;cursor:pointer;padding:8px; transition:color 0.2s;" onmouseover="this.style.color='#64748b'" onmouseout="this.style.color='#94a3b8'">Cancel &amp; Go Back</button>
-        </div>
-      `;
+          <!-- PAYMENT TABS -->
+          ${paymentTabsHTML}
 
-      modal.querySelector('#cancel-payment-btn').onclick = () => {
-        modal.remove(); 
-      };
+          <!-- PAYMENT INSTRUCTIONS -->
+          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:18px;margin-bottom:22px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+              <div style="width:30px;height:30px;background:#eff6ff;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0b6cff" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              </div>
+              <span style="font-size:13px;font-weight:800;color:#1e293b;">Payment Instructions</span>
+            </div>
+            <div style="text-align:left;">${paymentStepsHTML}</div>
+          </div>
 
-      modal.querySelector('#confirm-payment-btn').onclick = async () => {
-        // Show proof submission form
-        card.innerHTML = `
-          <div style="padding:10px 0;">
-            <h3 style="font-size:18px;font-weight:900;color:#1e293b;margin-bottom:6px;text-align:center;">Submit Payment Proof</h3>
-            <p style="font-size:13px;color:#64748b;margin-bottom:20px;text-align:center;">Please fill in your payment details and upload a screenshot.</p>
+          <!-- SECTION DIVIDER -->
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px;">
+            <div style="flex:1;height:1px;background:#e2e8f0;"></div>
+            <span style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1.2px;white-space:nowrap;">Step 2 — Submit Your Proof</span>
+            <div style="flex:1;height:1px;background:#e2e8f0;"></div>
+          </div>
 
-            <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:20px;">
+          <!-- PROOF SUBMISSION FORM -->
+          <div style="background:white;border:1.5px solid #e2e8f0;border-radius:16px;padding:20px;margin-bottom:22px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
+              <div style="width:30px;height:30px;background:#dcfce7;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <span style="font-size:13px;font-weight:800;color:#1e293b;">Confirm Your Payment</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:14px;">
               <div>
-                <label style="font-size:12px;font-weight:700;color:#334155;display:block;margin-bottom:6px;">Full Name Used for Payment *</label>
-                <input id="proof-name" type="text" placeholder="e.g. Jean Pierre" style="width:100%;padding:12px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;box-sizing:border-box;" required />
+                <label style="font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;">Full Name Used for Payment *</label>
+                <input id="proof-name" type="text" placeholder="e.g. Jean Pierre"
+                  style="width:100%;padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;color:#0f172a;box-sizing:border-box;outline:none;font-family:inherit;"
+                  onfocus="this.style.borderColor='#0b6cff'" onblur="this.style.borderColor='#e2e8f0'" />
               </div>
               <div>
-                <label style="font-size:12px;font-weight:700;color:#334155;display:block;margin-bottom:6px;">Phone / Account Number Used *</label>
-                <input id="proof-number" type="text" placeholder="e.g. +25761234567" style="width:100%;padding:12px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;box-sizing:border-box;" required />
+                <label style="font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;">Phone / Account Number Used *</label>
+                <input id="proof-number" type="text" placeholder="e.g. +25761234567"
+                  style="width:100%;padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;color:#0f172a;box-sizing:border-box;outline:none;font-family:inherit;"
+                  onfocus="this.style.borderColor='#0b6cff'" onblur="this.style.borderColor='#e2e8f0'" />
               </div>
               <div>
-                <label style="font-size:12px;font-weight:700;color:#334155;display:block;margin-bottom:6px;">Payment Screenshot *</label>
-                <label for="proof-screenshot" style="display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px dashed #cbd5e1;border-radius:12px;padding:24px;cursor:pointer;background:#f8fafc;transition:border-color 0.2s;">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                  <span id="proof-file-label" style="font-size:13px;color:#64748b;margin-top:8px;font-weight:600;">Tap to upload screenshot</span>
-                  <input id="proof-screenshot" type="file" accept="image/*" style="display:none;" onchange="document.getElementById('proof-file-label').textContent = this.files[0]?.name || 'File selected'" />
+                <label style="font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;">Payment Screenshot *</label>
+                <label for="proof-screenshot" id="proof-drop-zone"
+                  style="display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px dashed #cbd5e1;border-radius:12px;padding:24px 16px;cursor:pointer;background:#f8fafc;gap:10px;transition:all 0.2s;"
+                  onmouseover="this.style.borderColor='#0b6cff';this.style.background='#eff6ff'"
+                  onmouseout="this.style.borderColor=document.getElementById('proof-screenshot')?.files[0]?'#16a34a':'#cbd5e1';this.style.background=document.getElementById('proof-screenshot')?.files[0]?'#f0fdf4':'#f8fafc'">
+                  <div style="width:44px;height:44px;background:#eff6ff;border-radius:12px;display:flex;align-items:center;justify-content:center;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0b6cff" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  </div>
+                  <div style="text-align:center;">
+                    <div id="proof-file-label" style="font-size:13px;font-weight:700;color:#334155;">Tap to upload screenshot</div>
+                    <div style="font-size:11px;color:#94a3b8;margin-top:2px;">PNG, JPG or JPEG</div>
+                  </div>
+                  <input id="proof-screenshot" type="file" accept="image/*" style="display:none;"
+                    onchange="const f=this.files[0];const lbl=document.getElementById('proof-file-label');const zone=document.getElementById('proof-drop-zone');if(f){lbl.textContent='✓ '+f.name;zone.style.borderColor='#16a34a';zone.style.background='#f0fdf4';}" />
                 </label>
               </div>
             </div>
-
-            <button id="submit-proof-btn" class="btn btn-green btn-full" style="padding:16px;font-size:15px;font-weight:900;border-radius:16px;width:100%;border:none;cursor:pointer;box-shadow:0 4px 12px rgba(22,163,74,0.2);">Submit Proof & Confirm</button>
-            <button onclick="this.closest('.invest-card-content, div').remove()" style="background:none;border:none;color:#94a3b8;font-size:13px;font-weight:700;cursor:pointer;padding:8px;display:block;width:100%;margin-top:8px;">Cancel</button>
           </div>
-        `;
 
-        document.getElementById('submit-proof-btn').onclick = async () => {
-          const proofNameEl = document.getElementById('proof-name');
-          const proofNumEl = document.getElementById('proof-number');
-          const proofFileEl = document.getElementById('proof-screenshot');
-          const submitBtn = document.getElementById('submit-proof-btn');
+          <!-- SUBMIT -->
+          <button id="submit-proof-btn"
+            style="width:100%;padding:16px;font-size:15px;font-weight:900;border-radius:16px;border:none;cursor:pointer;background:linear-gradient(135deg,#16a34a,#22c55e);color:white;box-shadow:0 6px 20px rgba(22,163,74,0.25);margin-bottom:12px;transition:all 0.2s;font-family:inherit;"
+            onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 8px 24px rgba(22,163,74,0.35)'"
+            onmouseout="this.style.transform='none';this.style.boxShadow='0 6px 20px rgba(22,163,74,0.25)'">
+            Submit Proof &amp; Confirm Payment
+          </button>
+          <button id="cancel-payment-btn"
+            style="background:none;border:none;color:#94a3b8;font-size:13px;font-weight:700;cursor:pointer;padding:8px;width:100%;font-family:inherit;transition:color 0.2s;"
+            onmouseover="this.style.color='#64748b'" onmouseout="this.style.color='#94a3b8'">
+            Cancel &amp; Go Back
+          </button>
+        </div>
+      `;
 
-          if (!proofNameEl.value.trim()) { this.showToast('Please enter the name used for payment.', 'error'); return; }
-          if (!proofNumEl.value.trim()) { this.showToast('Please enter the phone/account number used.', 'error'); return; }
-          if (!proofFileEl.files[0]) { this.showToast('Please upload a payment screenshot.', 'error'); return; }
+      modal.querySelector('#cancel-payment-btn').onclick = () => modal.remove();
 
-          submitBtn.disabled = true; submitBtn.textContent = 'Uploading...';
+      modal.querySelector('#submit-proof-btn').onclick = async () => {
+        const proofNameEl = document.getElementById('proof-name');
+        const proofNumEl  = document.getElementById('proof-number');
+        const proofFileEl = document.getElementById('proof-screenshot');
+        const submitBtn   = document.getElementById('submit-proof-btn');
 
-          const method = this.state.activePaymentTab || 'momo';
-          const displayAmount = method === 'crypto' ? this.formatCurrency(amount) : (this.state.user?.country?.toLowerCase() === 'rwanda' ? ((parseFloat(amount.toString().replace(/[^0-9]/g, '')) * 1450).toLocaleString() + ' RWF') : this.formatCurrency(amount));
-          const finalAmount = `${displayAmount} (${method.toUpperCase()})`;
+        if (!proofNameEl.value.trim()) { this.showToast('Please enter the name used for payment.', 'error'); return; }
+        if (!proofNumEl.value.trim())  { this.showToast('Please enter the phone/account number used.', 'error'); return; }
+        if (!proofFileEl.files[0])     { this.showToast('Please upload a payment screenshot.', 'error'); return; }
 
-          const formData = new FormData();
-          formData.append('package_name', name);
-          formData.append('amount', finalAmount);
-          formData.append('payment_name', proofNameEl.value.trim());
-          formData.append('payment_number', proofNumEl.value.trim());
-          formData.append('proof', proofFileEl.files[0]);
+        submitBtn.disabled = true; submitBtn.textContent = 'Uploading...';
 
-          const res = await this.fetchAPI('deposits', { method: 'POST', body: formData });
+        const method = this.state.activePaymentTab || 'momo';
+        const displayAmount = method === 'crypto'
+          ? this.formatCurrency(amount)
+          : (this.state.user?.country?.toLowerCase() === 'rwanda'
+              ? ((parseFloat(amount.toString().replace(/[^0-9]/g, '')) * 1450).toLocaleString() + ' RWF')
+              : this.formatCurrency(amount));
+        const finalAmount = `${displayAmount} (${method.toUpperCase()})`;
 
-          if (res) {
-            card.innerHTML = `
-              <div style="text-align:center; padding: 20px 0;">
-                <div style="width:80px; height:80px; background:#dcfce7; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px; box-shadow: 0 10px 20px rgba(22, 163, 74, 0.15);">
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                </div>
-                <h3 style="font-size:22px; font-weight:800; color:#111827; margin-bottom:12px;">Proof Submitted!</h3>
-                <p style="font-size:14px; color:#4b5563; line-height:1.6; margin-bottom:24px; padding:0 10px;">
-                  Your payment proof for <strong>${name}</strong> has been received and is under review.
-                  <br><br>
-                  Once verified, your <strong>${bonus} Welcome Bonus</strong> will be credited to your balance.
-                </p>
-                <button onclick="document.getElementById('invest-modal')?.remove()" class="btn btn-blue btn-full" style="padding:16px; font-size:15px; font-weight:800; border-radius:14px; width:100%; border:none; cursor:pointer;">Return to Dashboard</button>
+        const formData = new FormData();
+        formData.append('package_name', name);
+        formData.append('amount', finalAmount);
+        formData.append('payment_name', proofNameEl.value.trim());
+        formData.append('payment_number', proofNumEl.value.trim());
+        formData.append('proof', proofFileEl.files[0]);
+
+        const res = await this.fetchAPI('deposits', { method: 'POST', body: formData });
+
+        if (res) {
+          card.innerHTML = `
+            <div style="text-align:center;padding:30px 10px;">
+              <div style="width:80px;height:80px;background:#dcfce7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;box-shadow:0 10px 30px rgba(22,163,74,0.2);">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
               </div>
-            `;
-          } else {
-            submitBtn.disabled = false; submitBtn.textContent = 'Submit Proof & Confirm';
-          }
-        };
+              <h3 style="font-size:22px;font-weight:900;color:#111827;margin-bottom:10px;">Proof Submitted!</h3>
+              <p style="font-size:14px;color:#4b5563;line-height:1.7;margin-bottom:28px;padding:0 8px;">
+                Your payment proof for <strong>${name}</strong> has been received and is under review by our team.
+                <br><br>
+                Once verified, your <strong style="color:#f59e0b;">${bonus} Welcome Bonus</strong> will be instantly credited to your balance.
+              </p>
+              <button onclick="document.getElementById('invest-modal')?.remove()"
+                style="width:100%;padding:16px;font-size:15px;font-weight:900;border-radius:16px;border:none;cursor:pointer;background:linear-gradient(135deg,#0b6cff,#00b0ff);color:white;box-shadow:0 6px 20px rgba(11,108,255,0.25);font-family:inherit;">
+                Return to Dashboard
+              </button>
+            </div>
+          `;
+        } else {
+          submitBtn.disabled = false; submitBtn.textContent = 'Submit Proof & Confirm Payment';
+        }
       };
     };
   }
