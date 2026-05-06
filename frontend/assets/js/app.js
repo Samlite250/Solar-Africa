@@ -611,10 +611,11 @@ class SolarApp {
           <td>
             ${d.proof_url 
               ? `<img src="${d.proof_url}" alt="Payment Proof" 
-                  onclick="window.open().document.write('<img src=\\'${d.proof_url}\\' style=\\'max-width:100%;\\'/>')"
-                  style="width:52px;height:52px;object-fit:cover;border-radius:8px;cursor:pointer;border:2px solid #e2e8f0;transition:transform 0.2s;"
-                  onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"
-                  title="Click to view full screenshot" />` 
+                  onclick="window.app.showProofLightbox('${d.proof_url.replace(/'/g, "\\'")}')" 
+                  style="width:52px;height:52px;object-fit:cover;border-radius:8px;cursor:zoom-in;border:2px solid #e2e8f0;transition:all 0.2s;box-shadow:0 2px 8px rgba(0,0,0,0.1);"
+                  onmouseover="this.style.transform='scale(1.1)';this.style.boxShadow='0 4px 16px rgba(0,0,0,0.2)'" 
+                  onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'"
+                  title="Click to zoom" />` 
               : '<span style="color:#94a3b8;font-size:12px;">No proof</span>'}
           </td>
           <td style="color:#64748b;font-size:13px;">${new Date(d.created_at).toLocaleDateString()}</td>
@@ -1018,6 +1019,86 @@ class SolarApp {
             }
         });
     }
+  }
+
+  showProofLightbox(src) {
+    // Remove any existing lightbox
+    document.getElementById('proof-lightbox')?.remove();
+
+    let scale = 1, originX = 0, originY = 0, isDragging = false, startX = 0, startY = 0, dragX = 0, dragY = 0;
+
+    const lb = document.createElement('div');
+    lb.id = 'proof-lightbox';
+    lb.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.92);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);animation:fadeIn 0.2s ease-out;';
+    lb.innerHTML = `
+      <div style="position:relative;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center;gap:14px;">
+        <!-- Controls -->
+        <div style="display:flex;align-items:center;gap:10px;">
+          <button id="lb-zoom-out" title="Zoom Out" style="width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:white;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;">−</button>
+          <button id="lb-zoom-reset" title="Reset Zoom" style="padding:0 14px;height:36px;border-radius:10px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:white;font-size:12px;font-weight:700;cursor:pointer;transition:background 0.2s;">100%</button>
+          <button id="lb-zoom-in"  title="Zoom In"  style="width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:white;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;">+</button>
+          <button id="lb-close" title="Close" style="width:36px;height:36px;border-radius:10px;background:rgba(239,68,68,0.7);border:none;color:white;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:10px;transition:background 0.2s;">✕</button>
+        </div>
+        <!-- Image wrapper -->
+        <div id="lb-wrap" style="overflow:hidden;border-radius:12px;cursor:grab;max-width:88vw;max-height:78vh;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+          <img id="lb-img" src="${src}" style="display:block;max-width:88vw;max-height:78vh;transform-origin:center center;transform:scale(1) translate(0px,0px);transition:transform 0.15s ease;user-select:none;-webkit-user-drag:none;" />
+        </div>
+        <p style="color:rgba(255,255,255,0.4);font-size:11px;font-weight:600;">Scroll to zoom · Drag to pan · Press Esc to close</p>
+      </div>
+    `;
+    document.body.appendChild(lb);
+
+    const img = document.getElementById('lb-img');
+    const wrap = document.getElementById('lb-wrap');
+    const resetBtn = document.getElementById('lb-zoom-reset');
+
+    const applyTransform = () => {
+      img.style.transform = `scale(${scale}) translate(${dragX/scale}px,${dragY/scale}px)`;
+      resetBtn.textContent = Math.round(scale * 100) + '%';
+    };
+
+    // Zoom buttons
+    document.getElementById('lb-zoom-in').onclick  = () => { scale = Math.min(scale + 0.3, 5); applyTransform(); };
+    document.getElementById('lb-zoom-out').onclick = () => { scale = Math.max(scale - 0.3, 0.3); applyTransform(); };
+    document.getElementById('lb-zoom-reset').onclick = () => { scale = 1; dragX = 0; dragY = 0; applyTransform(); };
+    document.getElementById('lb-close').onclick = () => lb.remove();
+
+    // Click backdrop to close
+    lb.addEventListener('click', e => { if (e.target === lb) lb.remove(); });
+
+    // Keyboard
+    const onKey = e => {
+      if (e.key === 'Escape') { lb.remove(); document.removeEventListener('keydown', onKey); }
+      if (e.key === '+' || e.key === '=') { scale = Math.min(scale + 0.3, 5); applyTransform(); }
+      if (e.key === '-') { scale = Math.max(scale - 0.3, 0.3); applyTransform(); }
+    };
+    document.addEventListener('keydown', onKey);
+
+    // Mouse wheel zoom
+    wrap.addEventListener('wheel', e => {
+      e.preventDefault();
+      const delta = e.deltaY < 0 ? 0.15 : -0.15;
+      scale = Math.min(Math.max(scale + delta, 0.3), 5);
+      applyTransform();
+    }, { passive: false });
+
+    // Drag to pan
+    wrap.addEventListener('mousedown', e => { isDragging = true; startX = e.clientX - dragX; startY = e.clientY - dragY; wrap.style.cursor = 'grabbing'; });
+    window.addEventListener('mousemove', e => { if (!isDragging) return; dragX = e.clientX - startX; dragY = e.clientY - startY; applyTransform(); });
+    window.addEventListener('mouseup', () => { isDragging = false; wrap.style.cursor = 'grab'; });
+
+    // Touch pinch-zoom
+    let lastDist = 0;
+    wrap.addEventListener('touchstart', e => { if (e.touches.length === 2) lastDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); }, { passive: true });
+    wrap.addEventListener('touchmove', e => {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+        scale = Math.min(Math.max(scale * (dist / lastDist), 0.3), 5);
+        lastDist = dist;
+        applyTransform();
+      }
+    }, { passive: false });
   }
 
   renderAdminUsers() {
