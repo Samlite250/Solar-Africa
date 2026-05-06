@@ -213,12 +213,21 @@
 
       <div id="view-users" class="admin-view" style="display: none; padding: 40px;">
         <div class="panel-card">
-          <div class="panel-header">
+          <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
             <h4 class="panel-title">User Management</h4>
+            <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+              <input type="text" id="admin-user-search" placeholder="Search by name or email..." style="padding: 8px 12px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13px;" />
+              <select id="admin-user-sort" style="padding: 8px 12px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13px; background: white;">
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="balance-high">Balance: High to Low</option>
+                <option value="balance-low">Balance: Low to High</option>
+              </select>
+            </div>
           </div>
           <div class="table-container">
             <table>
-              <thead><tr><th>User</th><th>Email</th><th>Upline</th><th>Joined</th><th>Balance</th><th>Status</th><th>Actions</th></tr></thead>
+              <thead><tr><th>#</th><th>User</th><th>Email</th><th>Upline</th><th>Joined</th><th>Balance</th><th>Status</th><th>Actions</th></tr></thead>
               <tbody id="full-user-list"></tbody>
             </table>
           </div>

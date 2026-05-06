@@ -562,31 +562,20 @@ class SolarApp {
     }
 
     // 4. Populate Users Table (with Balance + Edit)
-    const userTable = document.getElementById('full-user-list');
-    if (userTable && users) {
-      const page = this.state.pagination.adminUsers;
-      const paginatedUsers = this.getPaginatedData(users, page);
-      userTable.innerHTML = paginatedUsers.map(u => `
-        <tr>
-          <td><div style="display:flex;align-items:center;gap:12px;">
-            <img src="https://ui-avatars.com/api/?name=${u.name}&background=eff6ff&color=0b6cff" style="width:36px;height:36px;border-radius:10px;">
-            <strong style="color:#0f172a;">${u.name}</strong>
-          </div></td>
-          <td style="color:#64748b;font-size:13px;">${u.email||'N/A'}</td>
-          <td style="color:#0b6cff;font-size:12px;font-weight:700;">${u.upline||'SOLAR'}</td>
-          <td style="color:#64748b;font-size:13px;">${new Date(u.created_at).toLocaleDateString()}</td>
-          <td style="color:#10b981;font-weight:700;">${this.formatCurrency(u.wallet_balance, u.country)}</td>
-          <td><span style="background:${u.status==='active'?'#dcfce7':'#fee2e2'};color:${u.status==='active'?'#16a34a':'#dc2626'};padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;">${(u.status||'active').toUpperCase()}</span></td>
-          <td style="display:flex;gap:6px;flex-wrap:wrap;">
-            <button onclick="window.app.openBalanceModal('${u.user_id}', '${u.name}', '${u.wallet_balance||'0'}', '${u.welcome_bonus||'0'}', '${u.total_earnings||'0'}', '${u.email||''}', '${u.phone||''}', '${u.country||''}', '${u.upline||''}')" class="btn-admin btn-admin-primary" style="padding:6px 12px;font-size:11px;">Edit User</button>
-            <button onclick="window.app.toggleUserStatus(${u.id}, '${u.status==='active'?'suspended':'active'}')" class="btn-admin ${u.status==='active'?'btn-admin-outline':'btn-admin-primary'}" style="padding:6px 12px;font-size:11px;">${u.status==='active'?'Suspend':'Activate'}</button>
-          </td>
-        </tr>
-      `).join('');
+    if (users) {
+      this.adminUsersData = users;
+      this.renderAdminUsers();
 
-      const controls = this.renderPaginationControls(users, page, 10, 'adminUsers');
-      const pagContainer = document.getElementById('pagination-users');
-      if (pagContainer) pagContainer.innerHTML = controls;
+      const searchInput = document.getElementById('admin-user-search');
+      const sortSelect = document.getElementById('admin-user-sort');
+      if (searchInput && !searchInput.dataset.bound) {
+        searchInput.addEventListener('input', () => { this.state.pagination.adminUsers = 1; this.renderAdminUsers(); });
+        searchInput.dataset.bound = 'true';
+      }
+      if (sortSelect && !sortSelect.dataset.bound) {
+        sortSelect.addEventListener('change', () => { this.state.pagination.adminUsers = 1; this.renderAdminUsers(); });
+        sortSelect.dataset.bound = 'true';
+      }
     }
 
     // 5. Populate Packages Table
@@ -1016,6 +1005,58 @@ class SolarApp {
             }
         });
     }
+  }
+
+  renderAdminUsers() {
+    const userTable = document.getElementById('full-user-list');
+    if (!userTable || !this.adminUsersData) return;
+
+    const searchTerm = (document.getElementById('admin-user-search')?.value || '').toLowerCase();
+    const sortVal = document.getElementById('admin-user-sort')?.value || 'newest';
+
+    let filtered = this.adminUsersData.filter(u => 
+      (u.name || '').toLowerCase().includes(searchTerm) || 
+      (u.email || '').toLowerCase().includes(searchTerm)
+    );
+
+    filtered.sort((a, b) => {
+      if (sortVal === 'newest') return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+      if (sortVal === 'oldest') return new Date(a.created_at || 0) - new Date(b.created_at || 0);
+      
+      const balA = parseFloat((a.wallet_balance || '0').replace(/[^0-9.-]+/g, '')) || 0;
+      const balB = parseFloat((b.wallet_balance || '0').replace(/[^0-9.-]+/g, '')) || 0;
+      
+      if (sortVal === 'balance-high') return balB - balA;
+      if (sortVal === 'balance-low') return balA - balB;
+      return 0;
+    });
+
+    const page = this.state.pagination.adminUsers || 1;
+    const paginatedUsers = this.getPaginatedData(filtered, page);
+    const startIndex = (page - 1) * 10; 
+
+    userTable.innerHTML = paginatedUsers.map((u, i) => `
+      <tr>
+        <td style="color:#94a3b8;font-weight:700;font-size:12px;">#${startIndex + i + 1}</td>
+        <td><div style="display:flex;align-items:center;gap:12px;">
+          <img src="https://ui-avatars.com/api/?name=${u.name}&background=eff6ff&color=0b6cff" style="width:36px;height:36px;border-radius:10px;">
+          <strong style="color:#0f172a;">${u.name}</strong>
+        </div></td>
+        <td style="color:#64748b;font-size:13px;">${u.email||'N/A'}</td>
+        <td style="color:#0b6cff;font-size:12px;font-weight:700;">${u.upline||'SOLAR'}</td>
+        <td style="color:#64748b;font-size:13px;">${new Date(u.created_at).toLocaleDateString()}</td>
+        <td style="color:#10b981;font-weight:700;">${this.formatCurrency(u.wallet_balance, u.country)}</td>
+        <td><span style="background:${u.status==='active'?'#dcfce7':'#fee2e2'};color:${u.status==='active'?'#16a34a':'#dc2626'};padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;">${(u.status||'active').toUpperCase()}</span></td>
+        <td style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button onclick="window.app.openBalanceModal('${u.user_id}', '${u.name}', '${u.wallet_balance||'0'}', '${u.welcome_bonus||'0'}', '${u.total_earnings||'0'}', '${u.email||''}', '${u.phone||''}', '${u.country||''}', '${u.upline||''}')" class="btn-admin btn-admin-primary" style="padding:6px 12px;font-size:11px;">Edit User</button>
+          <button onclick="window.app.toggleUserStatus(${u.id}, '${u.status==='active'?'suspended':'active'}')" class="btn-admin ${u.status==='active'?'btn-admin-outline':'btn-admin-primary'}" style="padding:6px 12px;font-size:11px;">${u.status==='active'?'Suspend':'Activate'}</button>
+        </td>
+      </tr>
+    `).join('') || `<tr><td colspan="8" style="text-align:center;padding:20px;color:#94a3b8;">No users found matching your search.</td></tr>`;
+
+    const controls = this.renderPaginationControls(filtered, page, 10, 'adminUsers');
+    const pagContainer = document.getElementById('pagination-users');
+    if (pagContainer) pagContainer.innerHTML = controls;
   }
 
   // Admin Actions
